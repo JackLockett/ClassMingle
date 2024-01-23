@@ -25,6 +25,23 @@
          </div>
 
          <br>
+
+         @if(session('success'))
+            <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+               {{ session('success') }}
+               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+               </button>
+            </div>
+
+            <script>
+               $(document).ready(function(){
+                     setTimeout(function(){
+                        $("#success-alert").alert('close');
+                     }, 10000);
+               });
+            </script>
+         @endif
          
          <div class="row">
          <div class="col-md-6">
@@ -35,7 +52,7 @@
                      <p class="card-text">
                      Academic Societies provide students with a place to discuss their chosen subject field in University.
                      </p>
-                     <a href="#" class="btn btn-success">Create Academic Society</a>
+                     <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createAcademicModal">Create Academic Society</a>
                   </div>
             </div>
          </div>
@@ -48,7 +65,7 @@
                      <p class="card-text">
                      Social Societies provide an environment for students at university to connect and combine interests beyond academics.
                      </p>
-                     <a href="#" class="btn btn-success">Create Social Society</a>
+                     <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createSocialModal">Create Social Society</a>
                   </div>
             </div>
          </div>
@@ -72,6 +89,78 @@
          </div>
       </div>
 
+      </div>
+
+      <!-- Modal for Create Academic Society -->
+      <div class="modal fade" id="createAcademicModal" tabindex="-1" role="dialog" aria-labelledby="createAcademicModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="createAcademicModalLabel">Create Academic Society</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                     <div class="alert alert-info" role="alert">
+                        Your academic society will need approval from an Administrator before being displayed to the public.
+                     </div>
+                     <form id="createAcademicForm" action="{{ route('create-society') }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                              <input type="hidden" id="societyType" name="societyType" value="Academic">
+                              <label for="subjectList">Subject:</label>
+                              <select id="subjectList" class="form-control" name="subjectList" required>
+                                 <option value="Computer Science">Computer Science</option>
+                                 <option value="Computing">Computing</option>
+                              </select>
+                        </div>
+
+                        <div class="form-group">
+                              <label for="societyDescription">Description</label>
+                              <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
+                        </div>
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
+                        <button type="submit" class="btn btn-success">Request New Academic Society</button>
+                     </form>
+                  </div>
+            </div>
+         </div>
+      </div>
+
+
+      <!-- Modal for Create Social Society -->
+      <div class="modal fade" id="createSocialModal" tabindex="-1" role="dialog" aria-labelledby="createSocialModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                  <div class="modal-header">
+                     <h5 class="modal-title" id="createSocialModalLabel">Create Social Society</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                     </button>
+                  </div>
+                  <div class="modal-body">
+                      <div class="alert alert-info" role="alert">
+                     Your social society will need approval from an Administrator before being displayed to the public.
+                     </div>
+                     <form id="createSocialForm" action="{{ route('create-society') }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                        <input id="societyType" name="societyType" value="Social" type="hidden">
+                              <label for="societyName">Society Name:</label>
+                              <input type="text" class="form-control" id="societyName" name="societyName" required>
+                        </div>
+                        <div class="form-group">
+                           <label for="societyDescription">Description</label>
+                           <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
+                        </div>                        
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
+                        <button type="submit" class="btn btn-success">Request New Social Society</button>
+                     </form>
+                  </div>
+            </div>
+         </div>
       </div>
 
       <script>

@@ -35,10 +35,12 @@ Route::get('/check-username-availability/{username}', [RegisterController::class
 
 Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
-    Route::get('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');  
+    Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
+
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     Route::post('/change-email', [AccountController::class, 'changeEmail'])->name('change-email');
     Route::post('/change-password', [AccountController::class, 'changePassword'])->name('change-password');
+
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 });
 
