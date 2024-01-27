@@ -13,5 +13,6 @@ class Society extends Model
         'societyName',
         'societyDescription',
         'approved',
+        'memberList',
     ];
 }

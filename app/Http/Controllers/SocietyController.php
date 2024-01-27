@@ -15,13 +15,12 @@ class SocietyController extends Controller
         return view('societies', compact('academicSocieties', 'socialSocieties'));
     }
 
-    public function viewSociety($id)
+    public function viewSocietyInfo($id)
     {
         $society = Society::findOrFail($id);
 
         return view('view-society', compact('society'));
     }
-
 
     public function createSociety(Request $request)
     {
@@ -39,6 +38,7 @@ class SocietyController extends Controller
         $society->societyName = $request->societyType === 'Academic' ? $validatedData['subjectList'] : $validatedData['societyName'];
         $society->societyDescription = $validatedData['societyDescription'];
         $society->approved = false;
+        $society->memberList = json_encode(['id' => auth()->user()->id]);
 
         $society->save();
 
