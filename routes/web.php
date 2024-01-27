@@ -35,6 +35,7 @@ Route::get('/check-username-availability/{username}', [RegisterController::class
 
 Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
+    Route::get('/societies/{id}', 'SocietyController@viewSociety')->name('view-society');
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
 
     Route::get('/account', [AccountController::class, 'index'])->name('account');

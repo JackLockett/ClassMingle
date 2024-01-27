@@ -9,8 +9,19 @@ class SocietyController extends Controller
 {
     public function index()
     {
-        return view('societies');
+        $academicSocieties = Society::where('societyType', 'Academic')->where('approved', 1)->get();
+        $socialSocieties = Society::where('societyType', 'Social')->where('approved', 1)->get();
+
+        return view('societies', compact('academicSocieties', 'socialSocieties'));
     }
+
+    public function viewSociety($id)
+    {
+        $society = Society::findOrFail($id);
+
+        return view('view-society', compact('society'));
+    }
+
 
     public function createSociety(Request $request)
     {
