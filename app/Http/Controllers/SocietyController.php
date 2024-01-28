@@ -38,7 +38,7 @@ class SocietyController extends Controller
         $society->societyName = $request->societyType === 'Academic' ? $validatedData['subjectList'] : $validatedData['societyName'];
         $society->societyDescription = $validatedData['societyDescription'];
         $society->approved = false;
-        $society->memberList = json_encode(['id' => auth()->user()->id]);
+        $society->memberList = json_encode([auth()->user()->id]);
 
         $society->save();
 
@@ -48,4 +48,49 @@ class SocietyController extends Controller
 
         return redirect()->route('societies');
     } 
+
+    public function joinSociety($societyId)
+    {
+        $society = Society::find($societyId);
+    
+        if (!$society) {
+            return response()->json(['error' => 'Society not found'], 404);
+        }
+    
+        $memberList = json_decode($society->memberList, true) ?: [];
+        $userId = auth()->user()->id;
+    
+        if (!in_array($userId, $memberList)) {
+            $memberList[] = $userId;
+        }
+    
+        $society->update(['memberList' => json_encode(array_values($memberList))]);
+    
+        return response()->json(['success' => 'User joined the society'], 200);
+    }
+
+    public function leaveSociety($societyId)
+    {
+        $society = Society::find($societyId);
+
+        if (!$society) {
+            return response()->json(['error' => 'Society not found'], 404);
+        }
+
+        $memberList = json_decode($society->memberList, true);
+        $userId = auth()->user()->id;
+
+        $key = array_search($userId, $memberList);
+        if ($key !== false) {
+            unset($memberList[$key]);
+        }
+
+        $society->update(['memberList' => json_encode($memberList)]);
+
+        return response()->json(['success' => 'User left the society'], 200);
+    }
+
+    
+    
+
 }
