@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Society;
+use App\Models\Post;
 
 class SocietyController extends Controller
 {
@@ -17,7 +18,7 @@ class SocietyController extends Controller
 
     public function viewSocietyInfo($id)
     {
-        $society = Society::findOrFail($id);
+        $society = Society::with('posts')->findOrFail($id);
 
         return view('view-society', compact('society'));
     }
@@ -47,7 +48,24 @@ class SocietyController extends Controller
         session()->flash('success', "Thank you for your submission! Your " . strtolower($societyTypeName) . " society will be reviewed by an administrator.");
 
         return redirect()->route('societies');
-    } 
+    }
+    
+    public function createPost(Request $request, $societyId)
+    {
+        $validatedData = $request->validate([
+            'postTitle' => 'required',
+            'postComment' => 'required',
+        ]);
+
+        $post = new Post();
+        $post->authorId = auth()->user()->id;
+        $post->societyId = $societyId;
+        $post->postTitle = $validatedData['postTitle'];
+        $post->postComment = $validatedData['postComment'];
+        $post->save();
+
+        return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
+    }
 
     public function joinSociety($societyId)
     {

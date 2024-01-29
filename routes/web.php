@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
     Route::get('/societies/{id}', [SocietyController::class, 'viewSocietyInfo'])->name('view-society');
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
+    Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
 

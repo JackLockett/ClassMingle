@@ -66,7 +66,6 @@
             </div>
          </div>
          <div class="row">
-<!-- Inside the appropriate divs in your HTML -->
 
 <div class="col-md-6">
     <div class="card bg-light mb-3">
@@ -155,7 +154,7 @@
                         </select>
                      </div>
                      <div class="form-group">
-                        <label for="societyDescription">Description</label>
+                        <label for="societyDescription">Description:</label>
                         <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
                      </div>
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
@@ -187,7 +186,7 @@
                         <input type="text" class="form-control" id="societyName" name="societyName" required>
                      </div>
                      <div class="form-group">
-                        <label for="societyDescription">Description</label>
+                        <label for="societyDescription">Description:</label>
                         <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
                      </div>
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
