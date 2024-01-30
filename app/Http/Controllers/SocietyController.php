@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Society;
 use App\Models\Post;
+use App\Models\Comment;
 
 class SocietyController extends Controller
 {
@@ -18,8 +19,10 @@ class SocietyController extends Controller
 
     public function viewSocietyInfo($id)
     {
-        $society = Society::with('posts')->findOrFail($id);
-
+        $society = Society::with(['posts' => function ($query) {
+            $query->withCount('comments');
+        }])->findOrFail($id);
+    
         return view('view-society', compact('society'));
     }
 
@@ -67,6 +70,35 @@ class SocietyController extends Controller
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
     }
 
+    public function viewPost($societyId, $postId)
+    {
+        $society = Society::find($societyId);
+        $post = Post::find($postId);
+    
+        return view('view-post', compact('society', 'post'));
+    }
+    
+    public function addComment(Request $request, $postId)
+    {
+        $validatedData = $request->validate([
+            'comment' => 'required|string',
+        ]);
+
+        $post = Post::find($postId);
+
+        if (!$post) {
+            return abort(404, 'Post not found');
+        }
+
+        $comment = new Comment();
+        $comment->post_id = $post->id;
+        $comment->user_id = auth()->user()->id;
+        $comment->comment = $validatedData['comment'];
+        $comment->save();
+
+        return redirect()->back()->with('success', 'Comment added successfully');
+    }
+
     public function joinSociety($societyId)
     {
         $society = Society::find($societyId);
@@ -107,8 +139,4 @@ class SocietyController extends Controller
 
         return response()->json(['success' => 'User left the society'], 200);
     }
-
-    
-    
-
 }

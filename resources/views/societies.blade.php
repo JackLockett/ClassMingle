@@ -66,67 +66,64 @@
             </div>
          </div>
          <div class="row">
-
-<div class="col-md-6">
-    <div class="card bg-light mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Academic Societies</h5>
-            @if(count($academicSocieties) > 0)
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Society Name</th>
-                            <th scope="col" style="text-align: right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($academicSocieties as $society)
-                            <tr>
-                                <td>{{ $society->societyName }}</td>
-                                <td style="text-align: right;">
-                                    <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">View</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <p class="card-text">There isn't any Academic Societies available at this time.</p>
-            @endif
-        </div>
-    </div>
-</div>
-
-<div class="col-md-6">
-    <div class="card bg-light mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Social Societies</h5>
-            @if(count($socialSocieties) > 0)
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Society Name</th>
-                            <th scope="col" style="text-align: right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($socialSocieties as $society)
-                            <tr>
-                                <td>{{ $society->societyName }}</td>
-                                <td style="text-align: right;">
-                                    <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">View</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <p class="card-text">There isn't any Social Societies available at this time.</p>
-            @endif
-        </div>
-    </div>
-</div>
-
+            <div class="col-md-6">
+               <div class="card bg-light mb-3">
+                  <div class="card-body">
+                     <h5 class="card-title">Academic Societies</h5>
+                     @if(count($academicSocieties) > 0)
+                     <table class="table">
+                        <thead>
+                           <tr>
+                              <th scope="col">Society Name</th>
+                              <th scope="col" style="text-align: right;">Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           @foreach($academicSocieties as $society)
+                           <tr>
+                              <td>{{ $society->societyName }}</td>
+                              <td style="text-align: right;">
+                                 <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">View</a>
+                              </td>
+                           </tr>
+                           @endforeach
+                        </tbody>
+                     </table>
+                     @else
+                     <p class="card-text">There isn't any Academic Societies available at this time.</p>
+                     @endif
+                  </div>
+               </div>
+            </div>
+            <div class="col-md-6">
+               <div class="card bg-light mb-3">
+                  <div class="card-body">
+                     <h5 class="card-title">Social Societies</h5>
+                     @if(count($socialSocieties) > 0)
+                     <table class="table">
+                        <thead>
+                           <tr>
+                              <th scope="col">Society Name</th>
+                              <th scope="col" style="text-align: right;">Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           @foreach($socialSocieties as $society)
+                           <tr>
+                              <td>{{ $society->societyName }}</td>
+                              <td style="text-align: right;">
+                                 <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">View</a>
+                              </td>
+                           </tr>
+                           @endforeach
+                        </tbody>
+                     </table>
+                     @else
+                     <p class="card-text">There isn't any Social Societies available at this time.</p>
+                     @endif
+                  </div>
+               </div>
+            </div>
          </div>
       </div>
       <!-- Modal for Create Academic Society -->
