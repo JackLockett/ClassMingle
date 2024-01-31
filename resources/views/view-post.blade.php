@@ -60,18 +60,21 @@
                 <h5 class="mb-0">Comments ({{ $post->comments->count() }})</h5>
             </div>
             <div class="card-body">
-                @foreach ($post->comments as $comment)
-                <div class="comment mb-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ $comment->user->username }}</strong> said:
+                @foreach ($post->comments as $key => $comment)
+                    <div class="comment mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ $comment->user->username }}</strong> said:
+                            </div>
+                            <div class="text-muted">
+                                <small>{{ $comment->created_at->diffForHumans() }}</small>
+                            </div>
                         </div>
-                        <div class="text-muted">
-                            <small>{{ $comment->created_at->diffForHumans() }}</small>
-                        </div>
+                        <p>{{ $comment->comment }}</p>
+                        @if (!$loop->last)
+                            <hr>
+                        @endif
                     </div>
-                    <p>{{ $comment->comment }}</p>
-                </div>
                 @endforeach
             </div>
             <div class="card-footer">
