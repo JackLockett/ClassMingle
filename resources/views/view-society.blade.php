@@ -23,6 +23,7 @@
                <h3 class="text-center">{{ $society->societyName }} Society</h3>
             </div>
          </div>
+         <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">Return To Societies</a>
          <br>
          <div id="alertContainer"></div>
          <div class="row">
@@ -46,7 +47,6 @@
                      <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">Delete Society</a>
                      <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">Edit Society Info</a>
                      @endif
-                     <a href="{{ route('societies') }}" class="btn btn-secondary">Return</a>
                   </div>
                </div>
             </div>

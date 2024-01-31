@@ -36,13 +36,13 @@
 </head>
 <body>
     @include('layouts.navbar')
-    <div class="container">
+    <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <h3 class="text-center">{{ $society->societyName }}</h3>
+                <h3 class="text-center">{{ $society->societyName }} - Society Post</h3>
             </div>
         </div>
-        <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary mb-3">Return to Society</a>
+        <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary btn-sm mb-3">Return to Society</a>
         <div class="card">
             <div class="card-body">
                 <h2 class="card-title">{{ $post->postTitle }}</h2>
