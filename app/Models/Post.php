@@ -15,6 +15,11 @@ class Post extends Model
         'postComment',
     ];
 
+    public function society()
+    {
+        return $this->belongsTo(Society::class);
+    }
+
     public function author()
     {
         return $this->belongsTo(User::class, 'authorId');
