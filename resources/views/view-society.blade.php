@@ -71,7 +71,10 @@
                            <p class="card-text">{{ $post->postComment }}</p>
                            <div class="text-muted">
                               <small><a href="{{ route('view-post', ['societyId' => $society->id, 'postId' => $post->id]) }}">View Post</a></small>
-                              <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
+                              @if ($post->comments_count > 0)
+                                 <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
+                              @endif
+
                            </div>
                         </div>
                      </div>
