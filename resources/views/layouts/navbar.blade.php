@@ -36,10 +36,10 @@
          font-size: 18px;
          }
          .navbar {
-         background-color: #534876;
+         background-color: #3d7475;
          color: #f0f3ff;
          padding: 10px 0;
-         border-bottom: 1px solid #2d2c4e;
+         border-bottom: 1px solid #479c9d;
          }
          .navbar-title {
          font-size: 28px;
