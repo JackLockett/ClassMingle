@@ -42,7 +42,11 @@
                <p class="card-text">{{ $post->postComment }}</p>
                <p class="card-text">
                   <small class="text-muted">
-                  Posted by {{ $post->author->username }} • {{ $post->created_at->diffForHumans() }}
+                     Posted by 
+                     <a href="{{ route('user.profile', ['id' => $post->author->id]) }}">
+                        {{ $post->author->username }}
+                     </a>
+                     • {{ $post->created_at->diffForHumans() }}
                   </small>
                </p>
             </div>
@@ -58,7 +62,11 @@
                   <div class="comment mb-3">
                      <div class="d-flex justify-content-between align-items-center">
                         <div>
-                           <strong>{{ $comment->user->username }}</strong> said:
+                              <strong>
+                                 <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
+                                    {{ $comment->user->username }}
+                                 </a>
+                              </strong> said:
                         </div>
                         <div class="text-muted">
                            <small>{{ $comment->created_at->diffForHumans() }}</small>

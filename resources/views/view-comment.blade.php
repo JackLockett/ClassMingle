@@ -48,14 +48,24 @@
         <div class="card">
             <div class="card-body">
                 <div class="comment">
-                    <strong>{{ $comment->user->username }}</strong> said:
+                    <strong>
+                        <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
+                            {{ $comment->user->username }}
+                        </a>
+                    </strong> said:
                     <p>{{ $comment->comment }}</p>
                 </div>
+
                 <p class="card-text">
-                  <small class="text-muted">
-                  Commented by {{ $comment->user->username }} • {{ $comment->created_at->diffForHumans() }}
-                  </small>
-               </p>
+                    <small class="text-muted">
+                        Commented by 
+                        <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
+                            {{ $comment->user->username }}
+                        </a>
+                        • {{ $comment->created_at->diffForHumans() }}
+                    </small>
+                </p>
+
             </div>
         </div>
 
@@ -66,10 +76,15 @@
                     @foreach($comment->responses as $response)
                     <div class="response mt-3">
                         <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>{{ $response->user->username }}</strong> responded:
+                        <div>
+                                <strong>
+                                    <a href="{{ route('user.profile', ['id' => $response->user->id]) }}">
+                                        {{ $response->user->username }}
+                                    </a>
+                                </strong> responded:
                                 <p>{{ $response->comment }}</p>
                             </div>
+
                             <div class="text-muted">
                                 <small>{{ $response->created_at->diffForHumans() }}</small>
                             </div>

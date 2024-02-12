@@ -62,7 +62,11 @@
                         <div class="card-header text-muted d-flex justify-content-between align-items-center">
                            <strong>{{ $post->postTitle }}</strong>
                            <div>
-                              <span>Posted by {{ $post->author->username }}</span>
+                              <span>Posted by 
+                                 <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
+                                       {{ $post->author->username }}
+                                 </a>
+                              </span>
                               <span class="ml-3">•</span>
                               <span class="ml-3">{{ $post->created_at->diffForHumans() }}</span>
                            </div>
