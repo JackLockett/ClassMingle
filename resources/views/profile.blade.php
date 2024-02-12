@@ -37,9 +37,24 @@
                         My Profile Settings
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                        <form method="POST" action="{{ route('profile-update') }}">
+                            @csrf
+                            <div class="form-group">
+                                <label for="bio">Bio:</label>
+                                <textarea class="form-control" id="bio" name="bio" rows="3" <?php if (empty($bio)) echo 'placeholder="You don\'t have a bio. Add one now!"'; ?>><?php echo $bio; ?></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="university">University:</label>
+                                <select class="form-control" id="university" name="university">
+                                    <option value="">Select University</option>
+                                    @foreach($ukUniversities as $uni)
+                                        <option value="{{ $uni }}" {{ $university == $uni ? 'selected' : '' }}>{{ $uni }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </form>
                     </div>
                 </div>
             </div>

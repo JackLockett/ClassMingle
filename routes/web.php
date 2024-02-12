@@ -9,6 +9,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocietyController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/change-password', [AccountController::class, 'changePassword'])->name('change-password');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile-update', [ProfileController::class, 'updateProfile'])->name('profile-update');
+
+    Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
+    Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
 });
 
 

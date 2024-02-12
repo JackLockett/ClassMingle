@@ -91,7 +91,8 @@
                <!-- Container for buttons and navigation links -->
                @if(Auth::check())
                <div class="d-none d-md-inline-block">
-                  <a href="/societies" class="d-none d-md-inline-block"><i class="fas fa-users"></i> Societies</a>
+                  <a href="/view-students" class="d-none d-md-inline-block"><i class="fas fa-users"></i> Students</a>
+                  <a href="/societies" class="d-none d-md-inline-block"><i class="fas fa-network-wired"></i> Societies</a>
                   <a href="#" class="d-none d-md-inline-block"><i class="fas fa-question-circle"></i> FAQ</a>
                </div>
                @else
