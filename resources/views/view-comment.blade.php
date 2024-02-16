@@ -43,7 +43,10 @@
             </div>
         </div>
 
-        <a href="{{ url('/societies/' . $society->id . '/posts/' . $post->id) }}" class="btn btn-secondary btn-sm mb-3">Return to Post</a>
+        <a href="{{ url('/societies/' . $society->id . '/posts/' . $post->id) }}" class="btn btn-secondary btn-sm mb-3">
+            <i class="fas fa-arrow-left"></i> Return to Post
+        </a>
+
 
         <div class="card">
             <div class="card-body">
@@ -101,7 +104,9 @@
                             <textarea class="form-control" id="response" name="response" rows="3" required></textarea>
                             <small>Characters remaining: <span id="charCount">250</span></small>
                         </div>
-                        <button type="submit" id="submitResponse" class="btn btn-primary">Submit Response</button>
+                        <button type="submit" id="submitResponse" class="btn btn-primary">
+                            <i class="fas fa-reply"></i> Submit Response
+                        </button>
                     </form>
                 </div>
             </div>
@@ -118,7 +123,9 @@
                             <textarea class="form-control" id="response" name="response" rows="3" required></textarea>
                             <small>Characters remaining: <span id="charCount">250</span></small>
                         </div>
-                        <button type="submit" id="submitResponse" class="btn btn-primary">Submit Response</button>
+                        <button type="submit" id="submitResponse" class="btn btn-primary">
+                            <i class="fas fa-reply"></i> Submit Response
+                        </button>
                     </form>
                 </div>
             </div>

@@ -35,7 +35,9 @@
                             <td>{{ $student->username }}</td>
                             <td>{{ $student->university ? $student->university : 'Not Applicable' }}</td>
                             <td>
-                                <a href="{{ route('user.profile', ['id' => $student->id]) }}" class="btn btn-primary">View Profile</a>
+                            <a href="{{ route('user.profile', ['id' => $student->id]) }}" class="btn btn-primary">
+                                <i class="fas fa-user"></i> View Profile
+                            </a>
                             </td>
                         </tr>
                     @endforeach

@@ -35,7 +35,9 @@
                <h3 class="text-center">{{ $society->societyName }} - Society Post</h3>
             </div>
          </div>
-         <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary btn-sm mb-3">Return to Society</a>
+         <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary btn-sm mb-3">
+            <i class="fas fa-arrow-left"></i> Return to Society
+         </a>
          <div class="card">
             <div class="card-body">
                <h2 class="card-title">{{ $post->postTitle }}</h2>
@@ -102,7 +104,9 @@
                         <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
                         <small>Characters remaining: <span id="charCount">250</span></small>
                     </div>
-                    <button type="submit" id="submitComment" class="btn btn-primary">Submit Comment</button>
+                    <button type="submit" id="submitComment" class="btn btn-primary">
+                        <i class="fas fa-comment"></i> Submit Comment
+                     </button>
                 </form>
             </div>            
          </div>

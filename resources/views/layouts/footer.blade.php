@@ -15,12 +15,13 @@
   font-size: 18px;
   color: white;
   font-family: 'Impress', sans-serif;
-  background-color: #3d7475;
+  font-size: 20px;
+  background-color: #23426d;
   padding: 20px 0;
   text-align: center;
   width: 100%;
   margin-top: auto; /* Push the footer to the bottom */
-  border-top: 1px solid #479c9d;
+  border-top: 2px solid #1A3A6B;
 }
 
 /* Social links styling */

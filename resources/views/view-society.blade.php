@@ -23,7 +23,9 @@
                <h3 class="text-center">{{ $society->societyName }} Society</h3>
             </div>
          </div>
-         <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">Return To Societies</a>
+         <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">
+            <i class="fas fa-arrow-left"></i> Return To Societies
+         </a>
          <br>
          <div id="alertContainer"></div>
          <div class="row">
@@ -31,23 +33,34 @@
                <div class="card mb-3">
                   <div class="card-header">Society Information</div>
                   <div class="card-body">
-                     <h5 class="card-title">About {{ $society->societyName }}</h5>
-                     <p class="card-text">
-                        {{ $society->societyDescription }}
-                     </p>
-                     @if (is_array(json_decode($society->memberList, true)) && in_array(auth()->user()->id, json_decode($society->memberList, true)))
-                     <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSocialModal">Create A Post</a>
-                     @if ($society->ownerId != auth()->user()->id)
-                     <a href="#" class="btn btn-danger" id="leaveSocietyBtn" data-society-id="{{ $society->id }}">Leave Society</a>
-                     @endif
-                     @else
-                     <a href="#" class="btn btn-success" id="joinSocietyBtn" data-society-id="{{ $society->id }}">Join Society</a>
-                     @endif
-                     @if ($society->ownerId == auth()->user()->id)
-                     <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">Delete Society</a>
-                     <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">Edit Society Info</a>
-                     @endif
-                  </div>
+                  <h5 class="card-title">About {{ $society->societyName }}</h5>
+                  <p class="card-text">
+                     {{ $society->societyDescription }}
+                  </p>
+                  <hr>
+                  @if (is_array(json_decode($society->memberList, true)) && in_array(auth()->user()->id, json_decode($society->memberList, true)))
+                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSocialModal">
+                     <i class="fas fa-pencil-alt"></i> Create A Post
+                  </a>
+                  @if ($society->ownerId != auth()->user()->id)
+                  <a href="#" class="btn btn-danger" id="leaveSocietyBtn" data-society-id="{{ $society->id }}">
+                     <i class="fas fa-sign-out-alt"></i> Leave Society
+                  </a>
+                  @endif
+                  @else
+                  <a href="#" class="btn btn-success" id="joinSocietyBtn" data-society-id="{{ $society->id }}">
+                     <i class="fas fa-user-plus"></i> Join Society
+                  </a>
+                  @endif
+                  @if ($society->ownerId == auth()->user()->id)
+                  <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">
+                     <i class="fas fa-trash-alt"></i> Delete Society
+                  </a>
+                  <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">
+                     <i class="fas fa-edit"></i> Edit Society Info
+                  </a>
+                  @endif
+               </div>
                </div>
             </div>
          </div>
@@ -92,11 +105,11 @@
             <div class="col-md-3">
                <div class="card mb-3">
                   <div class="card-header">Member Info</div>
-                  <div class="card-body text-info">
-                     <p class="card-text">
+                  <div class="card-body text-primary">
+                     <i><p class="card-text">
                         {{ count(json_decode($society->memberList, true)) }}
                         Member{{ count(json_decode($society->memberList, true)) != 1 ? 's' : '' }}
-                     </p>
+                     </p></i>
                   </div>
                </div>
             </div>

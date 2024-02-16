@@ -45,13 +45,13 @@
   <div class="row mt-4">
     <div class="col-md-12">
       <div class="btn-group-toggle d-flex" data-toggle="buttons">
-      <label class="btn btn-primary mr-2 btn-toggle active">
+      <label class="btn btn-secondary mr-2 btn-toggle active">
         <input type="checkbox" checked autocomplete="off" onclick="toggleCollapse('multiCollapseExample1', this)"> My Profile Settings
         </label>
-        <label class="btn btn-primary mr-2 btn-toggle">
+        <label class="btn btn-secondary mr-2 btn-toggle">
         <input type="checkbox" autocomplete="off" onclick="toggleCollapse('multiCollapseExample2', this)"> My Societies
         </label>
-        <label class="btn btn-primary mr-2 btn-toggle">
+        <label class="btn btn-secondary mr-2 btn-toggle">
         <input type="checkbox" autocomplete="off" onclick="toggleCollapse('multiCollapseExample3', this)"> My Bookmarks
         </label>
       </div>
@@ -61,7 +61,7 @@
     <div class="col col-12">
       <div class="collapse show" id="multiCollapseExample1">
         <div class="card">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-secondary text-white">
             <h5 class="mb-0">My Profile Settings</h5>
           </div>
           <div class="card-body">
@@ -80,7 +80,10 @@
                   @endforeach
                 </select>
               </div>
-              <button type="submit" class="btn btn-primary">Update Profile</button>
+              <button type="submit" class="btn btn-success">
+                  <i class="fas fa-save"></i> Update Profile
+              </button>
+
             </form>
           </div>
         </div>
@@ -89,12 +92,14 @@
     <div class="col col-12">
       <div class="collapse" id="multiCollapseExample2">
         <div class="card">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-secondary text-white">
             <h5 class="mb-0">My Societies</h5>
           </div>
           <div class="card-body">
             <p class="card-text">You haven't joined any societies yet.</p>
-            <a href="#" class="btn btn-primary">Discover Societies</a>
+            <a href="#" class="btn btn-primary">
+                <i class="fas fa-search"></i> Discover Societies
+            </a>
           </div>
         </div>
       </div>
@@ -102,12 +107,14 @@
     <div class="col col-12">
       <div class="collapse" id="multiCollapseExample3">
         <div class="card">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-secondary text-white">
             <h5 class="mb-0">My Bookmarks</h5>
           </div>
           <div class="card-body">
             <p class="card-text">You haven't bookmarked anything yet.</p>
-            <a href="#" class="btn btn-primary">Explore Content</a>
+            <a href="#" class="btn btn-primary">
+                <i class="fas fa-compass"></i> Explore Content
+            </a>
           </div>
         </div>
       </div>
