@@ -30,4 +30,14 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function isBookmarked()
+    {
+        return $this->bookmarks()->where('user_id', auth()->id())->exists();
+    }
+
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
 }

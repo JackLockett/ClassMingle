@@ -40,9 +40,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
     Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
     Route::post('/post/{postId}/comment', [SocietyController::class, 'addComment'])->name('add-comment');
+    Route::get('/posts/{postId}', [SocietyController::class, 'show'])->name('post.show');
     Route::get('/societies/{societyId}/posts/{postId}', [SocietyController::class, 'viewPost'])->name('view-post');
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
+
+    Route::post('/bookmark/{postId}', [SocietyController::class, 'bookmarkPost'])->name('bookmark.post');
+    Route::delete('/unbookmark/{postId}', [SocietyController::class, 'unbookmarkPost'])->name('unbookmark.post');
+    Route::get('/check-bookmark/{postId}', [SocietyController::class, 'checkBookmark'])->name('check-bookmark');
 
     Route::get('/societies/{societyId}/posts/{postId}/comments/{commentId}', [CommentController::class, 'viewComment'])->name('view-comment');
     Route::post('/societies/{societyId}/posts/{postId}/comments/{commentId}/respond', [CommentController::class, 'respondToComment'])->name('respond-to-comment');

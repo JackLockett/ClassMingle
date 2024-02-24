@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Society;
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Bookmark;
 
 class SocietyController extends Controller
 {
@@ -77,7 +78,41 @@ class SocietyController extends Controller
     
         return view('view-post', compact('society', 'post'));
     }
-    
+
+    public function show($postId)
+    {
+        // Fetch the post from the database
+        $post = Post::findOrFail($postId);
+
+        // Pass the post data to the view
+        return view('posts.show', compact('post'));
+    }
+
+    public function bookmarkPost(Request $request, $postId)
+    {
+        $user = auth()->user();
+        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->first();
+
+        if ($bookmark) {
+            $bookmark->delete(); // Unbookmark if already bookmarked
+            return response()->json(['success' => 'Post unbookmarked'], 200);
+        } else {
+            $bookmark = new Bookmark();
+            $bookmark->user_id = $user->id;
+            $bookmark->post_id = $postId;
+            $bookmark->save();
+            return response()->json(['success' => 'Post bookmarked'], 200);
+        }
+    }
+
+    public function checkBookmark($postId)
+    {
+        $user = auth()->user();
+        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->exists();
+
+        return response()->json(['bookmarked' => $bookmark]);
+    }
+
     public function addComment(Request $request, $postId)
     {
         $validatedData = $request->validate([
