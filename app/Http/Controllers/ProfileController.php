@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Bookmark; 
+use App\Models\SavedComment; 
 
 class ProfileController extends Controller
 {
@@ -12,6 +13,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
+        $savedComments = SavedComment::where('user_id', $user->id)->get();
 
         $ukUniversities = [
             'Sheffield Hallam University',
@@ -24,7 +26,8 @@ class ProfileController extends Controller
             'bio' => $user->bio,
             'university' => $user->university,
             'ukUniversities' => $ukUniversities,
-            'bookmarks' => $bookmarks, // Pass bookmarks to the view
+            'bookmarks' => $bookmarks,
+            'comments' => $savedComments,
         ]);
     }
 

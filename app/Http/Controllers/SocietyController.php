@@ -7,6 +7,7 @@ use App\Models\Society;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Bookmark;
+use App\Models\SavedComment;
 
 class SocietyController extends Controller
 {
@@ -79,15 +80,6 @@ class SocietyController extends Controller
         return view('view-post', compact('society', 'post'));
     }
 
-    public function show($postId)
-    {
-        // Fetch the post from the database
-        $post = Post::findOrFail($postId);
-
-        // Pass the post data to the view
-        return view('posts.show', compact('post'));
-    }
-
     public function bookmarkPost(Request $request, $postId)
     {
         $user = auth()->user();
@@ -102,6 +94,57 @@ class SocietyController extends Controller
             $bookmark->post_id = $postId;
             $bookmark->save();
             return response()->json(['success' => 'Post bookmarked'], 200);
+        }
+    }
+
+    public function unbookmarkPost($postId)
+    {
+        $user = auth()->user();
+        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->first();
+
+        if ($bookmark) {
+            $bookmark->delete();
+            return redirect()->back()->with('success', 'Post unbookmarked successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Bookmark not found.');
+        }
+    }
+
+    public function saveComment(Request $request, $commentId)
+    {
+        $user = auth()->user();
+        $comment = Comment::find($commentId);
+    
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found'], 404);
+        }
+    
+        $savedComment = SavedComment::where('user_id', $user->id)
+                                     ->where('comment_id', $commentId)
+                                     ->first();
+    
+        if ($savedComment) {
+            $savedComment->delete();
+            return response()->json(['success' => 'Comment unsaved'], 200);
+        } else {
+            $savedComment = new SavedComment();
+            $savedComment->user_id = $user->id;
+            $savedComment->comment_id = $commentId;
+            $savedComment->save();
+            return response()->json(['success' => 'Comment saved'], 200);
+        }
+    }
+
+    public function unsaveComment($commentId)
+    {
+        $user = auth()->user();
+        $savedComment = SavedComment::where('user_id', $user->id)->where('comment_id', $commentId)->first();
+
+        if ($savedComment) {
+            $savedComment->delete();
+            return redirect()->back()->with('success', 'Comment unsaved successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Saved comment not found.');
         }
     }
 

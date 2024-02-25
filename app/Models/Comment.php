@@ -26,4 +26,16 @@ class Comment extends Model
     {
         return $this->belongsTo(Comment::class, 'parent_comment_id');
     }
+
+    public function isSaved()
+    {
+        return $this->savedComments()->where('user_id', auth()->id())->exists();
+    }
+
+    public function savedComments()
+    {
+        return $this->hasMany(SavedComment::class);
+    }
+
+    
 }

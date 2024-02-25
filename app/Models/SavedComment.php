@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bookmark extends Model
+class SavedComment extends Model
 {
     use HasFactory;
 
-    protected $table = 'bookmarked_posts';
+    protected $table = 'saved_comments';
+
     protected $fillable = [
+        'comment_id',
         'user_id',
-        'post_id',
     ];
 
     public function user()
@@ -20,8 +21,8 @@ class Bookmark extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function post()
+    public function comment()
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Comment::class);
     }
 }

@@ -64,26 +64,29 @@
                @if ($post->comments->count() > 0)
                @foreach ($post->comments->where('parent_comment_id', null) as $key => $comment)
                <div class="comment mb-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                     <div>
-                        <strong>
-                        <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
-                        {{ $comment->user->username }}
-                        </a>
-                        </strong> said:
-                     </div>
-                     <div class="text-muted">
-                        <small>{{ $comment->created_at->diffForHumans() }}</small>
-                     </div>
+               <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                     <strong>
+                           <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
+                              {{ $comment->user->username }}
+                           </a>
+                     </strong> said:
                   </div>
-                  <p>{{ $comment->comment }}</p>
-                  @if ($comment->responses->count() > 0)
-                  <div class="mb-3">
-                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
-                     <small class="text-muted">
+                  <div class="text-muted">
+                     <small>{{ $comment->created_at->diffForHumans() }}</small>
+                     <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $comment->id }}">
+                        {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
+                     </button>
+                  </div>
+               </div>
+               <p>{{ $comment->comment }}</p>
+               @if ($comment->responses->count() > 0)
+               <div class="mb-3">
+                  <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                  <small class="text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
-                     </small>
-                  </div>
+                  </small>
+               </div>
                   @else
                   <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
                   @endif
@@ -164,6 +167,45 @@
                      console.error("There was a problem with the fetch operation:", error);
                });
             });
+
+            const saveButtons = document.querySelectorAll('.saveButton');
+
+            saveButtons.forEach(saveButton => {
+            saveButton.addEventListener("click", function () {
+               const commentId = this.dataset.commentId;
+               fetch(`/save-comment/${commentId}`, {
+                     method: "POST",
+                     headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                     },
+                     body: JSON.stringify({
+                        commentId: commentId
+                     })
+               })
+               .then(response => {
+                     if (response.ok) {
+                        // Invert the class toggling and text content
+                        if (saveButton.classList.contains("btn-primary")) {
+                           saveButton.classList.remove("btn-primary");
+                           saveButton.classList.add("btn-outline-primary");
+                           saveButton.textContent = "Save";
+                        } else {
+                           saveButton.classList.remove("btn-outline-primary");
+                           saveButton.classList.add("btn-primary");
+                           saveButton.textContent = "Unsave";
+                        }
+                     } else {
+                        throw new Error("Network response was not ok");
+                     }
+               })
+               .catch(error => {
+                     console.error("There was a problem with the fetch operation:", error);
+               });
+            });
+         });
+
+
          });
          
          
