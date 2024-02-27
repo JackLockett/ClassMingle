@@ -115,6 +115,7 @@
             <!-- Container for buttons and navigation links -->
             @if(Auth::check())
                 <div class="d-none d-md-inline-block">
+                    <a href="/discovery" class="d-none d-md-inline-block"><i class="fas fa-compass"></i> Discovery</a>
                     <a href="/view-students" class="d-none d-md-inline-block"><i class="fas fa-users"></i> Students</a>
                     <a href="/societies" class="d-none d-md-inline-block"><i class="fas fa-network-wired"></i> Societies</a>
                     <a href="#" class="d-none d-md-inline-block"><i class="fas fa-question-circle"></i> FAQ</a>
@@ -154,6 +155,9 @@
     <div class="collapse navbar-collapse" id="navbar-links">
         <div class="container">
             <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a href="/discovery" class="nav-link"><i class="fas fa-compass"></i> Discovery</a>
+                </li>
                 <li class="nav-item">
                     <a href="/view-students" class="nav-link"><i class="fas fa-home"></i> Students</a>
                 </li>

@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocietyController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DiscoveryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
     Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
+
+    Route::get('/discovery', [DiscoveryController::class, 'index'])->name('discovery');
 });
 
 

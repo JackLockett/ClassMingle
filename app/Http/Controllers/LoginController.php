@@ -17,7 +17,7 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('/profile');
+            return redirect()->intended('/discovery');
         }
 
         return back()->withErrors(['invalidCredentials' => 'Invalid email or password.']);

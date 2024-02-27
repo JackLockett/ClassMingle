@@ -17,8 +17,9 @@ class Post extends Model
 
     public function society()
     {
-        return $this->belongsTo(Society::class);
+        return $this->belongsTo(Society::class, 'societyId');
     }
+    
 
     public function author()
     {
