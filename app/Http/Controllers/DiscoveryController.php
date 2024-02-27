@@ -23,7 +23,12 @@ class DiscoveryController extends Controller
         // Fetch posts from societies where the current user is a member
         $personalFeedPosts = Post::whereHas('society', function ($query) use ($userId) {
             $query->whereJsonContains('memberList', $userId);
-        })->latest()->take(10)->get();
+        })
+        ->where('authorId', '!=', $userId) // Exclude posts authored by the current user
+        ->latest()
+        ->take(10)
+        ->get();
+        
         
 
         return view('discovery', compact('suggestedSocieties', 'personalFeedPosts'));
