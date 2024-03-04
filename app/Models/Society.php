@@ -14,6 +14,7 @@ class Society extends Model
         'societyDescription',
         'approved',
         'memberList',
+        'moderatorList',
     ];
 
     public function posts()

@@ -177,6 +177,38 @@ class SocietyController extends Controller
         return redirect()->back()->with('success', 'Comment added successfully');
     }
 
+    public function promoteToModerator(Request $request, $societyId)
+    {
+        $society = Society::findOrFail($societyId);
+        $selectedUserId = intval($request->input('moderatorUser'));
+        $moderatorList = json_decode($society->moderatorList, true) ?? [];
+    
+        if (!in_array($selectedUserId, $moderatorList)) {
+            $moderatorList[] = $selectedUserId;
+        }
+    
+        $society->update(['moderatorList' => json_encode($moderatorList)]);
+    
+        return response()->json(['success' => true, 'message' => 'Moderator added successfully.', 'reload' => true]);
+    }
+    
+    public function demoteModerator(Request $request, $societyId)
+    {
+        $society = Society::findOrFail($societyId);
+        $selectedUserId = intval($request->input('demotedModerator'));
+        $moderatorList = json_decode($society->moderatorList, true) ?? [];
+    
+        $key = array_search($selectedUserId, $moderatorList);
+        if ($key !== false) {
+            unset($moderatorList[$key]);
+            $society->update(['moderatorList' => json_encode(array_values($moderatorList))]);
+            return response()->json(['success' => true, 'message' => 'Moderator removed successfully.', 'reload' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Selected user is not a moderator.'], 400);
+    }
+    
+
     public function joinSociety($societyId)
     {
         $society = Society::find($societyId);

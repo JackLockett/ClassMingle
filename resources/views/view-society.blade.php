@@ -19,12 +19,17 @@
       @include('layouts.navbar')
       <div class="container mt-3">
          <div class="row justify-content-center">
+            @if (session('success'))
+            <div class="alert alert-success">
+               {{ session('success') }}
+            </div>
+            @endif
             <div class="col-md-8">
                <h3 class="text-center">{{ $society->societyName }} Society</h3>
             </div>
          </div>
          <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">
-            <i class="fas fa-arrow-left"></i> Return To Societies
+         <i class="fas fa-arrow-left"></i> Return To Societies
          </a>
          <br>
          <div id="alertContainer"></div>
@@ -33,34 +38,37 @@
                <div class="card mb-3">
                   <div class="card-header">Society Information</div>
                   <div class="card-body">
-                  <h5 class="card-title">About {{ $society->societyName }}</h5>
-                  <p class="card-text">
-                     {{ $society->societyDescription }}
-                  </p>
-                  <hr>
-                  @if (is_array(json_decode($society->memberList, true)) && in_array(auth()->user()->id, json_decode($society->memberList, true)))
-                  <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSocialModal">
+                     <h5 class="card-title">About {{ $society->societyName }}</h5>
+                     <p class="card-text">
+                        {{ $society->societyDescription }}
+                     </p>
+                     <hr>
+                     @if (is_array(json_decode($society->memberList, true)) && in_array(auth()->user()->id, json_decode($society->memberList, true)))
+                     <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSocialModal">
                      <i class="fas fa-pencil-alt"></i> Create A Post
-                  </a>
-                  @if ($society->ownerId != auth()->user()->id)
-                  <a href="#" class="btn btn-danger" id="leaveSocietyBtn" data-society-id="{{ $society->id }}">
+                     </a>
+                     @if ($society->ownerId != auth()->user()->id)
+                     <a href="#" class="btn btn-danger" id="leaveSocietyBtn" data-society-id="{{ $society->id }}">
                      <i class="fas fa-sign-out-alt"></i> Leave Society
-                  </a>
-                  @endif
-                  @else
-                  <a href="#" class="btn btn-success" id="joinSocietyBtn" data-society-id="{{ $society->id }}">
+                     </a>
+                     @endif
+                     @else
+                     <a href="#" class="btn btn-success" id="joinSocietyBtn" data-society-id="{{ $society->id }}">
                      <i class="fas fa-user-plus"></i> Join Society
-                  </a>
-                  @endif
-                  @if ($society->ownerId == auth()->user()->id)
-                  <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">
+                     </a>
+                     @endif
+                     @if ($society->ownerId == auth()->user()->id)
+                     <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">
                      <i class="fas fa-trash-alt"></i> Delete Society
-                  </a>
-                  <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">
+                     </a>
+                     <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">
                      <i class="fas fa-edit"></i> Edit Society Info
-                  </a>
-                  @endif
-               </div>
+                     </a>
+                     <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#manageModeratorsModal">
+                     <i class="fas fa-user-cog"></i> Manage Moderators
+                     </a>
+                     @endif
+                  </div>
                </div>
             </div>
          </div>
@@ -76,9 +84,9 @@
                            <strong>{{ $post->postTitle }}</strong>
                            <div>
                               <span>Posted by 
-                                 <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
-                                       {{ $post->author->username }}
-                                 </a>
+                              <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
+                              {{ $post->author->username }}
+                              </a>
                               </span>
                               <span class="ml-3">•</span>
                               <span class="ml-3">{{ $post->created_at->diffForHumans() }}</span>
@@ -89,9 +97,8 @@
                            <div class="text-muted">
                               <small><a href="{{ route('view-post', ['societyId' => $society->id, 'postId' => $post->id]) }}">View Post</a></small>
                               @if ($post->comments_count > 0)
-                                 <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
+                              <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
                               @endif
-
                            </div>
                         </div>
                      </div>
@@ -106,10 +113,15 @@
                <div class="card mb-3">
                   <div class="card-header">Member Info</div>
                   <div class="card-body text-primary">
-                     <i><p class="card-text">
-                        {{ count(json_decode($society->memberList, true)) }}
-                        Member{{ count(json_decode($society->memberList, true)) != 1 ? 's' : '' }}
-                     </p></i>
+                     <i>
+                        <p class="card-text">
+                           {{ count(json_decode($society->moderatorList, true)) + ($society->ownerId ? 1 : 0) }}
+                           Moderator{{ count(json_decode($society->moderatorList, true)) + ($society->ownerId ? 1 : 0) != 1 ? 's' : '' }}
+                           <br>
+                           {{ count(json_decode($society->memberList, true)) }}
+                           Member{{ count(json_decode($society->memberList, true)) != 1 ? 's' : '' }}
+                        </p>
+                     </i>
                   </div>
                </div>
             </div>
@@ -144,6 +156,110 @@
             </div>
          </div>
       </div>
+      <!-- Modal for Manage Moderators -->
+      <div class="modal fade" id="manageModeratorsModal" tabindex="-1" role="dialog" aria-labelledby="manageModeratorsModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="manageModeratorsModalLabel">Manage Moderators - {{ $society->societyName }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <ul class="nav nav-tabs" id="manageModeratorsTabs" role="tablist">
+                     <li class="nav-item">
+                        <a class="nav-link active" id="promote-tab" data-toggle="tab" href="#promote" role="tab" aria-controls="promote" aria-selected="true">Add Moderator(s)</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" id="demote-tab" data-toggle="tab" href="#demote" role="tab" aria-controls="demote" aria-selected="false">Remove Moderator(s)</a>
+                     </li>
+                  </ul>
+                  <div class="tab-content" id="manageModeratorsTabContent">
+                     <div class="tab-pane fade show active" id="promote" role="tabpanel" aria-labelledby="promote-tab">
+                        <form id="promoteToModeratorForm">
+                           @csrf
+                           <div class="form-group">
+                              <br>
+                              <label for="moderatorUser">Select User to Promote:</label>
+                              <select class="form-control" id="moderatorUser" name="moderatorUser">
+                                 @php
+                                 $usersToAdd = [];
+                                 if ($society->moderatorList !== null) {
+                                 foreach (json_decode($society->memberList) as $member) {
+                                 if ($member != $society->ownerId && !in_array($member, json_decode($society->moderatorList))) {
+                                 $usersToAdd[] = $member;
+                                 }
+                                 }
+                                 } else {
+                                 // All members except owner are eligible to be added as moderators if there are no moderators yet
+                                 foreach (json_decode($society->memberList) as $member) {
+                                 if ($member != $society->ownerId) {
+                                 $usersToAdd[] = $member;
+                                 }
+                                 }
+                                 }
+                                 @endphp
+                                 @if (count($usersToAdd) > 0)
+                                 @foreach ($usersToAdd as $userId)
+                                 @php
+                                 $user = App\Models\User::find($userId);
+                                 @endphp
+                                 @if ($user)
+                                 <option value="{{ $userId }}">{{ $userId }} - {{ $user->username }}</option>
+                                 @endif
+                                 @endforeach
+                                 @else
+                                 <option value="" disabled>No users to add as moderator</option>
+                                 @endif
+                              </select>
+                              <br>
+                           </div>
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                           <button type="submit" class="btn btn-primary" id="promoteToModeratorBtn">Promote to Moderator</button>
+                        </form>
+                     </div>
+                     <div class="tab-pane fade" id="demote" role="tabpanel" aria-labelledby="demote-tab">
+                        <form id="demoteModeratorForm">
+                           @csrf
+                           <div class="form-group">
+                              <br>
+                              <label for="demotedModerator">Select Moderator to Remove:</label>
+                              <select class="form-control" id="demotedModerator" name="demotedModerator">
+                                 @php
+                                 $moderatorsToRemove = [];
+                                 if ($society->moderatorList !== null) {
+                                 foreach (json_decode($society->memberList) as $member) {
+                                 if ($member != $society->ownerId && in_array($member, json_decode($society->moderatorList))) {
+                                 $moderatorsToRemove[] = $member;
+                                 }
+                                 }
+                                 }
+                                 @endphp
+                                 @if (count($moderatorsToRemove) > 0)
+                                 @foreach ($moderatorsToRemove as $moderatorId)
+                                 @php
+                                 $moderator = App\Models\User::find($moderatorId);
+                                 @endphp
+                                 @if ($moderator)
+                                 <option value="{{ $moderatorId }}">{{ $moderatorId }} - {{ $moderator->username }}</option>
+                                 @endif
+                                 @endforeach
+                                 @else
+                                 <option value="" disabled>No moderators to remove</option>
+                                 @endif
+                              </select>
+                              <br>
+                           </div>
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                           <button type="submit" class="btn btn-danger" id="demoteModeratorBtn">Remove Moderator</button>
+                        </form>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
       <script>
          document.addEventListener('DOMContentLoaded', function () {
              const handleSocietyAction = (e, action) => {
@@ -164,17 +280,17 @@
                          'X-CSRF-TOKEN': '{{ csrf_token() }}',
                      },
                  })
-                 .then(response => response.json())
-                 .then(data => {
-                     console.log(data);
+                     .then(response => response.json())
+                     .then(data => {
+                         console.log(data);
          
-                     showAlert(data.success, data.success ? actionMessage : errorMessage);
+                         showAlert(data.success, data.success ? actionMessage : errorMessage);
          
-                     location.reload();
-                 })
-                 .catch(error => {
-                     console.error(error);
-                 });
+                         location.reload();
+                     })
+                     .catch(error => {
+                         console.error(error);
+                     });
              };
          
              const showAlert = (success, message) => {
@@ -198,8 +314,77 @@
          
              addSocietyButtonListener('joinSocietyBtn', 'join');
              addSocietyButtonListener('leaveSocietyBtn', 'leave');
+         
+             const promoteToModeratorForm = document.getElementById('promoteToModeratorForm');
+             promoteToModeratorForm.addEventListener('submit', function (e) {
+                 e.preventDefault();
+         
+                 const selectedUserId = document.getElementById('moderatorUser').value;
+         
+                 fetch(`/promote-to-moderator/{{ $society->id }}`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                     },
+                     body: JSON.stringify({ moderatorUser: selectedUserId }),
+                 })
+                     .then(response => response.json())
+                     .then(data => {
+                        console.log(data);
+                        showAlert(data.success, data.message);
+                        if (data.success) {
+                           if (data.reload) {
+                                 location.reload(); // Reload the page
+                           } else {
+                                 $('#manageModeratorsModal').modal('hide'); // Close the modal
+                           }
+                        }
+                     })
+                     .catch(error => {
+                         console.error(error);
+                     });
+             });
+         
+         
+             // Add an event listener to handle form submission for demoting a moderator
+             const demoteModeratorForm = document.getElementById('demoteModeratorForm');
+             demoteModeratorForm.addEventListener('submit', function (e) {
+                 e.preventDefault();
+         
+                 // Retrieve the selected user ID from the dropdown menu
+                 const selectedUserId = document.getElementById('demotedModerator').value;
+         
+                 // Send a POST request to the demoteModerator route
+                 fetch(`/demote-moderator/{{ $society->id }}`, {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                     },
+                     body: JSON.stringify({ demotedModerator: selectedUserId }),
+                 })
+                     .then(response => response.json())
+                     .then(data => {
+                        console.log(data);
+                        showAlert(data.success, data.message);
+                        if (data.success) {
+                           if (data.reload) {
+                                 location.reload(); // Reload the page
+                           } else {
+                                 $('#manageModeratorsModal').modal('hide'); // Close the modal
+                           }
+                        }
+                     })
+                     .catch(error => {
+                         console.error(error);
+                     });
+             });
+         
          });
          
+                  
+               
       </script>
       @include('layouts.footer')
    </body>

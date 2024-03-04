@@ -38,6 +38,8 @@ Route::get('/check-username-availability/{username}', [RegisterController::class
 Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
     Route::get('/societies/{id}', [SocietyController::class, 'viewSocietyInfo'])->name('view-society');
+    Route::post('/promote-to-moderator/{societyId}', [SocietyController::class, 'promoteToModerator'])->name('promote-to-moderator');
+    Route::post('/demote-moderator/{societyId}', [SocietyController::class, 'demoteModerator'])->name('demote-moderator');
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
     Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
     Route::post('/post/{postId}/comment', [SocietyController::class, 'addComment'])->name('add-comment');
