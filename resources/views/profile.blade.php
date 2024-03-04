@@ -47,6 +47,10 @@
          </div>
          <div class="row mt-4">
             <div class="col-md-12">
+               <a href="{{ route('user.profile', ['id' => Auth::id()]) }}" class="btn btn-info btn-sm mb-3">
+                  <i class="fas fa-user"></i> View Public Profile
+               </a>
+
                <ul class="nav nav-pills justify-content-center mb-4" id="pills-tab" role="tablist">
                   <li class="nav-item">
                      <a class="nav-link active" id="profile-settings-tab" data-toggle="pill" href="#profile-settings" role="tab" aria-controls="profile-settings" aria-selected="true">My Profile Settings</a>
