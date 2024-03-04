@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Bookmark; 
 use App\Models\SavedComment; 
+use App\Models\Society;
 
 class ProfileController extends Controller
 {
@@ -14,6 +15,8 @@ class ProfileController extends Controller
         $user = Auth::user();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
+
+        $joinedSocieties = Society::getSocietiesForUser($user->id);
 
         $ukUniversities = [
             'Sheffield Hallam University',
@@ -28,6 +31,7 @@ class ProfileController extends Controller
             'ukUniversities' => $ukUniversities,
             'bookmarks' => $bookmarks,
             'comments' => $savedComments,
+            'joinedSocieties' => $joinedSocieties,
         ]);
     }
 

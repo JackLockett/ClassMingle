@@ -20,4 +20,15 @@ class Society extends Model
     {
         return $this->hasMany(Post::class, 'societyId');
     }
+
+    /**
+     * Get the societies associated with a user based on the memberList.
+     *
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getSocietiesForUser($userId)
+    {
+        return self::whereJsonContains('memberList', $userId)->get();
+    }
 }

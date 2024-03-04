@@ -95,17 +95,42 @@
                      </div>
                   </div>
                   <div class="tab-pane fade" id="my-societies" role="tabpanel" aria-labelledby="my-societies-tab">
-                     <div class="card">
-                        <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">My Societies</h5>
-                        </div>
-                        <div class="card-body">
-                           <p class="card-text">You haven't joined any societies yet.</p>
-                           <a href="#" class="btn btn-primary">
-                           <i class="fas fa-search"></i> Discover Societies
-                           </a>
-                        </div>
+                  <div class="card">
+                     <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">My Societies</h5>
                      </div>
+                     <div class="card-body">
+                        @if($joinedSocieties->count() > 0)
+                              <div class="table-responsive">
+                                 <table class="table">
+                                    <thead>
+                                          <tr>
+                                             <th>Name</th>
+                                             <th>Description</th>
+                                             <th>Actions</th>
+                                          </tr>
+                                    </thead>
+                                    <tbody>
+                                          @foreach($joinedSocieties as $society)
+                                             <tr>
+                                                <td>{{ $society->societyName }}</td>
+                                                <td>{{ $society->societyDescription }}</td>
+                                                <td>
+                                                   <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-primary">View Society</a>
+                                                </td>
+                                             </tr>
+                                          @endforeach
+                                    </tbody>
+                                 </table>
+                              </div>
+                        @else
+                              <p class="card-text">You haven't joined any societies yet.</p>
+                              <a href="#" class="btn btn-primary">
+                                 <i class="fas fa-search"></i> Discover Societies
+                              </a>
+                        @endif
+                     </div>
+                  </div>
                   </div>
                   <div class="tab-pane fade" id="bookmarked-posts" role="tabpanel" aria-labelledby="bookmarked-posts-tab">
                      <div class="card">
