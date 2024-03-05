@@ -74,7 +74,7 @@
           <h4>Profile Picture</h4>
         </div>
         <!-- Replace 'profile_picture.jpg' with the actual path to the profile picture -->
-        <img src="https://pbs.twimg.com/media/FzEjZL4aYAU4Vzj.jpg" alt="Profile Picture">
+        <img src="{{ asset($student->avatar ?? 'images/default.jpg') }}" alt="Profile Picture">
       </div>
     </div>
     <div class="col-md-8">

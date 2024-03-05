@@ -32,6 +32,7 @@ class RegisterController extends Controller
             'email' => $request->input('email'),
             'username' => $request->input('username'),
             'password' => bcrypt($request->input('password')),
+            'avatar' => 'images/default.jpg',
             'role' => 'user',
         ]);
 
