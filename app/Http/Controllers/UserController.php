@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\FriendRequest;
+use App\Models\Friendship;
 
 class UserController extends Controller
 {
@@ -17,7 +19,30 @@ class UserController extends Controller
 
     public function showProfile($id)
     {
+        $authId = auth()->id();
         $student = User::findOrFail($id);
-        return view('student', ['student' => $student]);
+
+        $isPendingRequest = FriendRequest::where('sender_id', auth()->id())
+                                         ->where('receiver_id', $student->id)
+                                         ->where('status', 'pending')
+                                         ->exists();
+
+        $isFriend = Friendship::where(function ($query) use ($student) {
+        $query->where('user_id', Auth::id())
+                ->where('friend_id', $student->id);
+        })
+        ->orWhere(function ($query) use ($student) {
+            $query->where('user_id', $student->id)
+                    ->where('friend_id', Auth::id());
+        })
+        ->where('status', 'accepted')
+        ->exists();
+
+        return view('student', [
+            'student' => $student,
+            'isPendingRequest' => $isPendingRequest,
+            'isFriend' => $isFriend,
+            'authId' => $authId,
+        ]);
     }
 }

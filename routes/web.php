@@ -11,6 +11,7 @@ use App\Http\Controllers\SocietyController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DiscoveryController;
+use App\Http\Controllers\FriendController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
 
     Route::get('/discovery', [DiscoveryController::class, 'index'])->name('discovery');
+
+    Route::post('/send-friend-request', [FriendController::class, 'sendFriendRequest'])->name('sendFriendRequest');
+    Route::post('/cancel-friend-request', [FriendController::class, 'cancelFriendRequest'])->name('cancelFriendRequest');
+
+    Route::post('/accept-friend-request', [FriendController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
+    Route::post('/deny-friend-request', [FriendController::class, 'denyFriendRequest'])->name('denyFriendRequest');
+
+    Route::post('/remove-friend', [FriendController::class, 'removeFriend'])->name('removeFriend');
 });
 
 

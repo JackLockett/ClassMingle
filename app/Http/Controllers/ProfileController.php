@@ -7,16 +7,18 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Bookmark; 
 use App\Models\SavedComment; 
 use App\Models\Society;
+use App\Models\FriendRequest;
 
 class ProfileController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
+        $friendRequests = FriendRequest::where('receiver_id', $user->id)->where('status', 'pending')->get();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
-
         $joinedSocieties = Society::getSocietiesForUser($user->id);
+        $friends = $user->friends;
 
         $ukUniversities = [
             'Sheffield Hallam University',
@@ -32,6 +34,8 @@ class ProfileController extends Controller
             'bookmarks' => $bookmarks,
             'comments' => $savedComments,
             'joinedSocieties' => $joinedSocieties,
+            'friendRequests' => $friendRequests,
+            'friends' => $friends,
         ]);
     }
 

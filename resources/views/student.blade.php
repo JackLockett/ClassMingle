@@ -86,8 +86,20 @@
                   <img src="{{ asset($student->avatar ?? 'images/default.jpg') }}" alt="Profile Picture">
                   <div class="profile-footer">
                      <div class="profile-card">
-                        <button class="btn btn-primary mr-2" @if($student->id === Auth::id()) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
+                        <button id="sendRequestButton" class="btn btn-primary mr-2" 
+                        @if($student->id === Auth::id() || $isFriend) 
+                        disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;"
+                        @endif
+                        onclick="toggleFriendRequest({{ $student->id }}, {{ $isPendingRequest ? 'true' : 'false' }})">
+                        @if($student->id === Auth::id() && $student->id == $authId) 
                         <i class="fas fa-user-plus"></i> Send Request
+                        @elseif($isFriend)
+                        Already Friends
+                        @elseif($isPendingRequest) 
+                        Pending
+                        @else 
+                        <i class="fas fa-user-plus"></i> Send Request
+                        @endif
                         </button>
                         <button class="btn btn-info" @if($student->id === Auth::id()) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
                         <i class="far fa-envelope"></i> Send Message
@@ -125,11 +137,67 @@
             <div class="col-md-8">
                <div class="profile-card">
                   <h4 class="profile-header"><i class="fas fa-user-friends"></i>&nbsp;Friends</h4>
-                  <!-- Code for displaying friends will go here -->
+                  @if($student->friends->isEmpty())
+                  <p>This student has no friends.</p>
+                  @else
+                  <ul class="list-group">
+                     @foreach($student->friends as $friend)
+                     <li class="list-group-item">
+                        <a href="{{ route('user.profile', ['id' => $friend->id]) }}">{{ $friend->username }}</a>
+                     </li>
+                     @endforeach
+                  </ul>
+                  @endif
                </div>
             </div>
          </div>
       </div>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+      <script>
+         function toggleFriendRequest(userId, isPending) {
+             if (isPending) {
+                 cancelFriendRequest(userId);
+             } else {
+                 sendFriendRequest(userId);
+             }
+         }
+         
+         function sendFriendRequest(userId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '{{ route("sendFriendRequest") }}',
+                 data: {
+                     '_token': '{{ csrf_token() }}',
+                     'receiver_id': userId
+                 },
+                 success: function(response) {
+                     alert('Friend request sent successfully');
+                     location.reload();
+                 },
+                 error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+                 }
+             });
+         }
+         
+         function cancelFriendRequest(userId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '{{ route("cancelFriendRequest") }}',
+                 data: {
+                     '_token': '{{ csrf_token() }}',
+                     'receiver_id': userId
+                 },
+                 success: function(response) {
+                     alert('Friend request canceled successfully');
+                     location.reload();
+                 },
+                 error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+                 }
+             });
+         }
+      </script>
       @include('layouts.footer')
    </body>
 </html>

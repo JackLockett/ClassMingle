@@ -15,4 +15,11 @@ class User extends Authenticatable
     protected $fillable = [
         'email', 'username', 'password', 'role', 'avatar', 'bio', 'university'
     ];
+
+    public function friends()
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
+                    ->wherePivot('status', 'accepted');
+    }
+
 }
