@@ -17,19 +17,32 @@ class Society extends Model
         'moderatorList',
     ];
 
+    protected $casts = [
+        'moderatorList' => 'array',
+        'memberList' => 'array',
+    ];
+
     public function posts()
     {
         return $this->hasMany(Post::class, 'societyId');
     }
 
-    /**
-     * Get the societies associated with a user based on the memberList.
-     *
-     * @param int $userId
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
     public static function getSocietiesForUser($userId)
     {
         return self::whereJsonContains('memberList', $userId)->get();
     }
+
+    public function getUserRole($userId)
+    {
+        if ($userId == $this->ownerId) {
+            return 'Owner';
+        } elseif (in_array($userId, $this->moderatorList)) {
+            return 'Moderator';
+        } elseif (in_array($userId, $this->memberList)) {
+            return 'User';
+        }
+        return 'Not a Member';
+    }
+    
+    
 }

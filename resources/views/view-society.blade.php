@@ -19,15 +19,18 @@
       @include('layouts.navbar')
       <div class="container mt-3">
          <div class="row justify-content-center">
-            @if (session('success'))
-            <div class="alert alert-success">
-               {{ session('success') }}
-            </div>
-            @endif
             <div class="col-md-8">
                <h3 class="text-center">{{ $society->societyName }} Society</h3>
             </div>
          </div>
+         @if (session('success'))
+         <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         @endif
          <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">
          <i class="fas fa-arrow-left"></i> Return To Societies
          </a>
@@ -43,7 +46,7 @@
                         {{ $society->societyDescription }}
                      </p>
                      <hr>
-                     @if (is_array(json_decode($society->memberList, true)) && in_array(auth()->user()->id, json_decode($society->memberList, true)))
+                     @if (is_array($society->memberList) && in_array(auth()->user()->id, $society->memberList))
                      <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#createSocialModal">
                      <i class="fas fa-pencil-alt"></i> Create A Post
                      </a>
@@ -78,7 +81,7 @@
                   <div class="card-header">Society Feed</div>
                   <div class="card-body">
                      @if ($society->posts && count($society->posts) > 0)
-                     @foreach ($society->posts as $post)
+                     @foreach ($society->posts->sortByDesc('created_at') as $post)
                      <div class="card mb-3">
                         <div class="card-header text-muted d-flex justify-content-between align-items-center">
                            <strong>{{ $post->postTitle }}</strong>
@@ -115,11 +118,11 @@
                   <div class="card-body text-primary">
                      <i>
                         <p class="card-text">
-                           {{ count(json_decode($society->moderatorList, true)) + ($society->ownerId ? 1 : 0) }}
-                           Moderator{{ count(json_decode($society->moderatorList, true)) + ($society->ownerId ? 1 : 0) != 1 ? 's' : '' }}
+                           {{ count($society->moderatorList) }}
+                           Moderator{{ count($society->moderatorList) != 1 ? 's' : '' }}
                            <br>
-                           {{ count(json_decode($society->memberList, true)) }}
-                           Member{{ count(json_decode($society->memberList, true)) != 1 ? 's' : '' }}
+                           {{ count($society->memberList) }}
+                           Member{{ count($society->memberList) != 1 ? 's' : '' }}
                         </p>
                      </i>
                   </div>
@@ -186,14 +189,14 @@
                                  @php
                                  $usersToAdd = [];
                                  if ($society->moderatorList !== null) {
-                                 foreach (json_decode($society->memberList) as $member) {
-                                 if ($member != $society->ownerId && !in_array($member, json_decode($society->moderatorList))) {
+                                 foreach ($society->memberList as $member) {
+                                 if ($member != $society->ownerId && !in_array($member, $society->moderatorList)) {
                                  $usersToAdd[] = $member;
                                  }
                                  }
                                  } else {
                                  // All members except owner are eligible to be added as moderators if there are no moderators yet
-                                 foreach (json_decode($society->memberList) as $member) {
+                                 foreach ($society->memberList as $member) {
                                  if ($member != $society->ownerId) {
                                  $usersToAdd[] = $member;
                                  }
@@ -229,8 +232,8 @@
                                  @php
                                  $moderatorsToRemove = [];
                                  if ($society->moderatorList !== null) {
-                                 foreach (json_decode($society->memberList) as $member) {
-                                 if ($member != $society->ownerId && in_array($member, json_decode($society->moderatorList))) {
+                                 foreach ($society->memberList as $member) {
+                                 if ($member != $society->ownerId && in_array($member, $society->moderatorList)) {
                                  $moderatorsToRemove[] = $member;
                                  }
                                  }

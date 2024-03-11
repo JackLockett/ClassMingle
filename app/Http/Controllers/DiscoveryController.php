@@ -14,22 +14,25 @@ class DiscoveryController extends Controller
         $userId = Auth::id();
         $allSocieties = Society::all();
     
-        // Filter out societies where the user is already a member
         $suggestedSocieties = $allSocieties->filter(function ($society) use ($userId) {
-            $members = json_decode($society->memberList, true);
-            return !in_array($userId, $members);
-        })->shuffle()->take(10); // Shuffle the filtered societies and take 10 random ones
+            if (is_array($society->memberList)) {
+                $members = $society->memberList;
+            } else {
+                $members = json_decode($society->memberList, true);
+            }
 
-        // Fetch posts from societies where the current user is a member
+            return !in_array($userId, $members);
+        })->shuffle()->take(10);
+
         $personalFeedPosts = Post::whereHas('society', function ($query) use ($userId) {
             $query->whereJsonContains('memberList', $userId);
         })
-        ->where('authorId', '!=', $userId) // Exclude posts authored by the current user
+        ->where('authorId', '!=', $userId)
         ->latest()
         ->take(10)
         ->get();
-        
-        
+
+        $personalFeedPosts = $personalFeedPosts->shuffle();
 
         return view('discovery', compact('suggestedSocieties', 'personalFeedPosts'));
     }

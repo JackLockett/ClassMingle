@@ -44,7 +44,8 @@ class SocietyController extends Controller
         $society->societyName = $request->societyType === 'Academic' ? $validatedData['subjectList'] : $validatedData['societyName'];
         $society->societyDescription = $validatedData['societyDescription'];
         $society->approved = false;
-        $society->memberList = json_encode([auth()->user()->id]);
+        $society->memberList = [auth()->user()->id];
+        $society->moderatorList = [auth()->user()->id];
 
         $society->save();
 
@@ -181,13 +182,13 @@ class SocietyController extends Controller
     {
         $society = Society::findOrFail($societyId);
         $selectedUserId = intval($request->input('moderatorUser'));
-        $moderatorList = json_decode($society->moderatorList, true) ?? [];
+        $moderatorList = $society->moderatorList ?: [];
     
         if (!in_array($selectedUserId, $moderatorList)) {
             $moderatorList[] = $selectedUserId;
         }
     
-        $society->update(['moderatorList' => json_encode($moderatorList)]);
+        $society->update(['moderatorList' => $moderatorList]);
     
         return response()->json(['success' => true, 'message' => 'Moderator added successfully.', 'reload' => true]);
     }
@@ -196,18 +197,17 @@ class SocietyController extends Controller
     {
         $society = Society::findOrFail($societyId);
         $selectedUserId = intval($request->input('demotedModerator'));
-        $moderatorList = json_decode($society->moderatorList, true) ?? [];
+        $moderatorList = $society->moderatorList ?: [];
     
         $key = array_search($selectedUserId, $moderatorList);
         if ($key !== false) {
             unset($moderatorList[$key]);
-            $society->update(['moderatorList' => json_encode(array_values($moderatorList))]);
+            $society->update(['moderatorList' => array_values($moderatorList)]);
             return response()->json(['success' => true, 'message' => 'Moderator removed successfully.', 'reload' => true]);
         }
-
+    
         return response()->json(['success' => false, 'message' => 'Selected user is not a moderator.'], 400);
     }
-    
 
     public function joinSociety($societyId)
     {
@@ -217,36 +217,36 @@ class SocietyController extends Controller
             return response()->json(['error' => 'Society not found'], 404);
         }
     
-        $memberList = json_decode($society->memberList, true) ?: [];
+        $memberList = $society->memberList ?: [];
         $userId = auth()->user()->id;
     
         if (!in_array($userId, $memberList)) {
             $memberList[] = $userId;
         }
     
-        $society->update(['memberList' => json_encode(array_values($memberList))]);
+        $society->update(['memberList' => $memberList]);
     
         return response()->json(['success' => 'User joined the society'], 200);
     }
-
+    
     public function leaveSociety($societyId)
     {
         $society = Society::find($societyId);
-
+    
         if (!$society) {
             return response()->json(['error' => 'Society not found'], 404);
         }
-
-        $memberList = json_decode($society->memberList, true);
+    
+        $memberList = $society->memberList ?: [];
         $userId = auth()->user()->id;
-
+    
         $key = array_search($userId, $memberList);
         if ($key !== false) {
             unset($memberList[$key]);
         }
-
-        $society->update(['memberList' => json_encode($memberList)]);
-
+    
+        $society->update(['memberList' => $memberList]);
+    
         return response()->json(['success' => 'User left the society'], 200);
     }
 }

@@ -14,9 +14,9 @@
       <div class="container mt-3">
          <div class="row justify-content-center">
             <div class="col-md-8">
-               <h3 class="text-center">Student Societies</h3>
+               <h3 class="text-center">Class Mingle - Societies</h3>
             </div>
-         </div> 
+         </div>
          <br>
          @if(session('success'))
          <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -38,12 +38,14 @@
                <div class="card border-primary mb-3">
                   <div class="card-header">Academic Societies</div>
                   <div class="card-body text-primary">
-                     <i><h5 class="card-title">About Academic Societies</h5></i>
+                     <i>
+                        <h5 class="card-title">About Academic Societies</h5>
+                     </i>
                      <p class="card-text">
                         Academic Societies provide students with a place to discuss their chosen subject field in University.
                      </p>
                      <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createAcademicModal">
-                        <i class="fas fa-plus-circle"></i> Create Academic Society
+                     <i class="fas fa-plus-circle"></i> Create Academic Society
                      </a>
                   </div>
                </div>
@@ -52,14 +54,15 @@
                <div class="card border-primary mb-3">
                   <div class="card-header">Social Societies</div>
                   <div class="card-body text-primary">
-                     <i><h5 class="card-title">About Social Societies</h5></i>
+                     <i>
+                        <h5 class="card-title">About Social Societies</h5>
+                     </i>
                      <p class="card-text">
                         Social Societies provide an environment for students at university to connect and combine interests beyond academics.
                      </p>
                      <a href="#" class="btn btn-success" data-toggle="modal" data-target="#createSocialModal">
-                        <i class="fas fa-plus-circle"></i> Create Social Society
+                     <i class="fas fa-plus-circle"></i> Create Social Society
                      </a>
-
                   </div>
                </div>
             </div>
@@ -83,7 +86,7 @@
                               <td>{{ $society->societyName }}</td>
                               <td style="text-align: right;">
                                  <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">
-                                    <i class="fas fa-eye"></i> View Society
+                                 <i class="fas fa-eye"></i> View Society
                                  </a>
                               </td>
                            </tr>
@@ -113,7 +116,9 @@
                            <tr>
                               <td>{{ $society->societyName }}</td>
                               <td style="text-align: right;">
-                                 <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">View</a>
+                                 <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary">
+                                 <i class="fas fa-eye"></i> View Society
+                                 </a>
                               </td>
                            </tr>
                            @endforeach

@@ -9,12 +9,14 @@ use App\Models\SavedComment;
 use App\Models\Society;
 use App\Models\FriendRequest;
 use App\Models\Message;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
+        $userId = Auth::user()->id;
         $friendRequests = FriendRequest::where('receiver_id', $user->id)->where('status', 'pending')->get();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
@@ -28,6 +30,7 @@ class ProfileController extends Controller
         ];
 
         return view('profile', [
+            'userId' => $userId,
             'email' => $user->email,
             'avatar' => $user->avatar,
             'bio' => $user->bio,
@@ -55,4 +58,5 @@ class ProfileController extends Controller
     
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
+
 }

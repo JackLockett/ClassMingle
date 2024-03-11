@@ -20,8 +20,10 @@
          <br>
          <div class="row">
             <div class="col-md-9">
-               <div class="card mb-3">
-                  <div class="card-header">Your Personal Feed</div>
+               <div class="card border-secondary mb-3">
+                  <div class="card-header">
+                     <b><i class="fas fa-user text-secondary mr-2"></i>Your Personal Feed</b>
+                  </div>
                   <div class="card-body">
                      @if($personalFeedPosts->isEmpty())
                      <p class="card-text">It seems like there's nothing in your feed right now from the societies you're a member of.</p>
@@ -33,6 +35,11 @@
                            <h6 class="card-subtitle mb-2 text-muted">{{ $post->society->societyName }}</h6>
                            <p class="card-text">{{ $post->postComment }}</p>
                         </div>
+                        <div class="card-footer">
+                           <a href="{{ route('view-post', ['societyId' => $post->society->id, 'postId' => $post->id]) }}" class="btn btn-link">
+                           <i class="fas fa-eye"></i> View Post Details
+                           </a>
+                        </div>
                      </div>
                      <br>
                      @endforeach
@@ -41,9 +48,11 @@
                </div>
             </div>
             <div class="col-md-3">
-               <div class="card mb-3">
-                  <div class="card-header">Suggested Societies</div>
-                  <div class="card-body text-primary">
+               <div class="card border-info mb-3">
+                  <div class="card-header">
+                     <b><i class="fas fa-check-circle text-info mr-2"></i>Suggested Societies</b>
+                  </div>
+                  <div class="card-body">
                      @if($suggestedSocieties->isEmpty())
                      <p>No suggested societies are available at this time. Please check again later.</p>
                      @else
@@ -52,7 +61,7 @@
                         <a href="{{ route('view-society', ['id' => $society->id]) }}">
                         {{ $society->societyName }}
                         </a>
-                        - {{ count(json_decode($society->memberList, true)) }} Member{{ count(json_decode($society->memberList, true)) != 1 ? 's' : '' }}
+                        - {{ count($society->memberList) }} Member{{ count($society->memberList) != 1 ? 's' : '' }}
                      </p>
                      @endforeach
                      @endif

@@ -97,7 +97,7 @@
                   <div class="tab-pane fade show active" id="profile-settings" role="tabpanel" aria-labelledby="profile-settings-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">My Profile Settings</h5>
+                           <h5 class="mb-0">Profile Settings</h5>
                         </div>
                         <div class="card-body">
                            <form method="POST" action="{{ route('profile-update') }}">
@@ -135,6 +135,7 @@
                                     <tr>
                                        <th>Name</th>
                                        <th>Description</th>
+                                       <th>Society Role</th>
                                        <th>Actions</th>
                                     </tr>
                                  </thead>
@@ -143,8 +144,9 @@
                                     <tr>
                                        <td>{{ $society->societyName }}</td>
                                        <td>{{ $society->societyDescription }}</td>
+                                       <td>{{ $society->getUserRole($userId) }}</td>
                                        <td>
-                                          <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-primary">View Society</a>
+                                          <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Society</a>
                                        </td>
                                     </tr>
                                     @endforeach
@@ -172,12 +174,11 @@
                               <div class="card-body">
                                  <h5 class="card-title">{{ $bookmark->post->postTitle }}</h5>
                                  <p class="card-text">Post Author: {{ $bookmark->post->author->username }}</p>
-                                 <a href="{{ route('view-post', ['societyId' => $bookmark->post->societyId, 'postId' => $bookmark->post->id]) }}" class="btn btn-primary">View Post</a>
-                                 <a href="#" class="btn btn-danger"
-                                    onclick="event.preventDefault();
-                                    document.getElementById('unbookmark-post-form-{{$bookmark->post->id}}').submit();">
-                                 Unbookmark
-                                 </a>
+                                 <a href="{{ route('view-post', ['societyId' => $bookmark->post->societyId, 'postId' => $bookmark->post->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Post</a>
+                                 <form id="unbookmark-post-form-{{$bookmark->post->id}}" action="#" method="POST" style="display: none;">
+                                    @csrf
+                                 </form>
+                                 <a href="#" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('unbookmark-post-form-{{$bookmark->post->id}}').submit();"><i class="fas fa-bookmark"></i> Unbookmark</a>
                                  <form id="unbookmark-post-form-{{$bookmark->post->id}}" action="{{ route('unbookmark.post', ['postId' => $bookmark->post->id]) }}" method="POST" style="display: none;">
                                     @csrf
                                     @method('DELETE')
@@ -206,11 +207,11 @@
                               <div class="card-body">
                                  <h5 class="card-title">{{ $savedComment->comment->comment }}</h5>
                                  <p class="card-text">Comment Author: {{ $savedComment->user->username }}</p>
-                                 <a href="{{ route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->id]) }}" class="btn btn-primary">View Comment</a>
+                                 <a href="{{ route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Comment</a>
                                  <form id="unsave-comment-form-{{$savedComment->comment->id}}" action="{{ route('unsave-comment', ['commentId' => $savedComment->comment->id]) }}" method="POST" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">Unsave Comment</button>
+                                    <button type="submit" class="btn btn-danger"><i class="fas fa-bookmark"></i> Unsave Comment</button>
                                  </form>
                               </div>
                            </div>
@@ -243,8 +244,8 @@
                                  <tr>
                                     <td>{{ $friend->username }}</td>
                                     <td>
-                                       <a href="{{ route('user.profile', ['id' => $friend->id]) }}" class="btn btn-primary">View Profile</a>
-                                       <button class="btn btn-danger" onclick="removeFriend({{ $friend->id }})">Remove Friend</button>
+                                       <a href="{{ route('user.profile', ['id' => $friend->id]) }}" class="btn btn-primary"><i class="fas fa-user"></i> View Profile</a>
+                                       <button class="btn btn-danger" onclick="removeFriend({{ $friend->id }})"><i class="fas fa-user-minus"></i> Remove Friend</button>
                                     </td>
                                  </tr>
                                  @endforeach
@@ -275,8 +276,8 @@
                                  <tr>
                                     <td>{{ $request->sender->username ?? '' }}</td>
                                     <td>
-                                       <button class="btn btn-success" onclick="acceptFriendRequest({{ $request->id }})">Accept</button>
-                                       <button class="btn btn-danger" onclick="denyFriendRequest({{ $request->id }})">Deny</button>
+                                       <button class="btn btn-success" onclick="acceptFriendRequest({{ $request->id }})"><i class="fas fa-check"></i> Accept</button>
+                                       <button class="btn btn-danger" onclick="denyFriendRequest({{ $request->id }})"><i class="fas fa-times"></i> Deny</button>
                                     </td>
                                  </tr>
                                  @endforeach
