@@ -35,6 +35,20 @@
          .tab-pane.fade.show {
          opacity: 1;
          }
+         .notification-badge {
+         position: relative;
+         display: inline-block;
+         }
+         .notification-badge .badge {
+         position: absolute;
+         top: -8px;
+         right: -2px;
+         background-color: crimson;
+         color: white;
+         border-radius: 50%;
+         padding: 5px 8px;
+         font-size: 12px;
+         }
       </style>
    </head>
    <body>
@@ -50,9 +64,10 @@
                <a href="{{ route('user.profile', ['id' => Auth::id()]) }}" class="btn btn-info btn-sm mb-3">
                <i class="fas fa-user"></i> View Public Profile
                </a>
+               <br><br>
                <ul class="nav nav-pills justify-content-center mb-4" id="pills-tab" role="tablist">
                   <li class="nav-item">
-                     <a class="nav-link active" id="profile-settings-tab" data-toggle="pill" href="#profile-settings" role="tab" aria-controls="profile-settings" aria-selected="true">My Profile Settings</a>
+                     <a class="nav-link active" id="profile-settings-tab" data-toggle="pill" href="#profile-settings" role="tab" aria-controls="profile-settings" aria-selected="true">Profile Settings</a>
                   </li>
                   <li class="nav-item">
                      <a class="nav-link" id="friends-tab" data-toggle="pill" href="#friends" role="tab" aria-controls="friends" aria-selected="false">My Friends</a>
@@ -61,13 +76,17 @@
                      <a class="nav-link" id="my-societies-tab" data-toggle="pill" href="#my-societies" role="tab" aria-controls="my-societies" aria-selected="false">My Societies</a>
                   </li>
                   <li class="nav-item">
-                     <a class="nav-link" id="friend-requests-tab" data-toggle="pill" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests</a>
-                  </li>
-                  <li class="nav-item">
                      <a class="nav-link" id="bookmarked-posts-tab" data-toggle="pill" href="#bookmarked-posts" role="tab" aria-controls="bookmarked-posts" aria-selected="false">Bookmarked Posts</a>
                   </li>
                   <li class="nav-item">
                      <a class="nav-link" id="saved-comments-tab" data-toggle="pill" href="#saved-comments" role="tab" aria-controls="saved-comments" aria-selected="false">Saved Comments</a>
+                  </li>
+                  <hr>
+                  <li class="nav-item">
+                     <a class="nav-link notification-badge" id="friend-requests-tab" data-toggle="pill" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests <span class="badge">{{ count($friendRequests) }}</span></a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link notification-badge" id="messages-tab" data-toggle="pill" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages <span class="badge">{{ count($messages) }}</span></a>
                   </li>
                </ul>
             </div>
@@ -106,7 +125,7 @@
                   <div class="tab-pane fade" id="my-societies" role="tabpanel" aria-labelledby="my-societies-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">My Societies</h5>
+                           <h5 class="mb-0">My Societies - {{ $joinedSocieties->count() }}</h5>
                         </div>
                         <div class="card-body">
                            @if($joinedSocieties->count() > 0)
@@ -144,7 +163,7 @@
                   <div class="tab-pane fade" id="bookmarked-posts" role="tabpanel" aria-labelledby="bookmarked-posts-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">Bookmarked Posts</h5>
+                           <h5 class="mb-0">Bookmarked Posts - {{ $bookmarks->count() }}</h5>
                         </div>
                         <div class="card-body">
                            @if($bookmarks->count() > 0)
@@ -178,7 +197,7 @@
                   <div class="tab-pane fade" id="saved-comments" role="tabpanel" aria-labelledby="saved-comments-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">Saved Comments</h5>
+                           <h5 class="mb-0">Saved Comments - {{ $comments->count() }}</h5>
                         </div>
                         <div class="card-body">
                            @if($comments->count() > 0)
@@ -208,7 +227,7 @@
                   <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">My Friends</h5>
+                           <h5 class="mb-0">My Friends - {{ $friends->count() }}</h5>
                         </div>
                         <div class="card-body">
                            @if($friends->count() > 0)
@@ -240,7 +259,7 @@
                   <div class="tab-pane fade" id="friend-requests" role="tabpanel" aria-labelledby="friend-requests-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">Friend Requests</h5>
+                           <h5 class="mb-0">Friend Requests - {{ count($friendRequests) }}</h5>
                         </div>
                         <div class="card-body">
                            @if(count($friendRequests) > 0)
@@ -265,6 +284,39 @@
                            </table>
                            @else
                            <p>You have no friend requests right now.</p>
+                           @endif
+                        </div>
+                     </div>
+                  </div>
+                  <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
+                     <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                           <h5 class="mb-0">Messages - {{ count($messages) }}</h5>
+                        </div>
+                        <div class="card-body">
+                           @if(count($messages) > 0)
+                           <table class="table">
+                              <thead>
+                                 <tr>
+                                    <th>From</th>
+                                    <th>Message</th>
+                                    <th>Action</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 @foreach($messages as $message)
+                                 <tr>
+                                    <td><a href="{{ route('user.profile', ['id' => $message->sender->id]) }}">{{ $message->sender->username ?? '' }}</a></td>
+                                    <td>{{ $message->message ?? '' }}</td>
+                                    <td>
+                                       <button class="btn btn-danger" onclick="deleteMessage({{ $message->id }})">Delete</button>
+                                    </td>
+                                 </tr>
+                                 @endforeach
+                              </tbody>
+                           </table>
+                           @else
+                           <p>You have no messages right now.</p>
                            @endif
                         </div>
                      </div>
@@ -328,6 +380,24 @@
                   }
             });
          }
+         
+         function deleteMessage(messageId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("delete-message", ["id" => ":id"]) }}'.replace(':id', messageId),
+               data: {
+                     '_token': '{{ csrf_token() }}'
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         }
+         
+         
       </script>
       @include('layouts.footer')
    </body>

@@ -101,7 +101,7 @@
                         <i class="fas fa-user-plus"></i> Send Request
                         @endif
                         </button>
-                        <button class="btn btn-info" @if($student->id === Auth::id()) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
+                        <button data-toggle="modal" data-target="#sendMessageModal" class="btn btn-info" @if($student->id === Auth::id()) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
                         <i class="far fa-envelope"></i> Send Message
                         </button>
                      </div>
@@ -148,6 +148,30 @@
                      @endforeach
                   </ul>
                   @endif
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Sending Message -->
+      <div class="modal fade" id="sendMessageModal" tabindex="-1" role="dialog" aria-labelledby="sendMessageModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="createMessageModalLabel">Send A Message - {{ $student->username }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <form id="sendMessageForm" action="{{ route('send-message', ['id' => $student->id]) }}" method="POST">
+                     @csrf
+                     <div class="form-group">
+                        <label for="messageField">Message:</label>
+                        <textarea id="messageField" class="form-control" name="messageField" required autocomplete="messageField" style="resize: none; height: 150px;"></textarea>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
+                     <button type="submit" class="btn btn-primary">Send Message</button>
+                  </form>
                </div>
             </div>
          </div>

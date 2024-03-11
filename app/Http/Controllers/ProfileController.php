@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use App\Models\SavedComment; 
 use App\Models\Society;
 use App\Models\FriendRequest;
+use App\Models\Message;
 
 class ProfileController extends Controller
 {
@@ -17,6 +18,7 @@ class ProfileController extends Controller
         $friendRequests = FriendRequest::where('receiver_id', $user->id)->where('status', 'pending')->get();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
+        $messages = Message::where('receiverId', $user->id)->get();
         $joinedSocieties = Society::getSocietiesForUser($user->id);
         $friends = $user->friends;
 
@@ -36,6 +38,7 @@ class ProfileController extends Controller
             'joinedSocieties' => $joinedSocieties,
             'friendRequests' => $friendRequests,
             'friends' => $friends,
+            'messages' => $messages,
         ]);
     }
 

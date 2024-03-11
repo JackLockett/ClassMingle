@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\FriendRequest;
 use App\Models\Friendship;
+use App\Models\Message;
 
 class UserController extends Controller
 {
@@ -17,6 +18,32 @@ class UserController extends Controller
         return view('view-students', ['students' => $students]);
     }    
 
+    public function sendMessage(Request $request, $id)
+    {
+        $currentUserId = Auth::id();
+    
+        $message = new Message([
+            'senderId' => $currentUserId,
+            'receiverId' => $id,
+            'message' => $request->input('messageField'),
+        ]);
+    
+        $message->save();
+    
+        return redirect()->route('user.profile', ['id' => $id])->with('success', 'Message sent successfully.');
+    }
+
+    public function deleteMessage($id)
+    {
+        // Find the message by its ID and delete it
+        $message = Message::findOrFail($id);
+        $message->delete();
+    
+        // Redirect to the appropriate route or return a response
+        return redirect()->back()->with('success', 'Message deleted successfully.');
+    }
+    
+    
     public function showProfile($id)
     {
         $authId = auth()->id();

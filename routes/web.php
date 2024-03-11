@@ -69,6 +69,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
     Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
 
+    Route::post('/send-message/{id}', [UserController::class, 'sendMessage'])->name('send-message');
+    Route::post('/delete-message/{id}', [UserController::class, 'deleteMessage'])->name('delete-message');
+
     Route::get('/discovery', [DiscoveryController::class, 'index'])->name('discovery');
 
     Route::post('/send-friend-request', [FriendController::class, 'sendFriendRequest'])->name('sendFriendRequest');
