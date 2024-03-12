@@ -32,6 +32,14 @@
                <h3 class="text-center">{{ $society->societyName }} - Society Post</h3>
             </div>
          </div>
+         @if (session('success'))
+         <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         @endif
          <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary btn-sm mb-3">
          <i class="fas fa-arrow-left"></i> Return to Society
          </a>
@@ -71,11 +79,20 @@
                         </a>
                         </strong> said:
                      </div>
-                     <div class="text-muted">
+                     <div class="text-muted" style="display: inline-block;">
                         <small>{{ $comment->created_at->diffForHumans() }}</small>
                         <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $comment->id }}">
                         {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
                         </button>
+                        @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
+                        <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">
+                           @csrf
+                           @method('DELETE')
+                           <button type="submit" class="btn btn-sm btn-danger ml-2">
+                           <i class="fas fa-trash"></i> Delete
+                           </button>
+                        </form>
+                        @endif
                      </div>
                   </div>
                   <p>{{ $comment->comment }}</p>

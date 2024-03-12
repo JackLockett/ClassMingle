@@ -56,6 +56,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('save-comment/{commentId}', [SocietyController::class, 'saveComment'])->name('save-comment');
     Route::delete('/unsave-comment/{commentId}', [SocietyController::class, 'unsaveComment'])->name('unsave-comment');
+    Route::delete('/delete-comment/{commentId}', [SocietyController::class, 'deleteComment'])->name('delete-comment');
 
     Route::get('/societies/{societyId}/posts/{postId}/comments/{commentId}', [CommentController::class, 'viewComment'])->name('view-comment');
     Route::post('/societies/{societyId}/posts/{postId}/comments/{commentId}/respond', [CommentController::class, 'respondToComment'])->name('respond-to-comment');

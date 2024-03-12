@@ -194,6 +194,24 @@ class SocietyController extends Controller
         return redirect()->back()->with('success', 'Comment added successfully');
     }
 
+    public function deleteComment($commentId)
+    {
+        $comment = Comment::find($commentId);
+    
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Comment not found.');
+        }
+    
+        $society = $comment->post->society;
+        if (!in_array(auth()->id(), $society->moderatorList)) {
+            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
+        }
+    
+        $comment->delete();
+    
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
+    }
+
     public function promoteToModerator(Request $request, $societyId)
     {
         $society = Society::findOrFail($societyId);
