@@ -81,11 +81,11 @@
                   <div class="card-header">Society Feed</div>
                   <div class="card-body">
                      @if ($society->posts && count($society->posts) > 0)
-                     @foreach ($society->posts->sortByDesc('created_at') as $post)
-                     <div class="card mb-3">
+                     @foreach ($society->posts as $post)
+                     <div class="card mb-3{{ $post->pinned ? ' border-warning' : '' }}">
                         <div class="card-header text-muted d-flex justify-content-between align-items-center">
                            <strong>{{ $post->postTitle }}</strong>
-                           <div>
+                           <div style="display: inline-block;">
                               <span>Posted by 
                               <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
                               {{ $post->author->username }}
@@ -93,6 +93,25 @@
                               </span>
                               <span class="ml-3">•</span>
                               <span class="ml-3">{{ $post->created_at->diffForHumans() }}</span>
+                              @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
+                              <form action="{{ route('pin-post', ['postId' => $post->id]) }}" method="POST" style="display: inline-block;">
+                                 @csrf
+                                 <button type="submit" class="btn btn-sm
+                                    @if ($post->pinned)
+                                    btn-warning
+                                    @else
+                                    btn-info
+                                    @endif
+                                    ml-2">
+                                 <i class="fas fa-thumbtack"></i>
+                                 @if ($post->pinned)
+                                 Unpin
+                                 @else
+                                 Pin
+                                 @endif
+                                 </button>
+                              </form>
+                              @endif
                            </div>
                         </div>
                         <div class="card-body">

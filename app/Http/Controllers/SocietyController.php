@@ -22,12 +22,12 @@ class SocietyController extends Controller
     public function viewSocietyInfo($id)
     {
         $society = Society::with(['posts' => function ($query) {
-            $query->withCount('comments');
+            $query->orderBy('pinned', 'desc')->orderByDesc('created_at')->withCount('comments');
         }])->findOrFail($id);
     
         return view('view-society', compact('society'));
     }
-
+    
     public function createSociety(Request $request)
     {
         $validatedData = $request->validate([
@@ -68,10 +68,28 @@ class SocietyController extends Controller
         $post->societyId = $societyId;
         $post->postTitle = $validatedData['postTitle'];
         $post->postComment = $validatedData['postComment'];
+        $post->pinned = true;
         $post->save();
 
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
     }
+
+    public function pinPost($postId)
+    {
+        $post = Post::find($postId);
+    
+        if (!$post) {
+            return redirect()->back()->with('error', 'Post not found.');
+        }
+    
+        $post->pinned = !$post->pinned;
+        $post->save();
+    
+        $action = $post->pinned ? 'pinned' : 'unpinned';
+    
+        return redirect()->back()->with('success', "Post $action successfully.");
+    }
+    
 
     public function deletePost($postId)
     {

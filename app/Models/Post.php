@@ -13,6 +13,7 @@ class Post extends Model
         'societyId',
         'postTitle',
         'postComment',
+        'pinned',
     ];
 
     public function society()
