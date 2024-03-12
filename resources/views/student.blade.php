@@ -138,7 +138,7 @@
                <div class="profile-card">
                   <h4 class="profile-header"><i class="fas fa-user-friends"></i>&nbsp;Friends</h4>
                   @if($student->friends->isEmpty())
-                  <p>This student has no friends.</p>
+                  <p>No friends to display.</p>
                   @else
                   <ul class="list-group">
                      @foreach($student->friends as $friend)

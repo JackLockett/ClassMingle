@@ -40,18 +40,17 @@
                <h2 class="card-title">{{ $post->postTitle }}</h2>
                <p class="card-text">{{ $post->postComment }}</p>
                <div class="d-flex justify-content-between align-items-end">
-                  <p class="card-text mb-0">
-                     <small class="text-muted">
-                     Posted by 
-                     <a href="{{ route('user.profile', ['id' => $post->author->id]) }}">
-                     {{ $post->author->username }}
-                     </a>
-                     • {{ $post->created_at->diffForHumans() }}
-                     </small>
-                  </p>
                   <button id="bookmarkButton" class="btn btn-sm {{ $post->isBookmarked() ? 'btn-primary' : 'btn-outline-primary' }}">
                   {{ $post->isBookmarked() ? 'Unbookmark Post' : 'Bookmark Post' }}
                   </button>
+                  @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
+                  <form action="{{ route('delete-post', ['postId' => $post->id]) }}" method="POST">
+                     @csrf
+                     <button type="submit" class="btn btn-sm btn-danger ml-2">
+                     <i class="fas fa-trash"></i> Delete Post
+                     </button>
+                  </form>
+                  @endif
                </div>
             </div>
          </div>
@@ -64,29 +63,29 @@
                @if ($post->comments->count() > 0)
                @foreach ($post->comments->where('parent_comment_id', null) as $key => $comment)
                <div class="comment mb-3">
-               <div class="d-flex justify-content-between align-items-center">
-                  <div>
-                     <strong>
-                           <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
-                              {{ $comment->user->username }}
-                           </a>
-                     </strong> said:
-                  </div>
-                  <div class="text-muted">
-                     <small>{{ $comment->created_at->diffForHumans() }}</small>
-                     <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $comment->id }}">
+                  <div class="d-flex justify-content-between align-items-center">
+                     <div>
+                        <strong>
+                        <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
+                        {{ $comment->user->username }}
+                        </a>
+                        </strong> said:
+                     </div>
+                     <div class="text-muted">
+                        <small>{{ $comment->created_at->diffForHumans() }}</small>
+                        <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $comment->id }}">
                         {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
-                     </button>
+                        </button>
+                     </div>
                   </div>
-               </div>
-               <p>{{ $comment->comment }}</p>
-               @if ($comment->responses->count() > 0)
-               <div class="mb-3">
-                  <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
-                  <small class="text-muted">
+                  <p>{{ $comment->comment }}</p>
+                  @if ($comment->responses->count() > 0)
+                  <div class="mb-3">
+                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     <small class="text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
-                  </small>
-               </div>
+                     </small>
+                  </div>
                   @else
                   <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
                   @endif
@@ -167,9 +166,9 @@
                      console.error("There was a problem with the fetch operation:", error);
                });
             });
-
+         
             const saveButtons = document.querySelectorAll('.saveButton');
-
+         
             saveButtons.forEach(saveButton => {
             saveButton.addEventListener("click", function () {
                const commentId = this.dataset.commentId;
@@ -204,8 +203,8 @@
                });
             });
          });
-
-
+         
+         
          });
          
          

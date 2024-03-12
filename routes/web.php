@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/demote-moderator/{societyId}', [SocietyController::class, 'demoteModerator'])->name('demote-moderator');
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
     Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
+    Route::post('/delete-post/{postId}', [SocietyController::class, 'deletePost'])->name('delete-post');
     Route::post('/post/{postId}/comment', [SocietyController::class, 'addComment'])->name('add-comment');
     Route::get('/posts/{postId}', [SocietyController::class, 'show'])->name('post.show');
     Route::get('/societies/{societyId}/posts/{postId}', [SocietyController::class, 'viewPost'])->name('view-post');

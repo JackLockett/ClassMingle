@@ -73,6 +73,22 @@ class SocietyController extends Controller
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
     }
 
+    public function deletePost($postId)
+    {
+        $post = Post::find($postId);
+        if (!$post) {
+            return redirect()->back()->with('error', 'Post not found.');
+        }
+
+        if ($post->authorId !== auth()->id() && !in_array(auth()->id(), $post->society->moderatorList)) {
+            return redirect()->back()->with('error', 'You are not authorized to delete this post.');
+        }
+
+        $post->delete();
+
+        return redirect()->route('view-society', ['id' => $post->societyId])->with('success', 'Post deleted successfully.');
+    }
+
     public function viewPost($societyId, $postId)
     {
         $society = Society::find($societyId);
