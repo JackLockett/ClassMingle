@@ -20,8 +20,8 @@ class DiscoveryController extends Controller
             } else {
                 $members = json_decode($society->memberList, true);
             }
-
-            return !in_array($userId, $members);
+        
+            return $society->approved == 1 && !in_array($userId, $members);
         })->shuffle()->take(10);
 
         $personalFeedPosts = Post::whereHas('society', function ($query) use ($userId) {

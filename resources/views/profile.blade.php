@@ -206,7 +206,7 @@
                            <div class="card mb-3">
                               <div class="card-body">
                                  <h5 class="card-title">{{ $savedComment->comment->comment }}</h5>
-                                 <p class="card-text">Comment Author: {{ $savedComment->user->username }}</p>
+                                 <p class="card-text">Comment Author: {{ $savedComment->comment->user->username }}</p>
                                  <a href="{{ route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Comment</a>
                                  <form id="unsave-comment-form-{{$savedComment->comment->id}}" action="{{ route('unsave-comment', ['commentId' => $savedComment->comment->id]) }}" method="POST" style="display: inline;">
                                     @csrf

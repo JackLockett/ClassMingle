@@ -68,7 +68,7 @@ class SocietyController extends Controller
         $post->societyId = $societyId;
         $post->postTitle = $validatedData['postTitle'];
         $post->postComment = $validatedData['postComment'];
-        $post->pinned = true;
+        $post->pinned = false;
         $post->save();
 
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
