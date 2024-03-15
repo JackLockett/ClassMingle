@@ -52,12 +52,9 @@
                   {{ $post->isBookmarked() ? 'Unbookmark Post' : 'Bookmark Post' }}
                   </button>
                   @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
-                  <form action="{{ route('delete-post', ['postId' => $post->id]) }}" method="POST">
-                     @csrf
-                     <button type="submit" class="btn btn-sm btn-danger ml-2">
-                     <i class="fas fa-trash"></i> Delete Post
-                     </button>
-                  </form>
+                  <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeletePost">
+                  <i class="fas fa-trash"></i> Delete Post
+                  </a>
                   @endif
                </div>
             </div>
@@ -85,13 +82,9 @@
                         {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
                         </button>
                         @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
-                        <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">
-                           @csrf
-                           @method('DELETE')
-                           <button type="submit" class="btn btn-sm btn-danger ml-2">
-                           <i class="fas fa-trash"></i> Delete
-                           </button>
-                        </form>
+                        <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeleteComment">
+                        <i class="fas fa-trash"></i> Delete
+                        </a>
                         @endif
                      </div>
                   </div>
@@ -127,6 +120,57 @@
                   <i class="fas fa-comment"></i> Submit Comment
                   </button>
                </form>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Post Deletion -->
+      <div class="modal fade" id="confirmDeletePost" tabindex="-1" role="dialog" aria-labelledby="confirmDeletePostLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeletePostLabel">Confirm Delete Post</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to delete this post?</p>
+               </div>
+               <div class="modal-footer">
+                  <form action="{{ route('delete-post', ['postId' => $post->id]) }}" method="POST">
+                     @csrf
+                     <button type="submit" class="btn btn-danger">
+                     <i class="fas fa-trash"></i> Delete Post
+                     </button>
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Comment Deletion -->
+      <div class="modal fade" id="confirmDeleteComment" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteCommentLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteCommentLabel">Confirm Delete Comment</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to delete this comment?</p>
+               </div>
+               <div class="modal-footer">
+                  <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">
+                     @csrf
+                     @method('DELETE')
+                     <button type="submit" class="btn btn-danger">
+                     <i class="fas fa-trash"></i> Delete
+                     </button>
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
             </div>
          </div>
       </div>

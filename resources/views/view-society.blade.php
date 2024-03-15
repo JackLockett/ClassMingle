@@ -61,7 +61,7 @@
                      </a>
                      @endif
                      @if ($society->ownerId == auth()->user()->id)
-                     <a href="#" class="btn btn-danger" id="deleteSocietyBtn" data-society-id="{{ $society->id }}">
+                     <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteSociety">
                      <i class="fas fa-trash-alt"></i> Delete Society
                      </a>
                      <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">
@@ -278,6 +278,26 @@
                         </form>
                      </div>
                   </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Society Deletion -->
+      <div class="modal fade" id="confirmDeleteSociety" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteSocietyLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteSocietyLabel">Confirm Delete Society</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to delete this society?</p>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">Delete Society</button>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                </div>
             </div>
          </div>
