@@ -17,6 +17,14 @@ class AccountController extends Controller
         return view('account', compact('email', 'created_at'));
     }
 
+    public function deleteAccount()
+    {
+        $user = Auth::user();
+        $user->delete();
+
+        return redirect()->route('/')->with('success', 'Your account has been deleted successfully.');
+    }
+
     public function changeEmail(Request $request)
     {
         $user = Auth::user();

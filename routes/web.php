@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     Route::post('/change-email', [AccountController::class, 'changeEmail'])->name('change-email');
     Route::post('/change-password', [AccountController::class, 'changePassword'])->name('change-password');
+    Route::post('/delete-account', [AccountController::class, 'deleteAccount'])->name('delete-account');
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile-update', [ProfileController::class, 'updateProfile'])->name('profile-update');
