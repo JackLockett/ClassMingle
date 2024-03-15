@@ -175,14 +175,9 @@
                                  <h5 class="card-title">{{ $bookmark->post->postTitle }}</h5>
                                  <p class="card-text">Post Author: {{ $bookmark->post->author->username }}</p>
                                  <a href="{{ route('view-post', ['societyId' => $bookmark->post->societyId, 'postId' => $bookmark->post->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Post</a>
-                                 <form id="unbookmark-post-form-{{$bookmark->post->id}}" action="#" method="POST" style="display: none;">
-                                    @csrf
-                                 </form>
-                                 <a href="#" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('unbookmark-post-form-{{$bookmark->post->id}}').submit();"><i class="fas fa-bookmark"></i> Unbookmark</a>
-                                 <form id="unbookmark-post-form-{{$bookmark->post->id}}" action="{{ route('unbookmark.post', ['postId' => $bookmark->post->id]) }}" method="POST" style="display: none;">
-                                    @csrf
-                                    @method('DELETE')
-                                 </form>
+                                 <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteBookmark">
+                                 <i class="fas fa-bookmark"></i> Unbookmark
+                                 </a>
                               </div>
                            </div>
                            @endforeach
@@ -245,14 +240,16 @@
                                     <td>{{ $friend->username }}</td>
                                     <td>
                                        <a href="{{ route('user.profile', ['id' => $friend->id]) }}" class="btn btn-primary"><i class="fas fa-user"></i> View Profile</a>
-                                       <button class="btn btn-danger" onclick="removeFriend({{ $friend->id }})"><i class="fas fa-user-minus"></i> Remove Friend</button>
+                                       <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmRemoveFriend">
+                                       <i class="fas fa-user-minus"></i> Remove Friend
+                                       </a>
                                     </td>
                                  </tr>
                                  @endforeach
                               </tbody>
                            </table>
                            @else
-                           <p>No friends to display.</p>
+                           <p>You don't have any friends at the moment. Why not try adding someone?</p>
                            @endif
                         </div>
                      </div>
@@ -310,7 +307,9 @@
                                     <td><a href="{{ route('user.profile', ['id' => $message->sender->id]) }}">{{ $message->sender->username ?? '' }}</a></td>
                                     <td>{{ $message->message ?? '' }}</td>
                                     <td>
-                                       <button class="btn btn-danger" onclick="deleteMessage({{ $message->id }})">Delete</button>
+                                       <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteMessage">
+                                       <i class="fas fa-trash-alt"></i> Delete Message
+                                       </a>
                                     </td>
                                  </tr>
                                  @endforeach
@@ -322,6 +321,78 @@
                         </div>
                      </div>
                   </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Bookmark Deletion -->
+      <div class="modal fade" id="confirmDeleteBookmark" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteBookmarkLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteBookmarkLabel">Confirm Unbookmark</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to unbookmark this post?</p>
+               </div>
+               <div class="modal-footer">
+                  @foreach($bookmarks as $bookmark)
+                  <form id="unbookmark-post-form-{{$bookmark->post->id}}" action="{{ route('unbookmark.post', ['postId' => $bookmark->post->id]) }}" method="POST" style="display: none;">
+                     @csrf
+                     @method('DELETE')
+                  </form>
+                  <a href="#" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('unbookmark-post-form-{{$bookmark->post->id}}').submit();"><i class="fas fa-bookmark"></i> Unbookmark</a>
+                  @endforeach
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Friend Removal -->
+      <div class="modal fade" id="confirmRemoveFriend" tabindex="-1" role="dialog" aria-labelledby="confirmRemoveFriendLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmRemoveFriendLabel">Confirm Remove Friend</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to remove this user?</p>
+               </div>
+               <div class="modal-footer">
+                  @foreach($friends as $friend)
+                  <button class="btn btn-danger" onclick="removeFriend({{ $friend->id }})"><i class="fas fa-user-minus"></i> Remove Friend</button>
+                  @endforeach
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Confirming Message Deletion -->
+      <div class="modal fade" id="confirmDeleteMessage" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteMessageLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteMessageLabel">Confirm Delete Message</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to delete this message?</p>
+               </div>
+               <div class="modal-footer">
+                  @foreach($messages as $message)
+                  <button class="btn btn-danger" onclick="deleteMessage({{ $message->id }})">
+                  <i class="fas fa-trash-alt"></i> Delete Message
+                  </button>
+                  @endforeach
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                </div>
             </div>
          </div>
@@ -373,7 +444,6 @@
                      'friend_id': friendId
                   },
                   success: function(response) {
-                     alert('Friend removed successfully');
                      location.reload();
                   },
                   error: function(xhr, status, error) {
