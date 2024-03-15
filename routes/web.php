@@ -51,6 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
 
+    Route::post('/edit-society/{societyId}', [SocietyController::class, 'editSociety'])->name('edit-society');
+    Route::post('/delete-society/{societyId}', [SocietyController::class, 'deleteSociety'])->name('delete-society');
+
     Route::post('/bookmark/{postId}', [SocietyController::class, 'bookmarkPost'])->name('bookmark.post');
     Route::delete('/unbookmark/{postId}', [SocietyController::class, 'unbookmarkPost'])->name('unbookmark.post');
     Route::get('/check-bookmark/{postId}', [SocietyController::class, 'checkBookmark'])->name('check-bookmark');

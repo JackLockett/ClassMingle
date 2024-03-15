@@ -24,13 +24,20 @@
             </div>
          </div>
          @if (session('success'))
-         <div class="alert alert-success alert-dismissible fade show" role="alert">
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated animate__fadeOutUp" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
          @endif
+         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                setTimeout(function() {
+                    $('#successAlert').alert('close');
+                }, 5000);
+            });
+         </script>
          <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">
          <i class="fas fa-arrow-left"></i> Return To Societies
          </a>
@@ -64,8 +71,8 @@
                      <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteSociety">
                      <i class="fas fa-trash-alt"></i> Delete Society
                      </a>
-                     <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#createAcademicModal">
-                     <i class="fas fa-edit"></i> Edit Society Info
+                     <a href="#" class="btn btn-success" data-toggle="modal" data-target="#editSocietyModal">
+                     <i class="fas fa-edit"></i> Edit Society Description
                      </a>
                      <a href="#" class="btn btn-warning" data-toggle="modal" data-target="#manageModeratorsModal">
                      <i class="fas fa-user-cog"></i> Manage Moderators
@@ -171,8 +178,12 @@
                         <label for="postComment">Comment:</label>
                         <textarea id="postComment" class="form-control" name="postComment" required autocomplete="postComment" style="resize: none; height: 150px;"></textarea>
                      </div>
-                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
-                     <button type="submit" class="btn btn-primary">Create A Post</button>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" class="btn btn-success">
+                     <i class="fas fa-check"></i> Submit Post
+                     </button>
                   </form>
                </div>
             </div>
@@ -237,8 +248,12 @@
                               </select>
                               <br>
                            </div>
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                           <button type="submit" class="btn btn-primary" id="promoteToModeratorBtn">Promote to Moderator</button>
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                           <i class="fas fa-arrow-left"></i> Return
+                           </button>
+                           <button type="submit" class="btn btn-primary" id="promoteToModeratorBtn" onclick="closeModal()">
+                           <i class="fas fa-user-plus"></i> Promote to Moderator
+                           </button>
                         </form>
                      </div>
                      <div class="tab-pane fade" id="demote" role="tabpanel" aria-labelledby="demote-tab">
@@ -273,8 +288,12 @@
                               </select>
                               <br>
                            </div>
-                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                           <button type="submit" class="btn btn-danger" id="demoteModeratorBtn">Remove Moderator</button>
+                           <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                           <i class="fas fa-arrow-left"></i> Return
+                           </button>
+                           <button type="submit" class="btn btn-danger" id="demoteModeratorBtn" onclick="closeModal()">
+                           <i class="fas fa-user-minus"></i> Remove Moderator
+                           </button>
                         </form>
                      </div>
                   </div>
@@ -287,17 +306,52 @@
          <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                <div class="modal-header">
-                  <h5 class="modal-title" id="confirmDeleteSocietyLabel">Confirm Delete Society</h5>
+                  <h5 class="modal-title" id="confirmDeleteSocietyLabel">Delete Society - {{ $society->societyName }}</h5>
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                   </button>
                </div>
                <div class="modal-body">
-                  <p>Are you sure you want to delete this society?</p>
+                  <p>Are you absolutely sure you want to delete this society? <strong>This action can't be undone.</strong></p>
+                  <form id="deleteSocietyForm" action="{{ route('delete-society', ['societyId' => $society->id]) }}" method="POST">
+                     @csrf
+                     <div class="form-group">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-arrow-left"></i> Return
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Society
+                        </button>
+                  </form>
+                  </div>
                </div>
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-danger" data-dismiss="modal">Delete Society</button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Editing Society Information -->
+      <div class="modal fade" id="editSocietyModal" tabindex="-1" role="dialog" aria-labelledby="editSocietyModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="editSocietyModalLabel">Edit Society Details - {{ $society->societyName }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <form id="editSocietyForm" action="{{ route('edit-society', ['societyId' => $society->id]) }}" method="POST">
+                     @csrf
+                     <div class="form-group">
+                        <label for="societyDesc">Description:</label>
+                        <textarea id="societyDesc" class="form-control" name="societyDesc" required autocomplete="societyDesc" style="resize: none; height: 150px;">{{ $society->societyDescription }}</textarea>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" class="btn btn-success">
+                     <i class="fas fa-check"></i> Update
+                     </button>
+                  </form>
                </div>
             </div>
          </div>
@@ -342,7 +396,7 @@
          
                  alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
                  alertDiv.role = 'alert';
-                 alertDiv.innerHTML = `<strong>${message}</strong><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`;
+                 alertDiv.innerHTML = `${message}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>`;
          
                  alertContainer.appendChild(alertDiv);
              };
@@ -424,6 +478,10 @@
              });
          
          });
+         
+         function closeModal() {
+            $('#manageModeratorsModal').modal('hide');
+         }
          
                   
                

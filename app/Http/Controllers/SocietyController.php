@@ -55,6 +55,28 @@ class SocietyController extends Controller
 
         return redirect()->route('societies');
     }
+
+    public function editSociety(Request $request, $societyId)
+    {
+        $society = Society::findOrFail($societyId);
+
+        $validatedData = $request->validate([
+            'societyDesc' => 'required',
+        ]);
+
+        $society->societyDescription = $validatedData['societyDesc'];
+        $society->save();
+
+        return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Society details have been updated!');
+    }
+
+    public function deleteSociety($societyId)
+    {
+        $society = Society::findOrFail($societyId);
+        $society->delete();
+    
+        return redirect()->route('societies')->with('success', 'The society has been deleted successfully.');
+    }
     
     public function createPost(Request $request, $societyId)
     {
@@ -87,7 +109,7 @@ class SocietyController extends Controller
     
         $action = $post->pinned ? 'pinned' : 'unpinned';
     
-        return redirect()->back()->with('success', "Post $action successfully.");
+        return redirect()->back()->with('success', "Post $action successfully!");
     }
     
 

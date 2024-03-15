@@ -18,21 +18,21 @@
             </div>
          </div>
          <br>
-         @if(session('success'))
-         <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
+         @if (session('success'))
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated animate__fadeOutUp" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
+         @endif
          <script>
-            $(document).ready(function(){
-                  setTimeout(function(){
-                     $("#success-alert").alert('close');
-                  }, 10000);
+            document.addEventListener("DOMContentLoaded", function() {
+                setTimeout(function() {
+                    $('#successAlert').alert('close');
+                }, 5000);
             });
          </script>
-         @endif
          <div class="row">
             <div class="col-md-6">
                <div class="card border-primary mb-3">
