@@ -112,8 +112,8 @@
                <div class="profile-card">
                   <h4 class="profile-header"><i class="fas fa-user"></i>&nbsp;User Details</h4>
                   <div class="profile-info">
+                     <br>
                      <p><strong>Username:</strong> {{ $student->username }}</p>
-                     <p><strong>Email:</strong> {{ $student->email }}</p>
                      <p><strong>Bio:</strong> {{ $student->bio ? $student->bio : "This student doesn't have a bio" }}</p>
                      <p><strong>Member Since:</strong> {{ \Carbon\Carbon::parse($student->created_at)->isoFormat('Do MMMM YYYY') }}</p>
                      <p><strong>University:</strong> {{ $student->university ? $student->university : 'Not Applicable' }}</p>
