@@ -88,6 +88,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/deny-friend-request', [FriendController::class, 'denyFriendRequest'])->name('denyFriendRequest');
 
     Route::post('/remove-friend', [FriendController::class, 'removeFriend'])->name('removeFriend');
+    Route::delete('/delete-message/{id}', [ProfileController::class, 'deleteMessage'])->name('delete-message');
+
+
 });
 
 

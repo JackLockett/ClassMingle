@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use App\Models\Bookmark; 
 use App\Models\SavedComment; 
 use App\Models\Society;
@@ -21,7 +22,8 @@ class ProfileController extends Controller
         $friendRequests = FriendRequest::where('receiver_id', $user->id)->where('status', 'pending')->get();
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
-        $messages = Message::where('receiverId', $user->id)->get();
+        $receivedMessages = Message::where('receiverId', $user->id)->get();
+        $sentMessages = Message::where('senderId', $user->id)->get(); 
         $joinedSocieties = Society::getSocietiesForUser($user->id);
         $friends = $user->friends;
 
@@ -42,7 +44,8 @@ class ProfileController extends Controller
             'joinedSocieties' => $joinedSocieties,
             'friendRequests' => $friendRequests,
             'friends' => $friends,
-            'messages' => $messages,
+            'receivedMessages' => $receivedMessages,
+            'sentMessages' => $sentMessages,
         ]);
     }
 
@@ -66,5 +69,19 @@ class ProfileController extends Controller
     
         return redirect()->back()->with('success', 'Profile updated successfully!');
     }
+
+    public function deleteMessage($id)
+    {
+        $message = Message::find($id);
+    
+        if (!$message) {
+            return response()->json(['error' => 'Message not found'], 404);
+        }
+    
+        $message->delete();
+    
+        return response()->json(['message' => 'Message deleted successfully'], 200);
+    }
+    
 
 }

@@ -148,6 +148,7 @@
             </div>
          </div>
       </div>
+      @if(isset($comment))
       <!-- Modal for Confirming Comment Deletion -->
       <div class="modal fade" id="confirmDeleteComment" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteCommentLabel" aria-hidden="true">
          <div class="modal-dialog modal-lg" role="document">
@@ -174,6 +175,7 @@
             </div>
          </div>
       </div>
+      @endif
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
