@@ -190,7 +190,7 @@
                            </div>
                            @else
                            <p class="card-text text-muted">You haven't joined any societies yet.</p>
-                           <a href="#" class="btn btn-primary">
+                           <a href="/societies" class="btn btn-primary">
                            <i class="fas fa-search"></i> Discover Societies
                            </a>
                            @endif

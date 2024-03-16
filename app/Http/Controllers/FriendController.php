@@ -59,9 +59,20 @@ class FriendController extends Controller
     
         $friendRequest = FriendRequest::findOrFail($request->friend_request_id);
     
-        $friendRequest->status = 'accepted';
-        $friendRequest->save();
-
+        // Check if the friendship already exists
+        $existingFriendship = Friendship::where(function ($query) use ($friendRequest) {
+            $query->where('user_id', $friendRequest->sender_id)
+                  ->where('friend_id', $friendRequest->receiver_id);
+        })->orWhere(function ($query) use ($friendRequest) {
+            $query->where('user_id', $friendRequest->receiver_id)
+                  ->where('friend_id', $friendRequest->sender_id);
+        })->exists();
+    
+        if ($existingFriendship) {
+            return response()->json(['error' => 'Friendship already exists'], 422);
+        }
+    
+        // Create the friendship
         Friendship::create([
             'user_id' => $friendRequest->sender_id,
             'friend_id' => $friendRequest->receiver_id,
@@ -71,20 +82,19 @@ class FriendController extends Controller
             'user_id' => $friendRequest->receiver_id,
             'friend_id' => $friendRequest->sender_id,
         ]);
-
-        Friendship::where('user_id', $friendRequest->sender_id)
-        ->where('friend_id', $friendRequest->receiver_id)
-        ->update(['status' => 'accepted']);
-
-        Friendship::where('user_id', $friendRequest->receiver_id)
-            ->where('friend_id', $friendRequest->sender_id)
-            ->update(['status' => 'accepted']);
-            
+    
+        // Delete the corresponding friend request from the other person
+        FriendRequest::where('sender_id', $friendRequest->receiver_id)
+                     ->where('receiver_id', $friendRequest->sender_id)
+                     ->delete();
+    
+        // Update the status of the friend request
+        $friendRequest->status = 'accepted';
+        $friendRequest->save();
     
         return response()->json(['message' => 'Friend request accepted successfully']);
     }
-     
-
+    
     public function denyFriendRequest(Request $request)
     {
         $request->validate([
@@ -98,7 +108,6 @@ class FriendController extends Controller
         return response()->json(['message' => 'Friend request denied successfully']);
     }
     
-
     public function removeFriend(Request $request)
     {
         $request->validate([
@@ -118,5 +127,4 @@ class FriendController extends Controller
     
         return response()->json(['message' => 'Friend removed successfully']);
     }
-    
 }
