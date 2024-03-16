@@ -26,7 +26,7 @@
                   </div>
                   <div class="card-body">
                      @if($personalFeedPosts->isEmpty())
-                     <p class="card-text">It appears that there aren't any posts available from the societies you're a part of at the moment. Either you're not currently in any societies, or there aren't any updates from the ones you're affiliated with.</p>
+                     <p class="card-text">It appears that you're either not involved with any societies right now, or there simply haven't been any updates from the ones you're affiliated with.</p>
                      @else
                      @foreach($personalFeedPosts as $post)
                      <div class="card">
