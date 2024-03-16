@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Bookmark; 
 use App\Models\SavedComment; 
 use App\Models\Society;
@@ -50,9 +51,16 @@ class ProfileController extends Controller
         $validatedData = $request->validate([
             'bio' => 'nullable|string',
             'university' => 'nullable|string|max:255',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Add validation for avatar
         ]);
     
         $user = Auth::user();
+    
+        // Handle profile picture upload
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->move(public_path('avatars'), $request->file('avatar')->getClientOriginalName());
+            $validatedData['avatar'] = 'avatars/' . $request->file('avatar')->getClientOriginalName();
+        }
     
         $user->fill($validatedData)->save();
     

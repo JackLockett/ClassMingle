@@ -100,7 +100,39 @@
                            <h5 class="mb-0">Profile Settings</h5>
                         </div>
                         <div class="card-body">
-                           <form method="POST" action="{{ route('profile-update') }}">
+                           <div class="modal fade" id="changeAvatarModal" tabindex="-1" role="dialog" aria-labelledby="changeAvatarModalLabel" aria-hidden="true">
+                              <div class="modal-dialog modal-dialog-centered" role="document">
+                                 <div class="modal-content">
+                                    <div class="modal-header">
+                                       <h5 class="modal-title" id="changeAvatarModalLabel">Change Avatar</h5>
+                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                       <span aria-hidden="true">&times;</span>
+                                       </button>
+                                    </div>
+                                    <form method="POST" action="{{ route('profile-update') }}" enctype="multipart/form-data">
+                                       @csrf
+                                       <div class="modal-body">
+                                          <div class="text-center mb-3">
+                                             @if ($avatar)
+                                             <img src="{{ asset($avatar) }}" alt="Current Profile Picture" class="img-fluid rounded-circle" style="max-width: 200px;">
+                                             @endif
+                                          </div>
+                                          <div class="form-group">
+                                             <label for="avatar" class="d-block">Upload New Avatar:</label>
+                                             <input type="file" class="form-control-file" id="avatar" name="avatar">
+                                          </div>
+                                       </div>
+                                       <div class="modal-footer">
+                                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                          <button type="submit" class="btn btn-success">
+                                          <i class="fas fa-save"></i> Update Avatar
+                                          </button>
+                                       </div>
+                                    </form>
+                                 </div>
+                              </div>
+                           </div>
+                           <form method="POST" action="{{ route('profile-update') }}" enctype="multipart/form-data">
                               @csrf
                               <div class="form-group">
                                  <label for="bio">Bio:</label>
@@ -115,8 +147,12 @@
                                     @endforeach
                                  </select>
                               </div>
+                              <br>
+                              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeAvatarModal">
+                              <i class="fas fa-image"></i> Change Avatar
+                              </button>
                               <button type="submit" class="btn btn-success">
-                              <i class="fas fa-save"></i> Update Profile
+                              <i class="fas fa-save"></i> Update Details
                               </button>
                            </form>
                         </div>
