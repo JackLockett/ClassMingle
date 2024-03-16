@@ -87,13 +87,14 @@
                <div class="card mb-3">
                   <div class="card-header">Society Feed</div>
                   <div class="card-body">
+                     @if (is_array($society->memberList) && in_array(auth()->user()->id, $society->memberList))
                      @if ($society->posts && count($society->posts) > 0)
                      @foreach ($society->posts as $post)
                      <div class="card mb-3{{ $post->pinned ? ' border-warning' : '' }}">
                         <div class="card-header text-muted d-flex justify-content-between align-items-center">
                            <strong>{{ $post->postTitle }}</strong>
                            <div style="display: inline-block;">
-                              <span>Posted by 
+                              <span>Posted by
                               <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
                               {{ $post->author->username }}
                               </a>
@@ -134,6 +135,13 @@
                      @endforeach
                      @else
                      <p>No posts available in this society.</p>
+                     @endif
+                     @else
+                     <div class="card">
+                        <div class="card-body">
+                           <h5 class="card-title text-muted text-center">You need to be a member of this society to view the feed.</h5>
+                        </div>
+                     </div>
                      @endif
                   </div>
                </div>
