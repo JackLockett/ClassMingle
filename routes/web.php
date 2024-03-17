@@ -12,6 +12,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\FriendController;
+use App\Http\Controllers\FaqController;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +91,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/remove-friend', [FriendController::class, 'removeFriend'])->name('removeFriend');
     Route::delete('/delete-message/{id}', [ProfileController::class, 'deleteMessage'])->name('delete-message');
+
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 
 
 });

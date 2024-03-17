@@ -109,7 +109,7 @@
                   <a href="/discovery" class="d-none d-md-inline-block @if(request()->is('discovery')) active @endif"><i class="fas fa-compass"></i> Discovery</a>
                   <a href="/view-students" class="d-none d-md-inline-block @if(request()->is('view-students')) active @endif"><i class="fas fa-users"></i> Affiliated Students</a>
                   <a href="/societies" class="d-none d-md-inline-block @if(request()->is('societies')) active @endif"><i class="fas fa-network-wired"></i> Societies</a>
-                  <a href="#" class="d-none d-md-inline-block @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
+                  <a href="/faq" class="d-none d-md-inline-block @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
                </div>
                @else
                <div class="d-none d-md-inline-block">
@@ -162,7 +162,7 @@
                      <a href="/societies" class="nav-link @if(request()->is('societies')) active @endif"><i class="fas fa-network-wired"></i> Societies</a>
                   </li>
                   <li class="nav-item">
-                     <a href="#" class="nav-link @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
+                     <a href="/faq" class="nav-link @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
                   </li>
                </ul>
             </div>
