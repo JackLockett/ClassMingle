@@ -5,71 +5,104 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>View Students</title>
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
       <style>
-         .multi-collapse {
-         transition: height 0.3s ease-in-out;
+         .search-input {
+         border-radius: 20px;
+         }
+         .card {
+         border: none;
+         border-radius: 10px;
+         background-color: #fff;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         transition: box-shadow 0.3s ease;
+         }
+         .card:hover {
+         box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+         }
+         .avatar-wrapper {
+         width: 70px;
+         height: 70px;
+         overflow: hidden;
+         border-radius: 50%;
+         margin: 0 auto;
+         }
+         .avatar-img {
+         width: 100%;
+         height: auto;
+         display: block;
          }
       </style>
    </head>
    <body>
       @include('layouts.navbar')
-      <div class="container mt-3">
+      <div class="container mt-5">
          <div class="row justify-content-center">
             <div class="col-md-12">
-               <h3 class="text-center">Class Mingle - Students</h3>
-               <br>
-               <div class="row mb-3">
-                  <div class="col-md-6">
-                     <input type="text" class="form-control" id="searchUsername" placeholder="Search by username">
-                  </div>
-                  <div class="col-md-6">
-                     <input type="text" class="form-control" id="filterUniversity" placeholder="Filter by university">
-                  </div>
+               <h3 class="text-center mb-4">Students</h3>
+               <div class="alert alert-info text-center" role="alert">
+                  <strong>Note:</strong> Only students from your university will be displayed here. If you haven't added a university, you can do so in your profile settings.
+               </div>
+               <div class="input-group mb-3">
+                  <input type="text" class="form-control search-input" id="searchUsername" placeholder="Search by username" {{ count($students) > 0 ? '' : 'disabled' }}>
                </div>
                <div class="row" id="studentList">
                   @if(count($students) > 0)
                   @foreach($students as $student)
-                  <div class="col-md-4 mb-3 universityFilter" data-university="{{ $student->university }}">
+                  <div class="col-md-4 mb-4">
                      <div class="card">
                         <div class="card-body">
-                           <h5 class="card-title">{{ $student->username }}</h5>
-                           <p class="card-text">University: {{ $student->university ? $student->university : 'Not Applicable' }}</p>
-                           <a href="{{ route('user.profile', ['id' => $student->id]) }}" class="btn btn-primary">
+                           <div class="text-center mb-3">
+                              <div class="avatar-wrapper">
+                                 <img src="{{ $student->avatar }}" alt="Avatar" class="avatar-img">
+                              </div>
+                           </div>
+                           <h5 class="card-title text-center">{{ $student->username }}</h5>
+                           <p class="card-text text-center"><strong>Member Since:</strong> {{ \Carbon\Carbon::parse($student->created_at)->isoFormat('Do MMMM YYYY') }}</p>
+                           <a href="{{ route('user.profile', ['id' => $student->id]) }}" class="btn btn-primary btn-block">
                            <i class="fas fa-user"></i> View Profile
                            </a>
                         </div>
                      </div>
                   </div>
                   @endforeach
+                  @else
+                  <div class="col-md-12">
+                     @if($currentUserUniversity)
+                     <div class="alert alert-warning text-center" role="alert">
+                        No students were found from <strong>{{ $currentUserUniversity }}</strong>.
+                     </div>
+                     @else
+                     <div class="alert alert-danger text-center" role="alert">
+                        You need to join a university first before looking for other students. Please update your profile settings.
+                     </div>
+                     @endif
+                  </div>
                   @endif
                </div>
             </div>
          </div>
       </div>
-      @include('layouts.footer')
+      <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
       <script>
          $(document).ready(function(){
              var $noResultsMessage = $('<div class="col-md-12 no-results"><p class="text-center">No results found.</p></div>').hide();
              $('#studentList').append($noResultsMessage);
          
-             $('#searchUsername, #filterUniversity').on('input', function(){
+             $('#searchUsername').on('input', function(){
                  var searchUsername = $('#searchUsername').val().toLowerCase();
-                 var filterUniversity = $('#filterUniversity').val().toLowerCase();
-                 
-                 var resultsFound = false; 
+                 var resultsFound = false;
          
-                 $('.universityFilter').each(function(){
+                 $('.card').each(function(){
                      var username = $(this).find('.card-title').text().toLowerCase();
-                     var university = $(this).data('university').toLowerCase();
          
-                     if(username.includes(searchUsername) && (filterUniversity === '' || university.includes(filterUniversity))){
-                         $(this).show();
-                         resultsFound = true; 
+                     if(username.includes(searchUsername)){
+                         $(this).parent().show();
+                         resultsFound = true;
                      } else {
-                         $(this).hide();
+                         $(this).parent().hide();
                      }
                  });
          
@@ -81,5 +114,6 @@
              });
          });
       </script>
+      @include('layouts.footer')
    </body>
 </html>

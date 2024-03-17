@@ -14,10 +14,21 @@ class UserController extends Controller
     public function index()
     {
         $currentUserId = Auth::id();
-        $students = User::where('role', 'user')->where('id', '!=', $currentUserId)->get();
-        return view('view-students', ['students' => $students]);
-    }    
-
+        $currentUser = User::findOrFail($currentUserId);
+        $currentUserUniversity = $currentUser->university;
+    
+        // Filter students by the same university as the current user
+        $students = User::where('role', 'user')
+                        ->where('university', $currentUserUniversity)
+                        ->where('id', '!=', $currentUserId)
+                        ->get();
+    
+        return view('view-students', [
+            'students' => $students,
+            'currentUserUniversity' => $currentUserUniversity, 
+        ]);
+    }
+       
     public function sendMessage(Request $request, $id)
     {
         $currentUserId = Auth::id();
