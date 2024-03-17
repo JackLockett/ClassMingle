@@ -101,11 +101,11 @@ class FriendController extends Controller
         ]);
     
         $friendRequest = FriendRequest::findOrFail($request->request_id);
-        $friendRequest->status = 'denied';
-        $friendRequest->save();
+        $friendRequest->delete();
     
         return response()->json([], 204);
     }
+    
 
     public function deletePendingRequest(Request $request)
     {
