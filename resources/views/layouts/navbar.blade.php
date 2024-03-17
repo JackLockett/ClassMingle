@@ -113,7 +113,7 @@
                </div>
                @else
                <div class="d-none d-md-inline-block">
-                  <a href="#" class="d-none d-md-inline-block @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
+                  <a href="/faq" class="d-none d-md-inline-block @if(request()->is('faq')) active @endif"><i class="fas fa-question-circle"></i> FAQ</a>
                </div>
                @endif
                @if(Auth::check())

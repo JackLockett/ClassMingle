@@ -37,6 +37,8 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/check-username-availability/{username}', [RegisterController::class, 'checkUsernameAvailability']);
 
+Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+
 Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
     Route::get('/societies/{id}', [SocietyController::class, 'viewSocietyInfo'])->name('view-society');
@@ -51,14 +53,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/societies/{societyId}/posts/{postId}', [SocietyController::class, 'viewPost'])->name('view-post');
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
-
     Route::post('/edit-society/{societyId}', [SocietyController::class, 'editSociety'])->name('edit-society');
     Route::post('/delete-society/{societyId}', [SocietyController::class, 'deleteSociety'])->name('delete-society');
-
     Route::post('/bookmark/{postId}', [SocietyController::class, 'bookmarkPost'])->name('bookmark.post');
     Route::delete('/unbookmark/{postId}', [SocietyController::class, 'unbookmarkPost'])->name('unbookmark.post');
     Route::get('/check-bookmark/{postId}', [SocietyController::class, 'checkBookmark'])->name('check-bookmark');
-
     Route::post('save-comment/{commentId}', [SocietyController::class, 'saveComment'])->name('save-comment');
     Route::delete('/unsave-comment/{commentId}', [SocietyController::class, 'unsaveComment'])->name('unsave-comment');
     Route::delete('/delete-comment/{commentId}', [SocietyController::class, 'deleteComment'])->name('delete-comment');
@@ -76,7 +75,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
     Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
-
     Route::post('/send-message/{id}', [UserController::class, 'sendMessage'])->name('send-message');
     Route::post('/delete-message/{id}', [UserController::class, 'deleteMessage'])->name('delete-message');
 
@@ -84,17 +82,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/send-friend-request', [FriendController::class, 'sendFriendRequest'])->name('sendFriendRequest');
     Route::post('/cancel-friend-request', [FriendController::class, 'cancelFriendRequest'])->name('cancelFriendRequest');
-
     Route::post('/accept-friend-request', [FriendController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
     Route::post('/deny-friend-request', [FriendController::class, 'denyFriendRequest'])->name('denyFriendRequest');
     Route::post('/delete-pending-request', [FriendController::class, 'deletePendingRequest'])->name('delete-pending-request');
-
     Route::post('/remove-friend', [FriendController::class, 'removeFriend'])->name('removeFriend');
     Route::delete('/delete-message/{id}', [ProfileController::class, 'deleteMessage'])->name('delete-message');
-
-    Route::get('/faq', [FaqController::class, 'index'])->name('faq');
-
-
 });
 
 
