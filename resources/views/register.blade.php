@@ -5,20 +5,37 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Register</title>
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <style>
+         .card {
+         border-radius: 15px;
+         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         }
+         .form-group {
+         margin-bottom: 20px;
+         padding: 5px;
+         }
+         #register-button {
+         border-radius: 25px;
+         }
+         #loading {
+         margin-top: 20px;
+         }
+         @media (max-width: 576px) {
+         .col-md-6 {
+         max-width: 100%;
+         }
+         }
+      </style>
    </head>
    <body>
       @include('layouts.navbar')
-      <div class="container mt-3">
+      <div class="container mt-5">
          <div class="row justify-content-center">
-            <div class="col-md-6 mx-auto">
+            <div class="col-md-6">
                <div class="card">
                   <div class="card-header">Register</div>
                   <div class="card-body">
-                     <form method="POST" action="{{ route('register') }}">
+                     <form method="POST" action="{{ route('register') }}" id="register-form">
                         @csrf
                         <div class="form-group row">
                            <label for="email" class="col-md-3 col-form-label">Email</label>
@@ -39,6 +56,9 @@
                                  <button type="button" id="generateButton" class="btn btn-outline-success" onclick="generateUsername()">Generate</button>
                               </div>
                               @error('username')
+                              <span class="invalid-feedback" role="alert">
+                              <strong>{{ $message }}</strong>
+                              </span>
                               @enderror
                            </div>
                         </div>
@@ -53,21 +73,16 @@
                               @enderror
                            </div>
                         </div>
-                        <div class="form-group row">
-                           <div class="col-md-12 text-md-right">
-                              <div class="form-check">
-                                 <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                 <label class="form-check-label" for="remember">
-                                 Automatically Login
-                                 </label>
-                              </div>
-                           </div>
-                        </div>
                         <div class="form-group row mb-0">
                            <div class="col-md-12">
-                              <button type="submit" class="btn btn-block btn-success">
+                              <button type="submit" id="register-button" class="btn btn-block btn-success">
                               Register
                               </button>
+                              <div id="loading" class="text-center" style="display: none;">
+                                 <div class="spinner-border text-success" role="status">
+                                    <span class="sr-only"></span>
+                                 </div>
+                              </div>
                               <hr>
                               <a href="/login" class="btn btn-block btn-link">
                               Already Have An Account?
@@ -80,6 +95,8 @@
             </div>
          </div>
       </div>
+      @include('layouts.footer')
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
       <script>
          function generateUsername() {
              var generateButton = document.getElementById('generateButton');
@@ -133,6 +150,20 @@
              }
          }
       </script>
-      @include('layouts.footer')
+      <script>
+         document.addEventListener("DOMContentLoaded", function () {
+             const registerForm = document.getElementById("register-form");
+             const loading = document.getElementById("loading");
+             const registerButton = document.getElementById("register-button");
+         
+             // Enable the login button on page load
+             registerButton.disabled = false;
+         
+             registerForm.addEventListener("submit", function () {
+                 loading.style.display = "block"; // Show loading animation
+                 registerButton.disabled = true; // Disable the login button
+             });
+         });
+      </script>
    </body>
 </html>

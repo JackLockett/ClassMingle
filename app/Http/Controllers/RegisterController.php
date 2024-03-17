@@ -38,7 +38,7 @@ class RegisterController extends Controller
 
         $user->save();
 
-        return redirect()->route('login')->with('success', 'Registration successful! Please login.');
+        return redirect()->route('login')->with('success', 'Registration successful! You can now login!');
     }
 
     public function checkUsernameAvailability($username)
