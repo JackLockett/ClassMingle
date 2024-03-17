@@ -116,7 +116,7 @@
                         <i class="fas fa-user-plus"></i> Send Request
                         @endif
                         </button>
-                        <button data-toggle="modal" data-target="#sendMessageModal" class="btn btn-info" @if($student->id === Auth::id()) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
+                        <button data-toggle="modal" data-target="#sendMessageModal" class="btn btn-info" @if(!$isFriend) disabled style="opacity: 0.6; pointer-events: none; background-color: #dcdcdc; border-color: #c0c0c0; color: #6c757d;" @endif>
                         <i class="far fa-envelope"></i> Send Message
                         </button>
                      </div>
