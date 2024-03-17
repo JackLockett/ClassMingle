@@ -59,6 +59,14 @@ class FriendController extends Controller
     
         $friendRequest = FriendRequest::findOrFail($request->friend_request_id);
     
+        $friendRequests = FriendRequest::whereIn('sender_id', [$friendRequest->sender_id, $friendRequest->receiver_id])
+            ->whereIn('receiver_id', [$friendRequest->sender_id, $friendRequest->receiver_id])
+            ->get();
+    
+        foreach ($friendRequests as $request) {
+            $request->delete();
+        }
+    
         $existingFriendship = Friendship::where(function ($query) use ($friendRequest) {
             $query->where('user_id', $friendRequest->sender_id)
                 ->where('friend_id', $friendRequest->receiver_id);
@@ -83,8 +91,6 @@ class FriendController extends Controller
             'status' => 'accepted',
         ]);
     
-        $friendRequest->delete();
-    
         return response()->json(['message' => 'Friend request accepted successfully']);
     }
     
@@ -100,6 +106,19 @@ class FriendController extends Controller
     
         return response()->json([], 204);
     }
+
+    public function deletePendingRequest(Request $request)
+    {
+        $request->validate([
+            'request_id' => 'required|exists:friend_requests,id',
+        ]);
+    
+        $friendRequest = FriendRequest::findOrFail($request->request_id);
+        $friendRequest->delete(); // Delete the friend request
+    
+        return response()->json([], 204);
+    }
+    
     
     public function removeFriend(Request $request)
     {

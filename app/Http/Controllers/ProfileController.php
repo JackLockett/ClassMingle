@@ -19,19 +19,27 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $userId = Auth::user()->id;
-        $friendRequests = FriendRequest::where('receiver_id', $user->id)->where('status', 'pending')->get();
+    
+        $receivedFriendRequests = FriendRequest::where('receiver_id', $user->id)
+            ->where('status', 'pending')
+            ->get();
+    
+        $sentFriendRequests = FriendRequest::where('sender_id', $user->id)
+            ->where('status', 'pending')
+            ->get();
+    
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
         $receivedMessages = Message::where('receiverId', $user->id)->get();
-        $sentMessages = Message::where('senderId', $user->id)->get(); 
+        $sentMessages = Message::where('senderId', $user->id)->get();
         $joinedSocieties = Society::getSocietiesForUser($user->id);
         $friends = $user->friends;
-
+    
         $ukUniversities = [
             'Sheffield Hallam University',
-            'Unviersity of Sheffield',
+            'University of Sheffield',
         ];
-
+    
         return view('profile', [
             'userId' => $userId,
             'email' => $user->email,
@@ -42,12 +50,14 @@ class ProfileController extends Controller
             'bookmarks' => $bookmarks,
             'comments' => $savedComments,
             'joinedSocieties' => $joinedSocieties,
-            'friendRequests' => $friendRequests,
+            'receivedFriendRequests' => $receivedFriendRequests,
+            'sentFriendRequests' => $sentFriendRequests,
             'friends' => $friends,
             'receivedMessages' => $receivedMessages,
             'sentMessages' => $sentMessages,
         ]);
     }
+    
 
     public function updateProfile(Request $request)
     {

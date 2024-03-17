@@ -83,7 +83,7 @@
                   </li>
                   <hr>
                   <li class="nav-item">
-                     <a class="nav-link notification-badge" id="friend-requests-tab" data-toggle="pill" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests <span class="badge">{{ count($friendRequests) }}</span></a>
+                     <a class="nav-link notification-badge" id="friend-requests-tab" data-toggle="pill" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests <span class="badge">{{ count($receivedFriendRequests) }}</span></a>
                   </li>
                   <li class="nav-item">
                      <a class="nav-link notification-badge" id="messages-tab" data-toggle="pill" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages <span class="badge">{{ count($receivedMessages) }}</span></a>
@@ -358,32 +358,113 @@
                   <div class="tab-pane fade" id="friend-requests" role="tabpanel" aria-labelledby="friend-requests-tab">
                      <div class="card">
                         <div class="card-header bg-secondary text-white">
-                           <h5 class="mb-0">Friend Requests - {{ count($friendRequests) }}</h5>
+                           <h5 class="mb-0">Friend Requests - {{ count($receivedFriendRequests) }}</h5>
                         </div>
                         <div class="card-body">
-                           @if(count($friendRequests) > 0)
-                           <table class="table">
-                              <thead>
-                                 <tr>
-                                    <th>Username</th>
-                                    <th>Action</th>
-                                 </tr>
-                              </thead>
-                              <tbody>
-                                 @foreach($friendRequests as $request)
-                                 <tr>
-                                    <td>{{ $request->sender->username ?? '' }}</td>
-                                    <td>
-                                       <button class="btn btn-success" onclick="acceptFriendRequest({{ $request->id }})"><i class="fas fa-check"></i> Accept</button>
-                                       <button class="btn btn-danger" onclick="denyFriendRequest({{ $request->id }})"><i class="fas fa-times"></i> Deny</button>
-                                    </td>
-                                 </tr>
-                                 @endforeach
-                              </tbody>
-                           </table>
-                           @else
-                           <p class="text-muted">You have no friend requests right now.</p>
-                           @endif
+                           <ul class="nav nav-tabs" id="friendRequestTabs" role="tablist">
+                              <li class="nav-item">
+                                 <a class="nav-link active" id="received-requests-tab" data-toggle="tab" href="#received-requests" role="tab" aria-controls="received-requests" aria-selected="true">Received</a>
+                              </li>
+                              <li class="nav-item">
+                                 <a class="nav-link" id="sent-requests-tab" data-toggle="tab" href="#sent-requests" role="tab" aria-controls="sent-requests" aria-selected="false">Sent</a>
+                              </li>
+                           </ul>
+                           <br>
+                           <div class="tab-content" id="friendRequestTabsContent">
+                              <div class="tab-pane fade show active" id="received-requests" role="tabpanel" aria-labelledby="received-requests-tab">
+                                 @if(count($receivedFriendRequests) > 0)
+                                 <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                       <thead class="thead-light">
+                                          <tr>
+                                             <th>From</th>
+                                             <th>Action</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          @foreach($receivedFriendRequests as $request)
+                                          <tr>
+                                             <td>{{ $request->sender->username ?? '' }}</td>
+                                             <td>
+                                                <button class="btn btn-success" onclick="acceptFriendRequest({{ $request->id }})"><i class="fas fa-check"></i> Accept</button>
+                                                <button class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteReceivedFriendRequest{{$request->id}}"><i class="fas fa-times"></i> Deny</button>
+                                                <!-- Modal for Confirming Received Friend Request Denial -->
+                                                <div class="modal fade" id="confirmDeleteReceivedFriendRequest{{$request->id}}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteReceivedFriendRequestLabel{{$request->id}}" aria-hidden="true">
+                                                   <div class="modal-dialog modal-lg" role="document">
+                                                      <div class="modal-content">
+                                                         <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteReceivedFriendRequestLabel{{$request->id}}">Confirm Deny Friend Request</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                         </div>
+                                                         <div class="modal-body">
+                                                            <p>Are you sure you want to deny this friend request?</p>
+                                                         </div>
+                                                         <div class="modal-footer">
+                                                            <button class="btn btn-danger" onclick="denyFriendRequest({{ $request->id }})"><i class="fas fa-times"></i> Deny</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </td>
+                                          </tr>
+                                          @endforeach
+                                       </tbody>
+                                    </table>
+                                 </div>
+                                 @else
+                                 <p class="text-muted">You have no received friend requests right now.</p>
+                                 @endif
+                              </div>
+                              <div class="tab-pane fade" id="sent-requests" role="tabpanel" aria-labelledby="sent-requests-tab">
+                                 @if(count($sentFriendRequests) > 0)
+                                 <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                       <thead class="thead-light">
+                                          <tr>
+                                             <th>To</th>
+                                             <th>Action</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          @foreach($sentFriendRequests as $request)
+                                          <tr>
+                                             <td>{{ $request->receiver->username ?? '' }}</td>
+                                             <td>
+                                                <button class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteSentFriendRequest{{$request->id}}"><i class="fas fa-trash"></i> Delete</button>
+                                                <!-- Modal for Confirming Sent Friend Request Deletion -->
+                                                <div class="modal fade" id="confirmDeleteSentFriendRequest{{$request->id}}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteSentFriendRequestLabel{{$request->id}}" aria-hidden="true">
+                                                   <div class="modal-dialog modal-lg" role="document">
+                                                      <div class="modal-content">
+                                                         <div class="modal-header">
+                                                            <h5 class="modal-title" id="confirmDeleteSentFriendRequestLabel{{$request->id}}">Confirm Delete Sent Friend Request</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                         </div>
+                                                         <div class="modal-body">
+                                                            <p>Are you sure you want to delete this sent friend request?</p>
+                                                         </div>
+                                                         <div class="modal-footer">
+                                                            <button class="btn btn-danger" onclick="deletePendingRequest({{ $request->id }})"><i class="fas fa-trash"></i> Delete</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                </div>
+                                             </td>
+                                          </tr>
+                                          @endforeach
+                                       </tbody>
+                                    </table>
+                                 </div>
+                                 @else
+                                 <p class="text-muted">You have no sent friend requests right now.</p>
+                                 @endif
+                              </div>
+                           </div>
                         </div>
                      </div>
                   </div>
@@ -556,6 +637,24 @@
                   }
             });
          }
+         
+         function deletePendingRequest(requestId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("delete-pending-request") }}', 
+               data: {
+                     '_token': '{{ csrf_token() }}',
+                     'request_id': requestId.toString() 
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         }
+         
          
          function removeFriend(friendId) {
             $.ajax({
