@@ -18,7 +18,7 @@
          border-radius: 25px;
          }
          .nav-pills .nav-link.active {
-         background-color: #007bff;
+         background-color: #23426d;
          color: #fff;
          }
          .card {
@@ -61,7 +61,7 @@
          </div>
          <div class="row mt-4">
             <div class="col-md-12">
-               <a href="{{ route('user.profile', ['id' => Auth::id()]) }}" class="btn btn-info btn-sm mb-3">
+               <a href="{{ route('user.profile', ['id' => Auth::id()]) }}" class="btn btn-primary mb-3">
                <i class="fas fa-user"></i> View Public Profile
                </a>
                <br><br>
@@ -96,7 +96,7 @@
                <div class="tab-content" id="pills-tabContent">
                   <div class="tab-pane fade show active" id="profile-settings" role="tabpanel" aria-labelledby="profile-settings-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">Profile Settings</h5>
                         </div>
                         <div class="card-body">
@@ -159,7 +159,7 @@
                   </div>
                   <div class="tab-pane fade" id="my-societies" role="tabpanel" aria-labelledby="my-societies-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">My Societies - {{ $joinedSocieties->count() }}</h5>
                         </div>
                         <div class="card-body">
@@ -199,7 +199,7 @@
                   </div>
                   <div class="tab-pane fade" id="bookmarked-posts" role="tabpanel" aria-labelledby="bookmarked-posts-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">Bookmarked Posts - {{ $bookmarks->count() }}</h5>
                         </div>
                         <div class="card-body">
@@ -251,7 +251,7 @@
                   </div>
                   <div class="tab-pane fade" id="saved-comments" role="tabpanel" aria-labelledby="saved-comments-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">Saved Comments - {{ $comments->count() }}</h5>
                         </div>
                         <div class="card-body">
@@ -303,7 +303,7 @@
                   </div>
                   <div class="tab-pane fade" id="friends" role="tabpanel" aria-labelledby="friends-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">My Friends - {{ $friends->count() }}</h5>
                         </div>
                         <div class="card-body">
@@ -357,7 +357,7 @@
                   </div>
                   <div class="tab-pane fade" id="friend-requests" role="tabpanel" aria-labelledby="friend-requests-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">Friend Requests - {{ count($receivedFriendRequests) }}</h5>
                         </div>
                         <div class="card-body">
@@ -470,7 +470,7 @@
                   </div>
                   <div class="tab-pane fade" id="messages" role="tabpanel" aria-labelledby="messages-tab">
                      <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header" style="background-color: #23426d; color: white;">
                            <h5 class="mb-0">Messages</h5>
                         </div>
                         <div class="card-body">
