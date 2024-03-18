@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,10 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/check-username-availability/{username}', [RegisterController::class, 'checkUsernameAvailability']);
 
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin-panel');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  

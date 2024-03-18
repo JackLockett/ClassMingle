@@ -129,16 +129,26 @@
                   My Account
                   </button>
                   <div class="dropdown-menu">
-                     <h6 class="dropdown-header">Profile</h6>
+                     @php
+                     $isAdmin = (Auth::check() && Auth::user()->role == 'admin');
+                     @endphp
+                     <h6 class="dropdown-header">{{ $isAdmin ? 'Admin Profile' : 'Profile' }}</h6>
+                     @if($isAdmin)
+                     <button type="button" class="dropdown-item admin-panel-btn" onclick="redirectToAdmin()">
+                     <i class="fas fa-cogs mr-1"></i> 
+                     <span class="admin-panel-text" style="color: darkred;"><strong>Admin Panel</strong></span>
+                     </button>
+                     <div class="dropdown-divider"></div>
+                     @endif
                      <button type="button" class="dropdown-item" onclick="redirectToProfile()">
-                     <i class="fas fa-eye"></i> View Profile
+                     <i class="fas fa-eye mr-1"></i> View Profile
                      </button>
                      <div class="dropdown-divider"></div>
                      <button type="button" class="dropdown-item" onclick="redirectToAccount()">
-                     <i class="fas fa-user"></i> My Account
+                     <i class="fas fa-user mr-1"></i> My Account
                      </button>
                      <button id="logout-button" type="submit" class="dropdown-item">
-                     <i class="fas fa-sign-out-alt"></i> Log Out
+                     <i class="fas fa-sign-out-alt mr-1"></i> Log Out
                      </button>
                   </div>
                </div>
@@ -226,6 +236,10 @@
          
          function redirectToProfile() {
              window.location.href = "/profile";
+         };
+         
+         function redirectToAdmin() {
+             window.location.href = "/admin-panel";
          };
          
       </script>
