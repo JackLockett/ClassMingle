@@ -135,7 +135,7 @@
                      <h6 class="dropdown-header">{{ $isAdmin ? 'Admin Profile' : 'Profile' }}</h6>
                      @if($isAdmin)
                      <button type="button" class="dropdown-item admin-panel-btn" onclick="redirectToAdmin()">
-                     <i class="fas fa-cogs mr-1"></i> 
+                     <i class="fas fa-user-shield mr-1"></i> 
                      <span class="admin-panel-text" style="color: darkred;"><strong>Admin Panel</strong></span>
                      </button>
                      <div class="dropdown-divider"></div>

@@ -42,6 +42,7 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin-panel');
+    Route::post('/admin/update-user/{id}', [AdminController::class, 'updateUser'])->name('update-user');
 });
 
 Route::middleware('auth')->group(function () {
