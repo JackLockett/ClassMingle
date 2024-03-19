@@ -79,6 +79,28 @@
                   </div>
                   @endif
                </div>
+               <div class="row justify-content-center">
+                  <div class="col-md-12">
+                     <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                           {{-- Previous Page Link --}}
+                           <li class="page-item {{ $students->onFirstPage() ? 'disabled' : '' }}">
+                              <a class="page-link" href="{{ $students->previousPageUrl() }}" aria-label="Previous">Previous</a>
+                           </li>
+                           {{-- Pagination Elements --}}
+                           @for ($i = 1; $i <= $students->lastPage(); $i++)
+                           <li class="page-item {{ $i === $students->currentPage() ? 'active' : '' }}">
+                              <a class="page-link" href="{{ $students->url($i) }}">{{ $i }}</a>
+                           </li>
+                           @endfor
+                           {{-- Next Page Link --}}
+                           <li class="page-item {{ $students->hasMorePages() ? '' : 'disabled' }}">
+                              <a class="page-link" href="{{ $students->nextPageUrl() }}" aria-label="Next">Next</a>
+                           </li>
+                        </ul>
+                     </nav>
+                  </div>
+               </div>
             </div>
          </div>
       </div>

@@ -59,6 +59,21 @@
                <!-- <h3 class="text-center">My Profile</h3> -->
             </div>
          </div>
+         @if (session('success'))
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         @endif
+         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
+            });
+         </script>
          <div class="row mt-4">
             <div class="col-md-12">
                <a href="{{ route('user.profile', ['id' => Auth::id()]) }}" class="btn btn-primary mb-3">
@@ -135,7 +150,7 @@
                               @csrf
                               <div class="form-group">
                                  <label for="bio">Bio:</label>
-                                 <textarea class="form-control" id="bio" name="bio" rows="3" <?php if (empty($bio)) echo 'placeholder="You don\'t have a bio. Add one now!"'; ?>><?php echo $bio; ?></textarea>
+                                 <textarea class="form-control" id="bio" name="bio" rows="3" style="height: 100px; resize: none;" maxlength="250" <?php if (empty($bio)) echo 'placeholder="You don\'t have a bio. Add one now!"'; ?>><?php echo $bio; ?></textarea>
                               </div>
                               <div class="form-group">
                                  <label for="university">University:</label>
@@ -611,7 +626,6 @@
                      'friend_request_id': friendRequestId
                },
                success: function(response) {
-                     alert('Friend request accepted successfully');
                      location.reload();
                },
                error: function(xhr, status, error) {
@@ -689,6 +703,13 @@
             });
          } 
          
+      </script>
+      <script>
+         document.getElementById('bio').addEventListener('input', function() {
+            if (this.value.length > 250) {
+               this.value = this.value.slice(0, 250);
+            }
+         });
       </script>
       @include('layouts.footer')
    </body>

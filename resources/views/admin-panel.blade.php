@@ -5,6 +5,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Admin Panel</title>
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
    </head>
    <body>
       @include('layouts.navbar')
@@ -13,7 +14,7 @@
             <i class="fas fa-user-shield"></i> Admin Panel
          </h2>
          @if (session('success'))
-         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated animate__fadeOutUp" role="alert">
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -22,9 +23,9 @@
          @endif
          <script>
             document.addEventListener("DOMContentLoaded", function() {
-                setTimeout(function() {
-                    $('#successAlert').alert('close');
-                }, 5000);
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
             });
          </script>
          <!-- Bootstrap Pills -->
@@ -35,13 +36,16 @@
             <li class="nav-item">
                <a class="nav-link" id="pills-societies-tab" data-toggle="pill" href="#pills-societies" role="tab" aria-controls="pills-societies" aria-selected="false">Active Societies</a>
             </li>
+            <hr>
+            <li class="nav-item">
+               <a class="nav-link" id="pills-approve-societies-tab" data-toggle="pill" href="#pills-approve-societies" role="tab" aria-controls="pills-approve-societies" aria-selected="false">Pending Societies</a>
+            </li>
          </ul>
          <!-- Tab Content -->
          <div class="tab-content" id="pills-tabContent">
             <!-- Users Tab -->
             <div class="tab-pane fade show active" id="pills-users" role="tabpanel" aria-labelledby="pills-users-tab">
                <div class="row">
-                  <!-- Filter by University -->
                   <div class="col-md-6 mb-3">
                      <select class="form-control" id="universityFilter">
                         <option value="">All Universities</option>
@@ -50,25 +54,23 @@
                         @endforeach
                      </select>
                   </div>
-                  <!-- Search by Username -->
                   <div class="col-md-6 mb-3 d-flex flex-column flex-md-row">
                      <input class="form-control mr-sm-2 mb-2 mb-md-0" type="search" placeholder="Search by Username" aria-label="Search" id="searchInput">
                      <button class="btn btn-outline-primary my-2 my-md-0 ml-md-2" type="button" id="searchButton">Search</button>
                   </div>
-                  <!-- User Cards -->
+                  @if(count($users) > 0)
                   @foreach($users as $user)
                   <div class="col-md-6">
                      <div class="card mb-3">
                         <div class="card-body">
                            <h5 class="card-title">{{ $user->username }}</h5>
                            <p class="card-text">University: {{ $user->university ? $user->university : 'Not Applicable' }}</p>
-                           <button class="btn btn-primary view-details-button" data-toggle="modal" data-target="#userDetailsModal{{ $user->id }}">
-                           <i class="fas fa-info-circle"></i> View Details
+                           <button class="btn btn-info view-details-button" data-toggle="modal" data-target="#userDetailsModal{{ $user->id }}">
+                           <i class="fas fa-info-circle"></i> View User Details
                            </button>
                         </div>
                      </div>
                   </div>
-                  <!-- User Details Modal -->
                   <div class="modal fade" id="userDetailsModal{{ $user->id }}" tabindex="-1" role="dialog" aria-labelledby="userDetailsModalLabel{{ $user->id }}" aria-hidden="true">
                      <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
@@ -82,7 +84,6 @@
                               </button>
                            </div>
                            <div class="modal-body">
-                              <!-- Form for updating user details -->
                               <form action="{{ route('update-user', ['id' => $user->id]) }}" method="POST">
                                  @csrf
                                  <div class="form-group">
@@ -99,7 +100,7 @@
                                  </div>
                                  <div class="form-group">
                                     <label for="bio">Bio:</label>
-                                    <textarea class="form-control" name="bio" id="bio{{ $user->id }}">{{ $user->bio }}</textarea>
+                                    <textarea class="form-control" name="bio" id="bio{{ $user->id }}" rows="3" style="height: 100px; resize: none;" maxlength="250" placeholder="This user doesn't have a bio.">{{ $user->bio }}</textarea>
                                  </div>
                                  <div class="form-group">
                                     <label for="role">Role:</label>
@@ -109,7 +110,9 @@
                                     </select>
                                  </div>
                                  <div class="d-flex justify-content-between">
-                                    <button type="button" class="btn btn-danger" id="deleteAccount{{ $user->id }}"><i class="fas fa-trash"></i> Delete Account</button>
+                                    <button type="button" class="btn btn-danger" onclick="deleteAccount({{ $user->id }})">
+                                    <i class="fas fa-trash"></i> Delete Account
+                                    </button>
                                     <div>
                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
                                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
@@ -121,20 +124,163 @@
                      </div>
                   </div>
                   @endforeach
+                  @else
+                  <div class="col-md-12 mt-4">
+                     <p class="text-center">No users found.</p>
+                  </div>
+                  @endif
                </div>
             </div>
             <!-- Societies Tab -->
             <div class="tab-pane fade" id="pills-societies" role="tabpanel" aria-labelledby="pills-societies-tab">
                <div class="row">
+                  <div class="col-md-6 mb-3">
+                     <select class="form-control" id="categoryFilter">
+                        <option value="">All Types</option>
+                        @foreach($societyTypes as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                     </select>
+                  </div>
+                  <div class="col-md-6 mb-3 d-flex flex-column flex-md-row">
+                     <input class="form-control mr-sm-2 mb-2 mb-md-0" type="search" placeholder="Search by Society Name" aria-label="Search" id="societySearchInput">
+                     <button class="btn btn-outline-primary my-2 my-md-0 ml-md-2" type="button" id="societySearchButton">Search</button>
+                  </div>
+                  @if(count($societies) > 0)
+                  @foreach($societies as $society)
                   <div class="col-md-6">
-                     <div class="card">
+                     <div class="card mb-3">
                         <div class="card-body">
-                           <h5 class="card-title">View Societies</h5>
-                           <p class="card-text">Browse existing societies.</p>
-                           <a href="/admin/view-societies" class="btn btn-primary">Go to Societies</a>
+                           <h5 class="card-title">{{ $society->societyName }}</h5>
+                           <p class="card-text">Type: {{ $society->societyType ? $society->societyType : 'Not Specified' }}</p>
+                           <button class="btn btn-info view-details-button" data-toggle="modal" data-target="#societyDetailsModal{{ $society->id }}">
+                           <i class="fas fa-info-circle"></i> View Society Details
+                           </button>
                         </div>
                      </div>
                   </div>
+                  <div class="modal fade" id="societyDetailsModal{{ $society->id }}" tabindex="-1" role="dialog" aria-labelledby="societyDetailsModalLabel{{ $society->id }}" aria-hidden="true">
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <div class="d-flex align-items-center">
+                                 <h5 class="modal-title" id="societyDetailsModalLabel{{ $society->id }}">Society Details</h5>
+                              </div>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body">
+                              <form action="{{ route('update-society', ['id' => $society->id]) }}" method="POST">
+                                 @csrf
+                                 <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <input type="text" class="form-control" id="name{{ $society->id }}" value="{{ $society->societyName }}" readonly>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="category">Type:</label>
+                                    <input readonly type="text" class="form-control" id="category{{ $society->id }}" value="{{ $society->societyType }}">
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <textarea class="form-control" name="description" id="description{{ $society->id }}" rows="3" style="height: 100px; resize: none;" maxlength="250" placeholder="This society doesn't have a description.">{{ $society->societyDescription }}</textarea>
+                                 </div>
+                                 <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" onclick="deleteSociety({{ $society->id }})">
+                                    <i class="fas fa-trash"></i> Delete Society
+                                    </button>
+                                    <div>
+                                       <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                                       <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
+                                    </div>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  @endforeach
+                  @else
+                  <div class="col-md-12 mt-4">
+                     <p class="text-center">No societies found.</p>
+                  </div>
+                  @endif
+               </div>
+            </div>
+            <!-- Approve Societies Tab -->
+            <div class="tab-pane fade" id="pills-approve-societies" role="tabpanel" aria-labelledby="pills-approve-societies-tab">
+               <div class="row">
+                  <div class="col-md-6 mb-3">
+                     <select class="form-control" id="approveCategoryFilter">
+                        <option value="">All Types</option>
+                        @foreach($societyTypes as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                     </select>
+                  </div>
+                  <div class="col-md-6 mb-3 d-flex flex-column flex-md-row">
+                     <input class="form-control mr-sm-2 mb-2 mb-md-0" type="search" placeholder="Search by Society Name" aria-label="Search" id="approveSocietySearchInput">
+                     <button class="btn btn-outline-primary my-2 my-md-0 ml-md-2" type="button" id="approveSocietySearchButton">Search</button>
+                  </div>
+                  @if(count($pendingSocieties) > 0)
+                  @foreach($pendingSocieties as $society)
+                  <div class="col-md-6">
+                     <div class="card mb-3">
+                        <div class="card-body">
+                           <h5 class="card-title">{{ $society->societyName }}</h5>
+                           <p class="card-text">Type: {{ $society->societyType ? $society->societyType : 'Not Specified' }}</p>
+                           <button class="btn btn-info view-details-button" data-toggle="modal" data-target="#societyDetailsModal{{ $society->id }}">
+                           <i class="fas fa-info-circle"></i> View Society Details
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="modal fade" id="societyDetailsModal{{ $society->id }}" tabindex="-1" role="dialog" aria-labelledby="societyDetailsModalLabel{{ $society->id }}" aria-hidden="true">
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <div class="d-flex align-items-center">
+                                 <h5 class="modal-title" id="societyDetailsModalLabel{{ $society->id }}">Society Details</h5>
+                              </div>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body">
+                              <form action="{{ route('accept-society', ['id' => $society->id]) }}" method="POST">
+                                 @csrf
+                                 <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <input type="text" class="form-control" id="name{{ $society->id }}" value="{{ $society->societyName }}" readonly>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="category">Type:</label>
+                                    <input readonly type="text" class="form-control" id="category{{ $society->id }}" value="{{ $society->societyType }}">
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <textarea class="form-control" name="description" id="description{{ $society->id }}" rows="3" style="height: 100px; resize: none;" maxlength="250" placeholder="This society doesn't have a description." readonly>{{ $society->societyDescription }}</textarea>
+                                 </div>
+                                 <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-danger" onclick="denySociety({{ $society->id }})">
+                                    <i class="fas fa-ban"></i> Deny Society
+                                    </button>
+                                    <div>
+                                       <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+                                       <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Accept Society</button>
+                                    </div>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  @endforeach
+                  @else
+                  <div class="col-md-12 mt-4">
+                     <p class="text-center">No pending societies found.</p>
+                  </div>
+                  @endif
                </div>
             </div>
          </div>
@@ -175,6 +321,138 @@
                      }
                  });
              });
+      </script>
+      <script>
+         $(document).ready(function() {
+         $('.view-details-button').click(function() {
+            var societyId = $(this).data('societyid');
+            $('#societyDetailsModal' + societyId).modal('show');
+         });
+         
+         document.getElementById('societySearchButton').addEventListener('click', function() {
+            var categoryFilter = document.getElementById('categoryFilter').value;
+            var societySearchTerm = document.getElementById('societySearchInput').value.trim().toLowerCase();
+            var societyCards = document.querySelectorAll('.card');
+            societyCards.forEach(function(card) {
+                  var cardTitleElement = card.querySelector('.card-body .card-title');
+                  var cardCategoryElement = card.querySelector('.card-body .card-text:nth-of-type(1)');
+                  if (cardTitleElement && cardCategoryElement) {
+                     var cardTitle = cardTitleElement.textContent.toLowerCase();
+                     var cardCategory = cardCategoryElement.textContent.trim().toLowerCase();
+                     var categoryMatches = categoryFilter === '' || cardCategory.includes(categoryFilter.toLowerCase());
+                     var searchTermMatches = cardTitle.includes(societySearchTerm);
+                     if (categoryMatches && searchTermMatches) {
+                        card.closest('.col-md-6').style.display = 'block';
+                     } else {
+                        card.closest('.col-md-6').style.display = 'none';
+                     }
+                  } else {
+                     console.error("Card title or category element not found!");
+                  }
+            });
+         });
+         });
+      </script>
+      <script>
+         $(document).ready(function() {
+             $('.view-details-button').click(function() {
+                 var societyId = $(this).data('societyid');
+                 $('#societyDetailsModal' + societyId).modal('show');
+             });
+         
+             document.getElementById('approveSocietySearchButton').addEventListener('click', function() {
+                 var categoryFilter = document.getElementById('approveCategoryFilter').value;
+                 var societySearchTerm = document.getElementById('approveSocietySearchInput').value.trim().toLowerCase();
+                 var societyCards = document.querySelectorAll('.card');
+                 societyCards.forEach(function(card) {
+                     var cardTitleElement = card.querySelector('.card-body .card-title');
+                     var cardCategoryElement = card.querySelector('.card-body .card-text:nth-of-type(1)');
+                     if (cardTitleElement && cardCategoryElement) {
+                         var cardTitle = cardTitleElement.textContent.toLowerCase();
+                         var cardCategory = cardCategoryElement.textContent.trim().toLowerCase();
+                         var categoryMatches = categoryFilter === '' || cardCategory.includes(categoryFilter.toLowerCase());
+                         var searchTermMatches = cardTitle.includes(societySearchTerm);
+                         if (categoryMatches && searchTermMatches) {
+                             card.closest('.col-md-6').style.display = 'block';
+                         } else {
+                             card.closest('.col-md-6').style.display = 'none';
+                         }
+                     } else {
+                         console.error("Card title or category element not found!");
+                     }
+                 });
+             });
+         });
+      </script>
+      <script>
+         function deleteSociety(id) {
+             if (confirm("Are you sure you want to delete this society?")) {
+                 var url = '/admin/delete-society/' + id;
+                 
+                 var form = document.createElement('form');
+                 form.method = 'POST';
+                 form.action = url;
+         
+                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                 var csrfInput = document.createElement('input');
+                 csrfInput.setAttribute('type', 'hidden');
+                 csrfInput.setAttribute('name', '_token');
+                 csrfInput.setAttribute('value', csrfToken);
+         
+                 form.appendChild(csrfInput);
+                 document.body.appendChild(form);
+                 form.submit();
+             }
+         }
+      </script>
+      <script>
+         function deleteAccount(id) {
+             if (confirm("Are you sure you want to delete this account?")) {
+                 var url = '/admin/delete-user/' + id;
+                 
+                 var form = document.createElement('form');
+                 form.method = 'POST';
+                 form.action = url;
+         
+                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                 var csrfInput = document.createElement('input');
+                 csrfInput.setAttribute('type', 'hidden');
+                 csrfInput.setAttribute('name', '_token');
+                 csrfInput.setAttribute('value', csrfToken);
+         
+                 form.appendChild(csrfInput);
+                 document.body.appendChild(form);
+                 form.submit();
+             }
+         }
+      </script>
+      <script>
+         function denySociety(id) {
+             if (confirm("Are you sure you want to deny this society?")) {
+                 var url = '/admin/deny-society/' + id;
+                 
+                 var form = document.createElement('form');
+                 form.method = 'POST';
+                 form.action = url;
+         
+                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                 var csrfInput = document.createElement('input');
+                 csrfInput.setAttribute('type', 'hidden');
+                 csrfInput.setAttribute('name', '_token');
+                 csrfInput.setAttribute('value', csrfToken);
+         
+                 form.appendChild(csrfInput);
+                 document.body.appendChild(form);
+                 form.submit();
+             }
+         }
+      </script>
+      <script>
+         document.getElementById('bio{{ $user->id }}').addEventListener('input', function() {
+            if (this.value.length > 250) {
+               this.value = this.value.slice(0, 250);
+            }
+         });
       </script>
    </body>
 </html>

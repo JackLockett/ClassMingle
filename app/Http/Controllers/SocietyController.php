@@ -9,15 +9,18 @@ use App\Models\Comment;
 use App\Models\Bookmark;
 use App\Models\SavedComment;
 
+use Illuminate\Support\Facades\DB;
+
 class SocietyController extends Controller
 {
     public function index()
     {
-        $academicSocieties = Society::where('societyType', 'Academic')->where('approved', 1)->get();
-        $socialSocieties = Society::where('societyType', 'Social')->where('approved', 1)->get();
-
+        $academicSocieties = DB::table('societies')->where('societyType', 'Academic')->where('approved', 1)->paginate(6, ['*'], 'academic_page');
+        $socialSocieties = DB::table('societies')->where('societyType', 'Social')->where('approved', 1)->paginate(6, ['*'], 'social_page');
+    
         return view('societies', compact('academicSocieties', 'socialSocieties'));
     }
+    
 
     public function viewSocietyInfo($id)
     {

@@ -21,7 +21,7 @@ class UserController extends Controller
         $students = User::where('role', 'user')
                         ->where('university', $currentUserUniversity)
                         ->where('id', '!=', $currentUserId)
-                        ->get();
+                        ->paginate(9);
     
         return view('view-students', [
             'students' => $students,

@@ -43,6 +43,11 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin-panel');
     Route::post('/admin/update-user/{id}', [AdminController::class, 'updateUser'])->name('update-user');
+    Route::post('/admin/delete-user/{id}', [AdminController::class, 'deleteUser'])->name('delete-user');
+    Route::post('/admin/update-society/{id}', [AdminController::class, 'updateSociety'])->name('update-society');
+    Route::post('/admin/accept-society/{id}', [AdminController::class, 'acceptSociety'])->name('accept-society');
+    Route::post('/admin/deny-society/{id}', [AdminController::class, 'denySociety'])->name('deny-society');
+    Route::post('/admin/delete-society/{id}', [AdminController::class, 'deleteSociety'])->name('delete-society');
 });
 
 Route::middleware('auth')->group(function () {

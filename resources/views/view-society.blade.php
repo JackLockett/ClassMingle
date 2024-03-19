@@ -24,7 +24,7 @@
             </div>
          </div>
          @if (session('success'))
-         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated animate__fadeOutUp" role="alert">
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -33,9 +33,9 @@
          @endif
          <script>
             document.addEventListener("DOMContentLoaded", function() {
-                setTimeout(function() {
-                    $('#successAlert').alert('close');
-                }, 5000);
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
             });
          </script>
          <a href="{{ route('societies') }}" class="btn btn-secondary btn-sm mb-3">

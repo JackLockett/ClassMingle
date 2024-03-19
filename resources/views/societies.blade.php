@@ -19,7 +19,7 @@
          </div>
          <br>
          @if (session('success'))
-         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated animate__fadeOutUp" role="alert">
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
@@ -28,9 +28,9 @@
          @endif
          <script>
             document.addEventListener("DOMContentLoaded", function() {
-                setTimeout(function() {
-                    $('#successAlert').alert('close');
-                }, 5000);
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
             });
          </script>
          <div class="row">
@@ -93,8 +93,27 @@
                            @endforeach
                         </tbody>
                      </table>
+                     <!-- Academic Societies Page navigation -->
+                     <nav aria-label="Academic Societies Page navigation">
+                        <ul class="pagination">
+                           <!-- Previous Button -->
+                           <li class="page-item {{ $academicSocieties->previousPageUrl() ? '' : 'disabled' }}">
+                              <a class="page-link" href="{{ $academicSocieties->previousPageUrl() }}">Previous</a>
+                           </li>
+                           <!-- Page Numbers -->
+                           @for($i = 1; $i <= $academicSocieties->lastPage(); $i++)
+                           <li class="page-item {{ $i == $academicSocieties->currentPage() ? 'active' : '' }}">
+                              <a class="page-link" href="{{ $academicSocieties->url($i) }}">{{ $i }}</a>
+                           </li>
+                           @endfor
+                           <!-- Next Button -->
+                           <li class="page-item {{ $academicSocieties->nextPageUrl() ? '' : 'disabled' }}">
+                              <a class="page-link" href="{{ $academicSocieties->nextPageUrl() }}">Next</a>
+                           </li>
+                        </ul>
+                     </nav>
                      @else
-                     <p class="card-text">There isn't any Academic Societies available at this time.</p>
+                     <p class="card-text">There aren't any Academic Societies available at this time.</p>
                      @endif
                   </div>
                </div>
@@ -124,8 +143,31 @@
                            @endforeach
                         </tbody>
                      </table>
+                     <!-- Social Societies Page navigation -->
+                     <nav aria-label="Social Societies Page navigation">
+                        <ul class="pagination">
+                           <!-- Previous Button -->
+                           <li class="page-item {{ $socialSocieties->previousPageUrl() ? '' : 'disabled' }}">
+                              <a class="page-link" href="{{ $socialSocieties->previousPageUrl() }}">Previous</a>
+                           </li>
+                           <!-- Page Numbers -->
+                           @for($i = 1; $i <= $socialSocieties->lastPage(); $i++)
+                           <li class="page-item {{ $i == $socialSocieties->currentPage() ? 'active' : '' }}">
+                              <a class="page-link" href="{{ $socialSocieties->url($i) }}">{{ $i }}</a>
+                           </li>
+                           @endfor
+                           <!-- Next Button -->
+                           <li class="page-item {{ $socialSocieties->nextPageUrl() ? '' : 'disabled' }}">
+                              <a class="page-link" href="{{ $socialSocieties->nextPageUrl() }}">Next</a>
+                           </li>
+                        </ul>
+                     </nav>
+                     </nav>
+                     </nav>
+                     </nav>
+                     </nav>
                      @else
-                     <p class="card-text">There isn't any Social Societies available at this time.</p>
+                     <p class="card-text">There aren't any Social Societies available at this time.</p>
                      @endif
                   </div>
                </div>

@@ -33,13 +33,20 @@
             </div>
          </div>
          @if (session('success'))
-         <div class="alert alert-success alert-dismissible fade show" role="alert">
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
             {{ session('success') }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
          </div>
          @endif
+         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
+            });
+         </script>
          <a href="{{ route('view-society', ['id' => $society->id]) }}" class="btn btn-secondary btn-sm mb-3">
          <i class="fas fa-arrow-left"></i> Return to Society
          </a>
