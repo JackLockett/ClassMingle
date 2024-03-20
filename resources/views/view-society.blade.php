@@ -127,6 +127,7 @@
                            <div class="text-muted">
                               <small><a href="{{ route('view-post', ['societyId' => $society->id, 'postId' => $post->id]) }}">View Post</a></small>
                               @if ($post->comments_count > 0)
+                              <span class="ml-3">•</span>
                               <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
                               @endif
                            </div>

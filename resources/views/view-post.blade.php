@@ -108,6 +108,7 @@
                   @if ($comment->responses->count() > 0)
                   <div class="mb-3">
                      <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     <span class="ml-3 text-muted">•</span>
                      <small class="text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
                      </small>
@@ -177,7 +178,6 @@
                </div>
                <div class="modal-body">
                   <p>Are you sure you want to delete this comment?</p>
-                  <p>{{ $comment->id }}</p>
                </div>
                <div class="modal-footer">
                   <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">
