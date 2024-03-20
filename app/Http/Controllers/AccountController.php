@@ -22,7 +22,7 @@ class AccountController extends Controller
         $user = Auth::user();
         $user->delete();
 
-        return redirect()->route('/')->with('success', 'Your account has been deleted successfully.');
+        return redirect()->route('login')->with('success', 'Your account has been deleted successfully.');
     }
 
     public function changeEmail(Request $request)

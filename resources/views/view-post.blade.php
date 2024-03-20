@@ -54,6 +54,19 @@
             <div class="card-body">
                <h2 class="card-title">{{ $post->postTitle }}</h2>
                <p class="card-text">{{ $post->postComment }}</p>
+               <p class="card-text">
+                  <small class="text-muted">
+                  Posted by 
+                  @if(isset($post->author))
+                  <a href="{{ route('user.profile', ['id' => $post->author->id]) }}">
+                  {{ $post->author->username }}
+                  </a>
+                  @else
+                  Deleted User
+                  @endif
+                  • {{ $post->created_at->diffForHumans() }}
+                  </small>
+               </p>
                <div class="d-flex justify-content-between align-items-end">
                   <button id="bookmarkButton" class="btn btn-sm {{ $post->isBookmarked() ? 'btn-primary' : 'btn-outline-primary' }}">
                   {{ $post->isBookmarked() ? 'Unbookmark Post' : 'Bookmark Post' }}
@@ -78,8 +91,13 @@
                   <div class="d-flex justify-content-between align-items-center">
                      <div>
                         <strong>
+                        @if($comment->user)
                         <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                         {{ $comment->user->username }}
+                        </a>
+                        @else
+                        Deleted User
+                        @endif
                         </a>
                         </strong> said:
                      </div>
