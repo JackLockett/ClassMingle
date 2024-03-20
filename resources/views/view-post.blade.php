@@ -57,13 +57,9 @@
                <p class="card-text">
                   <small class="text-muted">
                   Posted by 
-                  @if(isset($post->author))
                   <a href="{{ route('user.profile', ['id' => $post->author->id]) }}">
                   {{ $post->author->username }}
                   </a>
-                  @else
-                  Deleted User
-                  @endif
                   • {{ $post->created_at->diffForHumans() }}
                   </small>
                </p>
@@ -91,13 +87,8 @@
                   <div class="d-flex justify-content-between align-items-center">
                      <div>
                         <strong>
-                        @if($comment->user)
                         <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                         {{ $comment->user->username }}
-                        </a>
-                        @else
-                        Deleted User
-                        @endif
                         </a>
                         </strong> said:
                      </div>
@@ -186,6 +177,7 @@
                </div>
                <div class="modal-body">
                   <p>Are you sure you want to delete this comment?</p>
+                  <p>{{ $comment->id }}</p>
                </div>
                <div class="modal-footer">
                   <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">

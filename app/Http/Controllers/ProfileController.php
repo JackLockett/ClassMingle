@@ -30,6 +30,17 @@ class ProfileController extends Controller
     
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
+
+        // Calculate the count of existing saved comments
+        $existingCommentsCount = $savedComments->filter(function($savedComment) {
+            return $savedComment->comment !== null; // Filter out saved comments that do not exist
+        })->count();
+
+        // Calculate the count of existing bookmarks
+        $existingBookmarksCount = $bookmarks->filter(function($bookmark) {
+            return $bookmark->post !== null; // Filter out bookmarks that do not exist
+        })->count();
+
         $receivedMessages = Message::where('receiverId', $user->id)->get();
         $sentMessages = Message::where('senderId', $user->id)->get();
         $joinedSocieties = Society::getSocietiesForUser($user->id);
@@ -48,7 +59,9 @@ class ProfileController extends Controller
             'university' => $user->university,
             'ukUniversities' => $ukUniversities,
             'bookmarks' => $bookmarks,
+            'existingBookmarksCount' => $existingBookmarksCount,
             'comments' => $savedComments,
+            'existingCommentsCount' => $existingCommentsCount,
             'joinedSocieties' => $joinedSocieties,
             'receivedFriendRequests' => $receivedFriendRequests,
             'sentFriendRequests' => $sentFriendRequests,

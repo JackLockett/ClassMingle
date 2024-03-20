@@ -95,13 +95,9 @@
                            <strong>{{ $post->postTitle }}</strong>
                            <div style="display: inline-block;">
                               <span>Posted by
-                              @if(isset($post->author))
                               <a href="{{ route('user.profile', ['id' => $post->author->id]) }}" style="color: #3d7475;">
                               {{ $post->author->username }}
                               </a>
-                              @else
-                              Deleted User
-                              @endif
                               </span>
                               <span class="ml-3">•</span>
                               <span class="ml-3">{{ $post->created_at->diffForHumans() }}</span>

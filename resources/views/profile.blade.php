@@ -215,11 +215,12 @@
                   <div class="tab-pane fade" id="bookmarked-posts" role="tabpanel" aria-labelledby="bookmarked-posts-tab">
                      <div class="card">
                         <div class="card-header" style="background-color: #23426d; color: white;">
-                           <h5 class="mb-0">Bookmarked Posts - {{ $bookmarks->count() }}</h5>
+                           <h5 class="mb-0">Bookmarked Posts - {{ $existingBookmarksCount }}</h5>
                         </div>
                         <div class="card-body">
-                           @if($bookmarks->count() > 0)
+                           @if($existingBookmarksCount > 0)
                            @foreach($bookmarks as $bookmark)
+                           @if($bookmark->post) <!-- Check if post exists -->
                            <div class="card mb-3">
                               <div class="card-body">
                                  <h5 class="card-title">{{ $bookmark->post->postTitle }}</h5>
@@ -254,6 +255,7 @@
                                  </div>
                               </div>
                            </div>
+                           @endif
                            @endforeach
                            @else
                            <p class="card-text text-muted">You haven't bookmarked any posts yet.</p>
@@ -267,11 +269,12 @@
                   <div class="tab-pane fade" id="saved-comments" role="tabpanel" aria-labelledby="saved-comments-tab">
                      <div class="card">
                         <div class="card-header" style="background-color: #23426d; color: white;">
-                           <h5 class="mb-0">Saved Comments - {{ $comments->count() }}</h5>
+                           <h5 class="mb-0">Saved Comments - {{ $existingCommentsCount }}</h5>
                         </div>
                         <div class="card-body">
-                           @if($comments->count() > 0)
+                           @if($existingCommentsCount > 0)
                            @foreach($comments as $savedComment)
+                           @if($savedComment->comment) <!-- Check if comment exists -->
                            <div class="card mb-3">
                               <div class="card-body">
                                  <h5 class="card-title">{{ $savedComment->comment->comment }}</h5>
@@ -306,6 +309,7 @@
                                  </div>
                               </div>
                            </div>
+                           @endif
                            @endforeach
                            @else
                            <p class="card-text text-muted">You haven't saved any comments yet.</p>

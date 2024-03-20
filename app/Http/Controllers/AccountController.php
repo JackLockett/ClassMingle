@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Society;
+use App\Models\Message;
+use App\Models\Post;
+use App\Models\Comment;
+use App\Models\FriendRequest;
+use App\Models\Friendship;
+use App\Models\User;
 
 class AccountController extends Controller
 {
@@ -22,32 +28,30 @@ class AccountController extends Controller
     {
         $user = Auth::user();
         
-        // Remove the user from societies where they are a member
-        $societies = Society::whereJsonContains('memberList', $user->id)->get();
-        foreach ($societies as $society) {
-            $memberList = $society->memberList;
-            $index = array_search($user->id, $memberList);
-            if ($index !== false) {
-                unset($memberList[$index]);
-                $society->update(['memberList' => $memberList]);
-            }
-        }
-
-        // Remove the user from societies where they are a moderator
-        $societies = Society::whereJsonContains('moderatorList', $user->id)->get();
-        foreach ($societies as $society) {
-            $moderatorList = $society->moderatorList;
-            $index = array_search($user->id, $moderatorList);
-            if ($index !== false) {
-                unset($moderatorList[$index]);
-                $society->update(['moderatorList' => $moderatorList]);
-            }
-        }
+        Society::whereIn('id', function ($query) use ($user) {
+            $query->select('id')
+                ->from('societies')
+                ->whereJsonContains('memberList', $user->id)
+                ->orWhereJsonContains('moderatorList', $user->id);
+        })->each(function ($society) use ($user) {
+            $society->update([
+                'memberList' => array_diff($society->memberList, [$user->id]),
+                'moderatorList' => array_diff($society->moderatorList, [$user->id]),
+            ]);
+        });
     
+        Society::where('ownerId', $user->id)->delete();
+        Post::where('authorId', $user->id)->delete();
+        Comment::where('user_id', $user->id)->delete();
+        Message::where('senderId', $user->id)->orWhere('receiverId', $user->id)->delete();
+        FriendRequest::where('sender_id', $user->id)->orWhere('receiver_id', $user->id)->delete();
+        Friendship::where('user_id', $user->id)->orWhere('friend_id', $user->id)->delete();
+
         $user->delete();
     
         return redirect()->route('login')->with('success', 'Your account has been deleted successfully.');
     }
+    
     
     public function changeEmail(Request $request)
     {

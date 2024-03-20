@@ -42,26 +42,18 @@
             <div class="card-body">
                <div class="comment">
                   <strong>
-                  @if($comment->user)
                   <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                   {{ $comment->user->username }}
                   </a>
-                  @else
-                  Deleted User
-                  @endif
                   </strong> said:
                   <p>{{ $comment->comment }}</p>
                </div>
                <p class="card-text">
                   <small class="text-muted">
                   Commented by 
-                  @if(isset($comment->user))
                   <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                   {{ $comment->user->username }}
                   </a>
-                  @else
-                  Deleted User
-                  @endif
                   • {{ $comment->created_at->diffForHumans() }}
                   </small>
                </p>
@@ -76,13 +68,9 @@
                   <div class="d-flex justify-content-between align-items-center">
                      <div>
                         <strong>
-                        @if(isset($response->user))
                         <a href="{{ route('user.profile', ['id' => $response->user->id]) }}">
                         {{ $response->user->username }}
                         </a>
-                        @else
-                        Deleted User
-                        @endif
                         </strong> responded:
                         <p>{{ $response->comment }}</p>
                      </div>
