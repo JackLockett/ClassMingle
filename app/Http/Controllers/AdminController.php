@@ -19,7 +19,10 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $users = User::where('id', '!=', Auth::id())->get();
+        $users = User::where('id', '!=', Auth::id())
+        ->where('username', '!=', 'admin')
+        ->get();
+
         $societies = Society::where('approved', 1)->get();
         $pendingSocieties = Society::where('approved', 0)->get();
         
