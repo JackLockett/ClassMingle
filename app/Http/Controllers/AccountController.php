@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Society;
 
 class AccountController extends Controller
 {
@@ -20,11 +21,34 @@ class AccountController extends Controller
     public function deleteAccount()
     {
         $user = Auth::user();
-        $user->delete();
+        
+        // Remove the user from societies where they are a member
+        $societies = Society::whereJsonContains('memberList', $user->id)->get();
+        foreach ($societies as $society) {
+            $memberList = $society->memberList;
+            $index = array_search($user->id, $memberList);
+            if ($index !== false) {
+                unset($memberList[$index]);
+                $society->update(['memberList' => $memberList]);
+            }
+        }
 
+        // Remove the user from societies where they are a moderator
+        $societies = Society::whereJsonContains('moderatorList', $user->id)->get();
+        foreach ($societies as $society) {
+            $moderatorList = $society->moderatorList;
+            $index = array_search($user->id, $moderatorList);
+            if ($index !== false) {
+                unset($moderatorList[$index]);
+                $society->update(['moderatorList' => $moderatorList]);
+            }
+        }
+    
+        $user->delete();
+    
         return redirect()->route('login')->with('success', 'Your account has been deleted successfully.');
     }
-
+    
     public function changeEmail(Request $request)
     {
         $user = Auth::user();

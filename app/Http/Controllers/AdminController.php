@@ -146,6 +146,28 @@ class AdminController extends Controller
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
         }
+
+        // Remove the user from societies where they are a member
+        $societies = Society::whereJsonContains('memberList', $user->id)->get();
+        foreach ($societies as $society) {
+            $memberList = $society->memberList;
+            $index = array_search($user->id, $memberList);
+            if ($index !== false) {
+                unset($memberList[$index]);
+                $society->update(['memberList' => $memberList]);
+            }
+        }
+
+        // Remove the user from societies where they are a moderator
+        $societies = Society::whereJsonContains('moderatorList', $user->id)->get();
+        foreach ($societies as $society) {
+            $moderatorList = $society->moderatorList;
+            $index = array_search($user->id, $moderatorList);
+            if ($index !== false) {
+                unset($moderatorList[$index]);
+                $society->update(['moderatorList' => $moderatorList]);
+            }
+        }
     
         $user->delete();
     
