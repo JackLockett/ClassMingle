@@ -42,18 +42,26 @@
             <div class="card-body">
                <div class="comment">
                   <strong>
+                  @if($comment->user)
                   <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                   {{ $comment->user->username }}
                   </a>
+                  @else
+                  <i>Deleted_Account</i>
+                  @endif
                   </strong> said:
                   <p>{{ $comment->comment }}</p>
                </div>
                <p class="card-text">
                   <small class="text-muted">
                   Commented by 
+                  @if($comment->user)
                   <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                   {{ $comment->user->username }}
                   </a>
+                  @else
+                  <i>Deleted_Account</i>
+                  @endif
                   • {{ $comment->created_at->diffForHumans() }}
                   </small>
                </p>
@@ -68,14 +76,26 @@
                   <div class="d-flex justify-content-between align-items-center">
                      <div>
                         <strong>
+                        @if($response->user)
                         <a href="{{ route('user.profile', ['id' => $response->user->id]) }}">
                         {{ $response->user->username }}
                         </a>
+                        @else
+                        <i>Deleted_Account</i>
+                        @endif
                         </strong> responded:
                         <p>{{ $response->comment }}</p>
                      </div>
                      <div class="text-muted">
                         <small>{{ $response->created_at->diffForHumans() }}</small>
+                        <button class="btn btn-sm {{ $response->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $response->id }}">
+                        {{ $response->isSaved() ? 'Unsave' : 'Save' }}
+                        </button>
+                        @if (auth()->user()->id == $response->user_id)
+                        <button class="btn btn-sm btn-danger ml-2 delete-response-btn" data-toggle="modal" data-target="#confirmDeleteResponse" data-response-id="{{ $response->id }}">
+                        <i class="fas fa-trash"></i> Delete
+                        </button>
+                        @endif
                      </div>
                   </div>
                </div>
@@ -116,19 +136,45 @@
          </div>
          @endif
       </div>
+      <!-- Modal for Confirming Response Deletion -->
+      <div class="modal fade" id="confirmDeleteResponse" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResponseLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="confirmDeleteResponseLabel">Confirm Delete Response</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to delete this response?</p>
+               </div>
+               <div class="modal-footer">
+                  <form id="deleteResponseForm" action="" method="POST">
+                     @csrf
+                     @method('DELETE')
+                     <button type="submit" class="btn btn-danger">
+                     <i class="fas fa-trash"></i> Delete Response
+                     </button>
+                  </form>
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+               </div>
+            </div>
+         </div>
+      </div>
       <script>
          document.addEventListener("DOMContentLoaded", function () {
-             const commentTextarea = document.getElementById("response");
+             const responseTextarea = document.getElementById("response");
              const maxCharCount = 250;
          
              updateCharCount();
          
-             commentTextarea.addEventListener("input", function () {
+             responseTextarea.addEventListener("input", function () {
                  updateCharCount();
              });
          
              function updateCharCount() {
-                 const charCount = commentTextarea.value.length;
+                 const charCount = responseTextarea.value.length;
                  const remainingChars = maxCharCount - charCount;
                  const charCountSpan = document.getElementById("charCount");
          
@@ -138,6 +184,51 @@
                  const submitButton = document.getElementById("submitResponse");
                  submitButton.disabled = remainingChars < 0 || remainingChars === maxCharCount;
              }
+         
+             const saveButtons = document.querySelectorAll('.saveButton');
+             saveButtons.forEach(saveButton => {
+                 saveButton.addEventListener("click", function () {
+                     const commentId = this.dataset.commentId;
+                     fetch(`/save-comment/${commentId}`, {
+                         method: "POST",
+                         headers: {
+                             "Content-Type": "application/json",
+                             "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                         },
+                         body: JSON.stringify({
+                             commentId: commentId
+                         })
+                     })
+                         .then(response => {
+                             if (response.ok) {
+                                 // Invert the class toggling and text content
+                                 if (saveButton.classList.contains("btn-primary")) {
+                                     saveButton.classList.remove("btn-primary");
+                                     saveButton.classList.add("btn-outline-primary");
+                                     saveButton.textContent = "Save";
+                                 } else {
+                                     saveButton.classList.remove("btn-outline-primary");
+                                     saveButton.classList.add("btn-primary");
+                                     saveButton.textContent = "Unsave";
+                                 }
+                             } else {
+                                 throw new Error("Network response was not ok");
+                             }
+                         })
+                         .catch(error => {
+                             console.error("There was a problem with the fetch operation:", error);
+                         });
+                 });
+             });
+         
+             const deleteResponseButtons = document.querySelectorAll('.delete-response-btn');
+             const deleteResponseForm = document.getElementById('deleteResponseForm');
+             deleteResponseButtons.forEach(button => {
+                 button.addEventListener('click', function () {
+                     const responseId = this.getAttribute('data-response-id');
+                     deleteResponseForm.action = `/delete-comment/${responseId}`;
+                 });
+             });
          });
       </script>
       @include('layouts.footer')

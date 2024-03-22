@@ -17,8 +17,9 @@ class UserController extends Controller
         $currentUser = User::findOrFail($currentUserId);
         $currentUserUniversity = $currentUser->university;
     
-        // Filter students by the same university as the current user
+        // Filter students by the same university as the current user and non-empty university
         $students = User::where('role', 'user')
+                        ->whereNotNull('university')
                         ->where('university', $currentUserUniversity)
                         ->where('id', '!=', $currentUserId)
                         ->paginate(9);
@@ -28,6 +29,7 @@ class UserController extends Controller
             'currentUserUniversity' => $currentUserUniversity, 
         ]);
     }
+    
        
     public function sendMessage(Request $request, $id)
     {

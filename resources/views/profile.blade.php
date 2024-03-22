@@ -222,11 +222,17 @@
                         <div class="card-body">
                            @if($existingBookmarksCount > 0)
                            @foreach($bookmarks as $bookmark)
-                           @if($bookmark->post) <!-- Check if post exists -->
+                           @if($bookmark->post)
                            <div class="card mb-3">
                               <div class="card-body">
                                  <h5 class="card-title">{{ $bookmark->post->postTitle }}</h5>
-                                 <p class="card-text">Post Author: {{ $bookmark->post->author->username }}</p>
+                                 <p class="card-text">Post Author:
+                                    @if($bookmark->post->author)
+                                    {{ $bookmark->post->author->username }}
+                                    @else
+                                    <i>Deleted_Account</i>
+                                    @endif
+                                 </p>
                                  <a href="{{ route('view-post', ['societyId' => $bookmark->post->societyId, 'postId' => $bookmark->post->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Post</a>
                                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteBookmark{{$bookmark->id}}" data-message-id="{{ $bookmark->id }}">
                                  <i class="fas fa-bookmark"></i> Unbookmark
@@ -276,12 +282,18 @@
                         <div class="card-body">
                            @if($existingCommentsCount > 0)
                            @foreach($comments as $savedComment)
-                           @if($savedComment->comment) <!-- Check if comment exists -->
+                           @if($savedComment->comment)
                            <div class="card mb-3">
                               <div class="card-body">
                                  <h5 class="card-title">{{ $savedComment->comment->comment }}</h5>
-                                 <p class="card-text">Comment Author: {{ $savedComment->comment->user->username }}</p>
-                                 <a href="{{ route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Comment</a>
+                                 <p class="card-text">Comment Author:
+                                    @if($savedComment->comment->user)
+                                    {{ $savedComment->comment->user->username }}
+                                    @else
+                                    <i>Deleted_Account</i>
+                                    @endif
+                                 </p>
+                                 <a href="{{ $savedComment->comment->parent_comment_id ? route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->parent_comment_id]) : route('view-comment', ['societyId' => $savedComment->comment->post->societyId, 'postId' => $savedComment->comment->post->id, 'commentId' => $savedComment->comment->id]) }}" class="btn btn-primary"><i class="fas fa-eye"></i> View Comment</a>
                                  <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteComment{{$savedComment->comment->id}}" data-message-id="{{ $savedComment->comment->id }}">
                                  <i class="fas fa-comment"></i> Unsave Comment
                                  </a>
@@ -522,7 +534,13 @@
                                        <tbody>
                                           @foreach($receivedMessages as $message)
                                           <tr>
-                                             <td><a href="{{ route('user.profile', ['id' => $message->sender->id]) }}">{{ $message->sender->username ?? '' }}</a></td>
+                                             <td>
+                                                @if ($message->sender)
+                                                <a href="{{ route('user.profile', ['id' => $message->sender->id]) }}">{{ $message->sender->username }}</a>
+                                                @else
+                                                <i>Deleted_Account</i>
+                                                @endif
+                                             </td>
                                              <td>{{ $message->created_at->diffForHumans() }}</td>
                                              <td>
                                                 <span class="read-status">{{ $message->read == 0 ? 'Unread' : 'Read' }}</span>
@@ -610,7 +628,13 @@
                                        <tbody>
                                           @foreach($sentMessages as $message)
                                           <tr>
-                                             <td><a href="{{ route('user.profile', ['id' => $message->recipient->id]) }}">{{ $message->recipient->username ?? '' }}</a></td>
+                                             <td>
+                                                @if ($message->recipient)
+                                                <a href="{{ route('user.profile', ['id' => $message->recipient->id]) }}">{{ $message->recipient->username }}</a>
+                                                @else
+                                                <i>Deleted_Account</i>
+                                                @endif
+                                             </td>
                                              <td>{{ $message->created_at->diffForHumans() }}</td>
                                              <td>
                                                 <a href="#" class="btn btn-info" data-toggle="modal" data-target="#viewSentMessage{{ $message->id }}" data-message-id="{{ $message->id }}">

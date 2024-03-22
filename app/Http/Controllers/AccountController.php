@@ -27,31 +27,43 @@ class AccountController extends Controller
     public function deleteAccount()
     {
         $user = Auth::user();
-        
-        Society::whereIn('id', function ($query) use ($user) {
+    
+        // Retrieve societies associated with the user
+        $societies = Society::whereIn('id', function ($query) use ($user) {
             $query->select('id')
                 ->from('societies')
                 ->whereJsonContains('memberList', $user->id)
                 ->orWhereJsonContains('moderatorList', $user->id);
-        })->each(function ($society) use ($user) {
+        })->get();
+    
+        // Iterate over each society and update ownerId if necessary
+        $societies->each(function ($society) use ($user) {
+            // Update ownerId if the user is the current owner
+            if ($society->ownerId == $user->id) {
+                // Remove the user from the moderatorList
+                $moderators = array_values(array_diff($society->moderatorList, [$user->id]));
+                $society->update(['moderatorList' => $moderators]);
+    
+                // Update ownerId based on remaining moderators
+                $society->update(['ownerId' => empty($moderators) ? -1 : $moderators[0]]);
+            }
+    
+            // Remove the user from the moderatorList and memberList
             $society->update([
-                'memberList' => array_diff($society->memberList, [$user->id]),
-                'moderatorList' => array_diff($society->moderatorList, [$user->id]),
+                'moderatorList' => array_values(array_diff($society->moderatorList, [$user->id])),
+                'memberList' => array_values(array_diff($society->memberList, [$user->id]))
             ]);
         });
     
-        Society::where('ownerId', $user->id)->delete();
-        Post::where('authorId', $user->id)->delete();
-        Comment::where('user_id', $user->id)->delete();
-        Message::where('senderId', $user->id)->orWhere('receiverId', $user->id)->delete();
+        // Delete other related records
         FriendRequest::where('sender_id', $user->id)->orWhere('receiver_id', $user->id)->delete();
         Friendship::where('user_id', $user->id)->orWhere('friend_id', $user->id)->delete();
-
+    
+        // Finally, delete the user
         $user->delete();
     
         return redirect()->route('login')->with('success', 'Your account has been deleted successfully.');
     }
-    
     
     public function changeEmail(Request $request)
     {

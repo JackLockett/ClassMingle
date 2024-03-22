@@ -57,9 +57,13 @@
                <p class="card-text">
                   <small class="text-muted">
                   Posted by 
+                  @if($post->author)
                   <a href="{{ route('user.profile', ['id' => $post->author->id]) }}">
                   {{ $post->author->username }}
                   </a>
+                  @else
+                  <i>Deleted_Account</i>
+                  @endif
                   • {{ $post->created_at->diffForHumans() }}
                   </small>
                </p>
@@ -87,9 +91,13 @@
                   <div class="d-flex justify-content-between align-items-center">
                      <div>
                         <strong>
+                        @if($comment->user)
                         <a href="{{ route('user.profile', ['id' => $comment->user->id]) }}">
                         {{ $comment->user->username }}
                         </a>
+                        @else
+                        <i>Deleted_Account</i>
+                        @endif
                         </strong> said:
                      </div>
                      <div class="text-muted" style="display: inline-block;">
@@ -98,7 +106,7 @@
                         {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
                         </button>
                         @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
-                        <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeleteComment">
+                        <a href="#" class="btn btn-sm btn-danger ml-2 delete-comment-btn" data-toggle="modal" data-target="#confirmDeleteComment" data-comment-id="{{ $comment->id }}">
                         <i class="fas fa-trash"></i> Delete
                         </a>
                         @endif
@@ -178,6 +186,7 @@
                </div>
                <div class="modal-body">
                   <p>Are you sure you want to delete this comment?</p>
+                  <p>{{ $comment->id }}</p>
                </div>
                <div class="modal-footer">
                   <form action="{{ route('delete-comment', ['commentId' => $comment->id]) }}" method="POST" style="display: inline-block;">
@@ -221,6 +230,32 @@
          
              const bookmarkButton = document.getElementById("bookmarkButton");
             const postId = {{ $post->id }};
+         
+            const deleteCommentButtons = document.querySelectorAll('.delete-comment-btn');
+         
+         deleteCommentButtons.forEach(button => {
+         button.addEventListener('click', function () {
+         const commentId = this.getAttribute('data-comment-id');
+         const modal = document.getElementById('confirmDeleteComment');
+         const modalBody = modal.querySelector('.modal-body');
+         modalBody.innerHTML = `<p>Are you sure you want to delete this comment?</p>`;
+         
+         const deleteCommentForm = modal.querySelector('form');
+         deleteCommentForm.action = `/delete-comment/${commentId}`;
+         
+         // Check if the comment has responses
+         const hasResponses = this.getAttribute('data-has-responses');
+         
+         // If it has responses, set a hidden input in the form to indicate this
+         if (hasResponses === 'true') {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'delete_responses';
+            hiddenInput.value = 'true';
+            deleteCommentForm.appendChild(hiddenInput);
+         }
+         });
+         });
             
             bookmarkButton.addEventListener("click", function () {
                fetch(`/bookmark/${postId}`, {

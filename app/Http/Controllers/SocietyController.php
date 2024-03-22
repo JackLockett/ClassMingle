@@ -250,11 +250,17 @@ class SocietyController extends Controller
             return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
         }
     
+        // Check if the comment has responses
+        if ($comment->responses()->count() > 0) {
+            // Delete responses associated with the comment
+            $comment->responses()->delete();
+        }
+    
         $comment->delete();
     
         return redirect()->back()->with('success', 'Comment deleted successfully.');
     }
-
+    
     public function promoteToModerator(Request $request, $societyId)
     {
         $society = Society::findOrFail($societyId);
