@@ -37,6 +37,8 @@ class UserController extends Controller
             'senderId' => $currentUserId,
             'receiverId' => $id,
             'message' => $request->input('messageField'),
+            'read' => false,
+            'deleted' => false,
         ]);
     
         $message->save();
@@ -46,14 +48,30 @@ class UserController extends Controller
 
     public function deleteMessage($id)
     {
-        // Find the message by its ID and delete it
         $message = Message::findOrFail($id);
-        $message->delete();
     
-        // Redirect to the appropriate route or return a response
-        return redirect()->back()->with('success', 'Message deleted successfully.');
+        $message->deleted = 1;
+        $message->save();
+    
+        return redirect()->back()->with('success', 'Message deleted successfully!');
     }
     
+
+    public function markMessage($id)
+    {
+        $message = Message::findOrFail($id);
+        $message->update(['read' => 1]);
+
+        return redirect()->back()->with('success', 'Message marked as read successfully.');
+    }
+
+    public function unmarkMessage($id)
+    {
+        $message = Message::findOrFail($id);
+        $message->update(['read' => 0]);
+        
+        return redirect()->back()->with('success', 'Message marked as unread successfully.');
+    }
     
     public function showProfile($id)
     {

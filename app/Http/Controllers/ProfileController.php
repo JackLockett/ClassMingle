@@ -41,7 +41,12 @@ class ProfileController extends Controller
             return $bookmark->post !== null; // Filter out bookmarks that do not exist
         })->count();
 
-        $receivedMessages = Message::where('receiverId', $user->id)->get();
+        $receivedMessages = Message::where('receiverId', $user->id)
+        ->where('deleted', 0)
+        ->orderBy('read')
+        ->get();
+    
+        $unreadMessageCount = count($receivedMessages->where('read', 0));
         $sentMessages = Message::where('senderId', $user->id)->get();
         $joinedSocieties = Society::getSocietiesForUser($user->id);
         $friends = $user->friends;
@@ -67,11 +72,11 @@ class ProfileController extends Controller
             'sentFriendRequests' => $sentFriendRequests,
             'friends' => $friends,
             'receivedMessages' => $receivedMessages,
+            'unreadMessageCount' => $unreadMessageCount,
             'sentMessages' => $sentMessages,
         ]);
     }
     
-
     public function updateProfile(Request $request)
     {
         $validatedData = $request->validate([
@@ -105,6 +110,4 @@ class ProfileController extends Controller
     
         return response()->json(['message' => 'Message deleted successfully'], 200);
     }
-    
-
 }

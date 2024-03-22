@@ -101,7 +101,9 @@
                      <a class="nav-link notification-badge" id="friend-requests-tab" data-toggle="pill" href="#friend-requests" role="tab" aria-controls="friend-requests" aria-selected="false">Friend Requests <span class="badge">{{ count($receivedFriendRequests) }}</span></a>
                   </li>
                   <li class="nav-item">
-                     <a class="nav-link notification-badge" id="messages-tab" data-toggle="pill" href="#messages" role="tab" aria-controls="messages" aria-selected="false">Messages <span class="badge">{{ count($receivedMessages) }}</span></a>
+                     <a class="nav-link notification-badge" id="messages-tab" data-toggle="pill" href="#messages" role="tab" aria-controls="messages" aria-selected="false">
+                     Messages <span class="badge">{{ $unreadMessageCount }}</span>
+                     </a>
                   </li>
                </ul>
             </div>
@@ -505,13 +507,15 @@
                            <div class="tab-content" id="messageTabsContent">
                               <div class="tab-pane fade show active" id="received" role="tabpanel" aria-labelledby="received-tab">
                                  @if(count($receivedMessages) > 0)
+                                 <input type="checkbox" id="unreadFilter" onclick="filterUnreadMessages()"> Filter Unread Messages
+                                 <br><br>
                                  <div class="table-responsive">
                                     <table class="table table-bordered">
                                        <thead class="thead-light">
                                           <tr>
                                              <th>From</th>
-                                             <th>Message</th>
                                              <th>Received</th>
+                                             <th>Status</th>
                                              <th>Action</th>
                                           </tr>
                                        </thead>
@@ -519,14 +523,49 @@
                                           @foreach($receivedMessages as $message)
                                           <tr>
                                              <td><a href="{{ route('user.profile', ['id' => $message->sender->id]) }}">{{ $message->sender->username ?? '' }}</a></td>
-                                             <td>{{ $message->message ?? '' }}</td>
                                              <td>{{ $message->created_at->diffForHumans() }}</td>
                                              <td>
+                                                <span class="read-status">{{ $message->read == 0 ? 'Unread' : 'Read' }}</span>
+                                             </td>
+                                             <td>
+                                                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#viewReceivedMessage{{ $message->id }}" data-message-id="{{ $message->id }}">
+                                                <i class="fas fa-envelope-open-text"></i> View Message
+                                                </a>
                                                 <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteReceivedMessage{{$message->id}}" data-message-id="{{ $message->id }}">
                                                 <i class="fas fa-trash-alt"></i> Delete Message
                                                 </a>
                                              </td>
                                           </tr>
+                                          <!-- Modal for Viewing Received Message -->
+                                          <div class="modal fade" id="viewReceivedMessage{{$message->id}}" tabindex="-1" role="dialog" aria-labelledby="viewReceivedMessageLabel{{$message->id}}" aria-hidden="true">
+                                             <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                   <div class="modal-header">
+                                                      <h5 class="modal-title" id="viewReceivedMessageLabel{{$message->id}}">Received Message</h5>
+                                                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                      <span aria-hidden="true">&times;</span>
+                                                      </button>
+                                                   </div>
+                                                   <div class="modal-body">
+                                                      {{ $message->message ?? '' }}
+                                                   </div>
+                                                   <div class="modal-footer">
+                                                      @if($message->read == 0)
+                                                      <!-- Mark as Read Button -->
+                                                      <a href="#" class="btn btn-info" data-toggle="modal" onclick="markAsRead({{ $message->id }})" data-message-id="{{ $message->id }}">
+                                                      <i class="fas fa-check"></i> Mark As Read
+                                                      </a>
+                                                      @else
+                                                      <!-- Mark as Unread Button -->
+                                                      <a href="#" class="btn btn-warning" data-toggle="modal" onclick="markAsUnread({{ $message->id }})" data-message-id="{{ $message->id }}">
+                                                      <i class="fas fa-times"></i> Mark As Unread
+                                                      </a>
+                                                      @endif
+                                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                   </div>
+                                                </div>
+                                             </div>
+                                          </div>
                                           <!-- Modal for Confirming Received Message Deletion -->
                                           <div class="modal fade" id="confirmDeleteReceivedMessage{{$message->id}}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteReceivedMessageLabel{{$message->id}}" aria-hidden="true">
                                              <div class="modal-dialog" role="document">
@@ -564,7 +603,6 @@
                                        <thead class="thead-light">
                                           <tr>
                                              <th>To</th>
-                                             <th>Message</th>
                                              <th>Sent</th>
                                              <th>Action</th>
                                           </tr>
@@ -573,31 +611,27 @@
                                           @foreach($sentMessages as $message)
                                           <tr>
                                              <td><a href="{{ route('user.profile', ['id' => $message->recipient->id]) }}">{{ $message->recipient->username ?? '' }}</a></td>
-                                             <td>{{ $message->message ?? '' }}</td>
                                              <td>{{ $message->created_at->diffForHumans() }}</td>
                                              <td>
-                                                <a href="#" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteSentMessage{{ $message->id }}" data-message-id="{{ $message->id }}">
-                                                <i class="fas fa-trash-alt"></i> Delete Message
+                                                <a href="#" class="btn btn-info" data-toggle="modal" data-target="#viewSentMessage{{ $message->id }}" data-message-id="{{ $message->id }}">
+                                                <i class="fas fa-envelope-open-text"></i> View Message
                                                 </a>
                                              </td>
                                           </tr>
-                                          <!-- Modal for Confirming Sent Message Deletion -->
-                                          <div class="modal fade" id="confirmDeleteSentMessage{{$message->id}}" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteSentMessageLabel{{$message->id}}" aria-hidden="true">
+                                          <!-- Modal for Viewing Sent Message -->
+                                          <div class="modal fade" id="viewSentMessage{{$message->id}}" tabindex="-1" role="dialog" aria-labelledby="viewSentMessageLabel{{$message->id}}" aria-hidden="true">
                                              <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                    <div class="modal-header">
-                                                      <h5 class="modal-title" id="confirmDeleteSentMessageLabel{{$message->id}}">Confirm Delete Message</h5>
+                                                      <h5 class="modal-title" id="viewSentMessageLabel{{$message->id}}">Sent Message</h5>
                                                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                       <span aria-hidden="true">&times;</span>
                                                       </button>
                                                    </div>
                                                    <div class="modal-body">
-                                                      Are you sure you want to delete this message?
+                                                      {{ $message->message ?? '' }}
                                                    </div>
                                                    <div class="modal-footer">
-                                                      <button class="btn btn-danger" onclick="deleteMessage({{ $message->id }})" data-message-id="{{ $message->id }}">
-                                                      <i class="fas fa-trash-alt"></i> Delete Message
-                                                      </button>
                                                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                    </div>
                                                 </div>
@@ -707,6 +741,38 @@
             });
          } 
          
+         function markAsRead(messageId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("mark-message", ["id" => ":id"]) }}'.replace(':id', messageId),
+               data: {
+                     '_token': '{{ csrf_token() }}'
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         } 
+         
+         function markAsUnread(messageId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("unmark-message", ["id" => ":id"]) }}'.replace(':id', messageId),
+               data: {
+                     '_token': '{{ csrf_token() }}'
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         } 
+         
       </script>
       <script>
          document.getElementById('bio').addEventListener('input', function() {
@@ -714,6 +780,25 @@
                this.value = this.value.slice(0, 250);
             }
          });
+      </script>
+      <script>
+         function filterUnreadMessages() {
+            var unreadCheckbox = document.getElementById('unreadFilter');
+            var receivedMessages = document.querySelectorAll('#received .table tbody tr');
+         
+            if (unreadCheckbox.checked) {
+               receivedMessages.forEach(function(message) {
+                  var readStatus = message.querySelector('.read-status').innerText.trim();
+                  if (readStatus === 'Read') {
+                     message.style.display = 'none';
+                  }
+               });
+            } else {
+               receivedMessages.forEach(function(message) {
+                  message.style.display = '';
+               });
+            }
+         }
       </script>
       @include('layouts.footer')
    </body>
