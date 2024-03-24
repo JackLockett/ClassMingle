@@ -14,6 +14,7 @@ use App\Models\Comment;
 use App\Models\FriendRequest;
 use App\Models\Friendship;
 use App\Models\User;
+use App\Models\Query;
 
 class AdminController extends Controller
 {
@@ -25,6 +26,7 @@ class AdminController extends Controller
 
         $societies = Society::where('approved', 1)->get();
         $pendingSocieties = Society::where('approved', 0)->get();
+        $queries = Query::all();
         
         $ukUniversities = [
             'Sheffield Hallam University',
@@ -36,12 +38,18 @@ class AdminController extends Controller
             'Social'
         ];
 
+        $queryTypes = [
+            'Society Ownership Claim',
+        ];
+
         return view('admin-panel', [
             'users' => $users,
             'societies' => $societies,
             'societyTypes' => $societyTypes,
             'ukUniversities' => $ukUniversities,
             'pendingSocieties' => $pendingSocieties,
+            'queryTypes' => $queryTypes,
+            'queries' => $queries,
         ]);
     }
 
@@ -133,6 +141,50 @@ class AdminController extends Controller
 
         return redirect()->route('admin-panel')->with('success', 'Society denied successfully!');
     }
+
+    public function acceptSocietyClaim(Request $request, $societyId)
+    {
+        $society = Society::findOrFail($societyId);
+    
+        $validatedData = $request->validate([
+            'claimerId' => 'required', 
+        ]);
+    
+        $existingRequests = Query::where('society_id', $societyId)
+                                ->where('queryType', 'Society Ownership Claim')
+                                ->get();
+    
+        foreach ($existingRequests as $existingRequest) {
+            $existingRequest->delete();
+        }
+    
+        $society->ownerId = $validatedData['claimerId'];
+    
+        $moderatorList = $society->moderatorList ?: [];
+        $claimerId = intval($validatedData['claimerId']);
+        if (!in_array($claimerId, $moderatorList)) {
+            $moderatorList[] = $claimerId;
+        }
+        $society->moderatorList = $moderatorList;
+    
+        $society->save();
+    
+        return redirect()->route('admin-panel')->with('success', 'The ownership of the society has been transferred successfully!');
+    }
+
+    public function denySocietyClaim(Request $request, $id)
+    {
+        $query = Query::find($id);
+    
+        if (!$query) {
+            return redirect()->route('admin-panel')->with('error', 'Query not found!');
+        }
+    
+        $query->delete();
+    
+        return redirect()->route('admin-panel')->with('success', 'Query denied successfully!');
+    }
+    
 
     public function deleteSociety(Request $request, $id)
     {

@@ -47,6 +47,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/update-society/{id}', [AdminController::class, 'updateSociety'])->name('update-society');
     Route::post('/admin/accept-society/{id}', [AdminController::class, 'acceptSociety'])->name('accept-society');
     Route::post('/admin/deny-society/{id}', [AdminController::class, 'denySociety'])->name('deny-society');
+    Route::post('/admin/accept-society-claim/{societyId}', [AdminController::class, 'acceptSocietyClaim'])->name('accept-society-claim');
+    Route::post('/admin/deny-society-claim/{id}', [AdminController::class, 'denySocietyClaim'])->name('deny-society-claim');
     Route::post('/admin/delete-society/{id}', [AdminController::class, 'deleteSociety'])->name('delete-society');
 });
 
@@ -65,6 +67,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
     Route::post('/edit-society/{societyId}', [SocietyController::class, 'editSociety'])->name('edit-society');
+    Route::post('/claim-society/{societyId}', [SocietyController::class, 'claimSociety'])->name('claim-society');
     Route::post('/delete-society/{societyId}', [SocietyController::class, 'deleteSociety'])->name('delete-society');
     Route::post('/bookmark/{postId}', [SocietyController::class, 'bookmarkPost'])->name('bookmark.post');
     Route::delete('/unbookmark/{postId}', [SocietyController::class, 'unbookmarkPost'])->name('unbookmark.post');

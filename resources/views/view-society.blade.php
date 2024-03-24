@@ -78,6 +78,20 @@
                      <i class="fas fa-user-cog"></i> Manage Moderators
                      </a>
                      @endif
+                     @if ($society->ownerId == -1 && in_array(auth()->user()->id, $society->memberList))
+                     @php
+                     $existingRequest = App\Models\Query::where('user_id', auth()->id())->where('society_id', $society->id)->exists();
+                     @endphp
+                     @if (!$existingRequest)
+                     <a href="#" class="btn btn-success" id="claimOwnershipBtn" data-toggle="modal" data-target="#claimSocietyModal">
+                     <i class="fas fa-hand-holding"></i> Claim Ownership
+                     </a>
+                     @else
+                     <button class="btn btn-success" disabled>
+                     <i class="fas fa-hand-holding"></i> Ownership Claim Pending
+                     </button>
+                     @endif
+                     @endif
                   </div>
                </div>
             </div>
@@ -363,6 +377,37 @@
                      </button>
                      <button type="submit" class="btn btn-success">
                      <i class="fas fa-check"></i> Update
+                     </button>
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Modal for Claiming Society -->
+      <div class="modal fade" id="claimSocietyModal" tabindex="-1" role="dialog" aria-labelledby="claimSocietyModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="claimSocietyModalLabel">Claim Ownership - {{ $society->societyName }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <div class="alert alert-info" role="alert">
+                     This society currently lacks both an owner and moderators. If you're interested, you can submit a claim request to take ownership.
+                  </div>
+                  <form id="claimSocietyForm" action="{{ route('claim-society', ['societyId' => $society->id]) }}" method="POST">
+                     @csrf
+                     <div class="form-group">
+                        <label for="claimReason">Reason:</label>
+                        <textarea id="claimReason" class="form-control" name="claimReason" required style="resize: none; height: 150px;" placeholder="What qualities would make you a strong candidate for ownership of this society?"></textarea>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" class="btn btn-success">
+                     <i class="fas fa-check"></i> Submit Claim Request
                      </button>
                   </form>
                </div>

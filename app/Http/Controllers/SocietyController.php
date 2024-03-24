@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Bookmark;
 use App\Models\SavedComment;
+use App\Models\Query;
 
 use Illuminate\Support\Facades\DB;
 
@@ -73,6 +74,27 @@ class SocietyController extends Controller
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Society details have been updated!');
     }
 
+    public function claimSociety(Request $request, $societyId)
+    {
+        $society = Society::findOrFail($societyId);
+        $user = auth()->user();
+
+        $validatedData = $request->validate([
+            'claimReason' => 'required',
+        ]);
+    
+        $claimRequest = Query::create([
+            'queryType' => 'Society Ownership Claim', 
+            'user_id' => auth()->id(), 
+            'username' => $user->username,
+            'society_id' => $societyId,
+            'societyName' => $society->societyName,
+            'description' => $validatedData['claimReason'],
+        ]);
+    
+        return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Your ownership claim request has been submitted!');
+    }
+    
     public function deleteSociety($societyId)
     {
         $society = Society::findOrFail($societyId);
@@ -320,16 +342,26 @@ class SocietyController extends Controller
             return response()->json(['error' => 'Society not found'], 404);
         }
     
-        $memberList = $society->memberList ?: [];
         $userId = auth()->user()->id;
     
-        $key = array_search($userId, $memberList);
-        if ($key !== false) {
-            unset($memberList[$key]);
+        // Remove user from memberList
+        $memberList = $society->memberList ?: [];
+        $memberKey = array_search($userId, $memberList);
+        if ($memberKey !== false) {
+            unset($memberList[$memberKey]);
         }
     
-        $society->update(['memberList' => $memberList]);
+        // Remove user from moderatorList
+        $moderatorList = $society->moderatorList ?: [];
+        $moderatorKey = array_search($userId, $moderatorList);
+        if ($moderatorKey !== false) {
+            unset($moderatorList[$moderatorKey]);
+        }
+    
+        // Update society with updated memberList and moderatorList
+        $society->update(['memberList' => array_values($memberList), 'moderatorList' => array_values($moderatorList)]);
     
         return response()->json(['success' => 'User left the society'], 200);
     }
+    
 }
