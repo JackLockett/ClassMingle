@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
+use App\Models\Badge;
 
 class RegisterController extends Controller
 {
@@ -37,6 +38,20 @@ class RegisterController extends Controller
         ]);
 
         $user->save();
+
+        // Check if there's already a row with the given user_id and badgeType
+        $existingBadge = Badge::where('user_id', $user->id)
+                            ->where('badgeType', 'New User')
+                            ->exists();
+
+        if (!$existingBadge) {
+            // Give the user a "New User" badge
+            $badge = new Badge([
+                'user_id' => $user->id,
+                'badgeType' => 'New User',
+            ]);
+            $badge->save();
+        }
 
         return redirect()->route('login')->with('success', 'Registration successful! You can now login!');
     }

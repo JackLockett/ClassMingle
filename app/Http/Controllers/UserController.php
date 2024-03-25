@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\FriendRequest;
 use App\Models\Friendship;
 use App\Models\Message;
+use App\Models\Badge;
 
 class UserController extends Controller
 {
@@ -96,11 +97,14 @@ class UserController extends Controller
         ->where('status', 'accepted')
         ->exists();
 
+        $badges = Badge::where('user_id', $id)->get();
+
         return view('student', [
             'student' => $student,
             'isPendingRequest' => $isPendingRequest,
             'isFriend' => $isFriend,
             'authId' => $authId,
+            'badges' => $badges,
         ]);
     }
 }

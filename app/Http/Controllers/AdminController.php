@@ -15,6 +15,7 @@ use App\Models\FriendRequest;
 use App\Models\Friendship;
 use App\Models\User;
 use App\Models\Query;
+use App\Models\Badge;
 
 class AdminController extends Controller
 {
@@ -117,6 +118,7 @@ class AdminController extends Controller
     public function acceptSociety(Request $request, $id)
     {
         $society = Society::find($id);
+        $societyOwner = $society->ownerId;
 
         if (!$society) {
             return response()->json(['error' => 'Society not found'], 404);
@@ -124,6 +126,20 @@ class AdminController extends Controller
 
         $society->approved = true;
         $society->save();
+
+        // Check if there's already a row with the given user_id and badgeType
+        $existingBadge = Badge::where('user_id', $societyOwner)
+                            ->where('badgeType', 'Created a Society')
+                            ->exists();
+
+        if (!$existingBadge) {
+            // Give the user a "Created a Society" badge
+            $badge = new Badge([
+                'user_id' => $societyOwner,
+                'badgeType' => 'Created a Society',
+            ]);
+            $badge->save();
+        }
 
         return redirect()->route('admin-panel')->with('success', 'Society approved successfully!');
     }

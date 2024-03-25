@@ -75,6 +75,15 @@
          .profile-action-card button {
          margin-right: 10px;
          }
+         .friends-list a {
+         display: inline-block;
+         color: #333;
+         text-decoration: none;
+         transition: color 0.3s ease;
+         }
+         .friends-list a:hover {
+         color: #007bff;
+         }
       </style>
    </head>
    <body>
@@ -139,29 +148,51 @@
          <div class="row justify-content-center">
             <div class="col-md-4">
                <div class="profile-card">
-                  <h4 class="profile-header"><i class="fas fa-award"></i>&nbsp;Badges</h4>
-                  <!-- Code for displaying badges will go here -->
-                  <div class="d-flex flex-wrap justify-content-center"> 
-                     <span class="badge bg-warning"><i class="fas fa-medal"></i> New User</span> 
-                     <span class="badge bg-secondary"><i class="fas fa-users"></i> Joined a Society</span> 
-                     <span class="badge bg-info"><i class="fas fa-edit"></i> Made a Post</span>
-                     <span class="badge bg-success"><i class="far fa-comment"></i> Made a Comment</span>
+                  <h4 class="profile-header"><i class="fas fa-award"></i>&nbsp;Badges ({{ count($badges) }})</h4>
+                  <!-- Code for displaying badges -->
+                  @if($badges->isNotEmpty())
+                  <div class="d-flex flex-wrap justify-content-center">
+                     @foreach($badges as $badge)
+                     @switch($badge->badgeType)
+                     @case('New User')
+                     <span class="badge" style="background-color: #2980b9; color: #fff;"><i class="fas fa-medal"></i> {{ $badge->badgeType }}</span> 
+                     @break
+                     @case('Created a Society')
+                     <span class="badge" style="background-color: #c0392b; color: #fff;"><i class="fas fa-flag"></i> {{ $badge->badgeType }}</span> 
+                     @break
+                     @case('Joined a Society')
+                     <span class="badge" style="background-color: #27ae60; color: #fff;"><i class="fas fa-users"></i> {{ $badge->badgeType }}</span> 
+                     @break
+                     @case('Made a Post')
+                     <span class="badge" style="background-color: #8e44ad; color: #fff;"><i class="fas fa-edit"></i> {{ $badge->badgeType }}</span>
+                     @break
+                     @case('Made a Comment')
+                     <span class="badge" style="background-color: #f39c12; color: #fff;"><i class="far fa-comment"></i> {{ $badge->badgeType }}</span>
+                     @break
+                     <!-- Add more cases for other badge types as needed -->
+                     @endswitch
+                     @endforeach
                   </div>
+                  @else
+                  <p>No badges found for this user.</p>
+                  @endif
                </div>
             </div>
             <div class="col-md-8">
                <div class="profile-card">
-                  <h4 class="profile-header"><i class="fas fa-user-friends"></i>&nbsp;Friends</h4>
+                  <h4 class="profile-header"><i class="fas fa-user-friends"></i>&nbsp;Friends ({{ count($student->friends) }}) </h4>
                   @if($student->friends->isEmpty())
                   <p>No friends to display.</p>
                   @else
-                  <ul class="list-group">
-                     @foreach($student->friends as $friend)
-                     <li class="list-group-item">
-                        <a href="{{ route('user.profile', ['id' => $friend->id]) }}">{{ $friend->username }}</a>
-                     </li>
-                     @endforeach
-                  </ul>
+                  <div class="friends-list">
+                     @php
+                     $friendLinks = [];
+                     foreach($student->friends as $friend) {
+                     $friendLinks[] = '<a href="' . route('user.profile', ['id' => $friend->id]) . '">' . $friend->username . '</a>';
+                     }
+                     echo implode(',&nbsp; &nbsp;', $friendLinks);
+                     @endphp
+                  </div>
                   @endif
                </div>
             </div>

@@ -9,6 +9,7 @@ use App\Models\Comment;
 use App\Models\Bookmark;
 use App\Models\SavedComment;
 use App\Models\Query;
+use App\Models\Badge;
 
 use Illuminate\Support\Facades\DB;
 
@@ -117,6 +118,20 @@ class SocietyController extends Controller
         $post->postComment = $validatedData['postComment'];
         $post->pinned = false;
         $post->save();
+
+        // Check if there's already a row with the given user_id and badgeType
+        $existingBadge = Badge::where('user_id', auth()->user()->id)
+                            ->where('badgeType', 'Made a Post')
+                            ->exists();
+
+        if (!$existingBadge) {
+            // Give the user a "Made a post" badge
+            $badge = new Badge([
+                'user_id' => auth()->user()->id,
+                'badgeType' => 'Made a Post',
+            ]);
+            $badge->save();
+        }
 
         return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
     }
@@ -256,6 +271,20 @@ class SocietyController extends Controller
         $comment->comment = $validatedData['comment'];
         $comment->save();
 
+        // Check if there's already a row with the given user_id and badgeType
+        $existingBadge = Badge::where('user_id', auth()->user()->id)
+                            ->where('badgeType', 'Made a Comment')
+                            ->exists();
+
+        if (!$existingBadge) {
+            // Give the user a "Made a Comment" badge
+            $badge = new Badge([
+                'user_id' => auth()->user()->id,
+                'badgeType' => 'Made a Comment',
+            ]);
+            $badge->save();
+        }
+
         return redirect()->back()->with('success', 'Comment added successfully');
     }
 
@@ -330,6 +359,20 @@ class SocietyController extends Controller
         }
     
         $society->update(['memberList' => $memberList]);
+
+        // Check if there's already a row with the given user_id and badgeType
+        $existingBadge = Badge::where('user_id', $userId)
+                            ->where('badgeType', 'Joined a Society')
+                            ->exists();
+
+        if (!$existingBadge) {
+            // Give the user a "Joined a Society" badge
+            $badge = new Badge([
+                'user_id' => $userId,
+                'badgeType' => 'Joined a Society',
+            ]);
+            $badge->save();
+        }
     
         return response()->json(['success' => 'User joined the society'], 200);
     }
