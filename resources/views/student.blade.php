@@ -213,15 +213,48 @@
                      @csrf
                      <div class="form-group">
                         <label for="messageField">Message:</label>
-                        <textarea id="messageField" class="form-control" name="messageField" required autocomplete="messageField" style="resize: none; height: 150px;"></textarea>
+                        <textarea id="messageField" class="form-control" name="messageField" maxlength="250" autocomplete="messageField" style="resize: none; height: 125px;" required></textarea>
                      </div>
-                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
-                     <button type="submit" class="btn btn-primary">Send Message</button>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCount"></span>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" id="sendMessageBtn" class="btn btn-success">
+                     <i class="fas fa-check"></i> Send Message
+                     </button>
                   </form>
                </div>
             </div>
          </div>
       </div>
+      <script>
+         // Function to update character count and disable button if input is empty
+         function updateCharacterCount() {
+            var commentLength = $('#messageField').val().length;
+            var totalLength = commentLength;
+            var remainingCharacters = 250 - totalLength;
+         
+            $('#characterCount').text(remainingCharacters);
+         
+            if (totalLength > 0) {
+                  $('#sendMessageBtn').prop('disabled', false);
+            } else {
+                  $('#sendMessageBtn').prop('disabled', true);
+            }
+         }
+         
+         // Update character count on input change
+         $('#messageField').on('input', function() {
+            updateCharacterCount();
+         });
+         
+         // Initialize character count on document ready
+         $(document).ready(function() {
+            updateCharacterCount();
+         });
+      </script>
       <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
       <script>
          function toggleFriendRequest(userId, isPending) {

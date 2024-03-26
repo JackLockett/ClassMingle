@@ -199,16 +199,19 @@
                      <div class="form-group">
                         <input type="hidden" name="societyType" value="Social">
                         <label for="postTitle">Post Title:</label>
-                        <input type="text" class="form-control" id="postTitle" name="postTitle" required>
+                        <input type="text" class="form-control" id="postTitle" name="postTitle" maxlength="40" required>
                      </div>
                      <div class="form-group">
                         <label for="postComment">Comment:</label>
-                        <textarea id="postComment" class="form-control" name="postComment" required autocomplete="postComment" style="resize: none; height: 150px;"></textarea>
+                        <textarea id="postComment" class="form-control" name="postComment" maxlength="250" autocomplete="postComment" style="resize: none; height: 125px;" required></textarea>
+                     </div>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCount"></span>
                      </div>
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">
                      <i class="fas fa-arrow-left"></i> Return
                      </button>
-                     <button type="submit" class="btn btn-success">
+                     <button type="submit" id="submitPostBtn" class="btn btn-success" disabled>
                      <i class="fas fa-check"></i> Submit Post
                      </button>
                   </form>
@@ -543,6 +546,32 @@
          
                   
                
+      </script>
+      <script>
+         // Function to update character count and disable button if input is empty
+         function updateCharacterCount() {
+            var commentLength = $('#postComment').val().length;
+            var totalLength = commentLength;
+            var remainingCharacters = 250 - totalLength;
+         
+            $('#characterCount').text(remainingCharacters);
+         
+            if (totalLength > 0) {
+                  $('#submitPostBtn').prop('disabled', false);
+            } else {
+                  $('#submitPostBtn').prop('disabled', true);
+            }
+         }
+         
+         // Update character count on input change
+         $('#postTitle, #postComment').on('input', function() {
+            updateCharacterCount();
+         });
+         
+         // Initialize character count on document ready
+         $(document).ready(function() {
+            updateCharacterCount();
+         });
       </script>
       @include('layouts.footer')
    </body>
