@@ -13,6 +13,8 @@ class Post extends Model
         'societyId',
         'postTitle',
         'postComment',
+        'likes',
+        'dislikes',
         'pinned',
     ];
 
@@ -21,7 +23,6 @@ class Post extends Model
         return $this->belongsTo(Society::class, 'societyId');
     }
     
-
     public function author()
     {
         return $this->belongsTo(User::class, 'authorId');
@@ -40,6 +41,11 @@ class Post extends Model
     public function bookmarks()
     {
         return $this->hasMany(Bookmark::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
     }
 
 }

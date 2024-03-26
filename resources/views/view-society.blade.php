@@ -144,10 +144,10 @@
                            <p class="card-text">{{ $post->postComment }}</p>
                            <div class="text-muted">
                               <small><a href="{{ route('view-post', ['societyId' => $society->id, 'postId' => $post->id]) }}">View Post</a></small>
-                              @if ($post->comments_count > 0)
                               <span class="ml-3">•</span>
                               <small class="ml-3">{{ $post->comments_count }} Comment{{ $post->comments_count != 1 ? 's' : '' }}</small>
-                              @endif
+                              <small class="ml-3"><i class="fas fa-thumbs-up"></i> {{ $post->likes }} Like{{ $post->likes != 1 ? 's' : '' }}</small>
+                              <small class="ml-3"><i class="fas fa-thumbs-down"></i> {{ $post->dislikes }} Dislike{{ $post->dislikes != 1 ? 's' : '' }}</small>
                            </div>
                         </div>
                      </div>

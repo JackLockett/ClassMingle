@@ -61,6 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
     Route::post('/delete-post/{postId}', [SocietyController::class, 'deletePost'])->name('delete-post');
     Route::post('/pin-post/{postId}', [SocietyController::class, 'pinPost'])->name('pin-post');
+    Route::post('/like-post/{postId}', [SocietyController::class, 'likePost'])->name('like-post');
+    Route::post('/dislike-post/{postId}', [SocietyController::class, 'dislikePost'])->name('dislike-post');
     Route::post('/post/{postId}/comment', [SocietyController::class, 'addComment'])->name('add-comment');
     Route::get('/posts/{postId}', [SocietyController::class, 'show'])->name('post.show');
     Route::get('/societies/{societyId}/posts/{postId}', [SocietyController::class, 'viewPost'])->name('view-post');

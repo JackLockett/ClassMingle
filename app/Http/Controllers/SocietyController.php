@@ -10,6 +10,7 @@ use App\Models\Bookmark;
 use App\Models\SavedComment;
 use App\Models\Query;
 use App\Models\Badge;
+use App\Models\Like;
 
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,52 @@ class SocietyController extends Controller
     
         return view('view-society', compact('society'));
     }
+
+    public function likePost($postId)
+    {
+        $user = auth()->user();
+        $post = Post::findOrFail($postId);
+        $like = $user->likes()->where('post_id', $postId)->first();
+    
+        if ($like && $like->is_like) {
+            // If the user has already liked the post, unlike it
+            $like->delete();
+            if ($post->likes > 0) { // Check if likes count is greater than 0
+                $post->decrement('likes'); // Decrement like count
+            }
+        } else {
+            // If the user hasn't liked the post, add the like
+            $user->likes()->updateOrCreate(['post_id' => $postId], ['is_like' => true]);
+            $post->increment('likes'); // Increment like count
+        }
+    
+        return response()->json(['likes' => $post->likes]);
+    }
+    
+    public function dislikePost($postId)
+    {
+        $user = auth()->user();
+        $post = Post::findOrFail($postId);
+        $like = $user->likes()->where('post_id', $postId)->first();
+    
+        if ($like && !$like->is_like) {
+            // If the user has already disliked the post, undislike it
+            $like->delete();
+            if ($post->dislikes > 0) { // Check if dislikes count is greater than 0
+                $post->decrement('dislikes'); // Decrement dislike count
+            }
+        } else {
+            // If the user hasn't disliked the post, add the dislike
+            $user->likes()->updateOrCreate(['post_id' => $postId], ['is_like' => false]);
+            $post->increment('dislikes'); // Increment dislike count
+        }
+    
+        return response()->json(['dislikes' => max($post->dislikes, 0)]);
+    }
+    
+    
+    
+
     
     public function createSociety(Request $request)
     {
@@ -117,6 +164,8 @@ class SocietyController extends Controller
         $post->postTitle = $validatedData['postTitle'];
         $post->postComment = $validatedData['postComment'];
         $post->pinned = false;
+        $post->likes = 0;
+        $post->dislikes = 0;
         $post->save();
 
         // Check if there's already a row with the given user_id and badgeType

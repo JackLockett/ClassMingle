@@ -5,6 +5,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>View Post</title>
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+      <meta name="csrf-token" content="{{ csrf_token() }}">
       <style>
          .comment {
          margin-bottom: 10px;
@@ -76,6 +77,16 @@
                   <i class="fas fa-trash"></i> Delete Post
                   </a>
                   @endif
+               </div>
+            </div>
+            <div class="card-footer">
+               <div>
+                  <button id="likeButton" class="btn btn-sm btn-link" onclick="likePost('{{ $post->id }}')">
+                  <i class="fas fa-thumbs-up"></i> {{ $post->likes }}
+                  </button>
+                  <button id="dislikeButton" class="btn btn-sm btn-link" onclick="dislikePost('{{ $post->id }}')">
+                  <i class="fas fa-thumbs-down"></i> {{ $post->dislikes }}
+                  </button>
                </div>
             </div>
          </div>
@@ -319,10 +330,37 @@
             });
          });
          
-         
          });
          
          
+      </script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script>
+         function likePost(postId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/like-post/' + postId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#likeButton').html('<i class="fas fa-thumbs-up"></i> ' + response.likes);
+                 }
+             });
+         }
+         
+         function dislikePost(postId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/dislike-post/' + postId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#dislikeButton').html('<i class="fas fa-thumbs-down"></i> ' + response.dislikes);
+                 }
+             });
+         }
       </script>
       @include('layouts.footer')
    </body>

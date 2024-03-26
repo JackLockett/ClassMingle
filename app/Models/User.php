@@ -22,4 +22,10 @@ class User extends Authenticatable
                     ->wherePivot('status', 'accepted');
     }
 
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+
 }
