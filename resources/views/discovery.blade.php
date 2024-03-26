@@ -50,13 +50,13 @@
             <div class="col-md-3">
                <div class="card border-info mb-3">
                   <div class="card-header">
-                     <b><i class="fas fa-check-circle text-info mr-2"></i>Suggested Societies</b>
+                     <b><i class="fas fa-users text-info mr-2"></i>Popular Societies</b>
                   </div>
                   <div class="card-body">
-                     @if($suggestedSocieties->isEmpty())
+                     @if($popularSocieties->isEmpty())
                      <p>No suggested societies are available at this time. Please check again later.</p>
                      @else
-                     @foreach($suggestedSocieties as $society)
+                     @foreach($popularSocieties as $society)
                      <p class="card-text">
                         <a href="{{ route('view-society', ['id' => $society->id]) }}">
                         {{ $society->societyName }}

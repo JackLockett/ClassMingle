@@ -14,15 +14,10 @@ class DiscoveryController extends Controller
         $userId = Auth::id();
         $allSocieties = Society::all();
     
-        $suggestedSocieties = $allSocieties->filter(function ($society) use ($userId) {
-            if (is_array($society->memberList)) {
-                $members = $society->memberList;
-            } else {
-                $members = json_decode($society->memberList, true);
-            }
-        
-            return $society->approved == 1 && !in_array($userId, $members);
-        })->shuffle()->take(10);
+        $popularSocieties = Society::where('approved', 1)
+            ->orderByDesc('memberList')
+            ->take(10)
+            ->get();
 
         $personalFeedPosts = Post::whereHas('society', function ($query) use ($userId) {
             $query->whereJsonContains('memberList', $userId);
@@ -34,6 +29,6 @@ class DiscoveryController extends Controller
 
         $personalFeedPosts = $personalFeedPosts->shuffle();
 
-        return view('discovery', compact('suggestedSocieties', 'personalFeedPosts'));
+        return view('discovery', compact('popularSocieties', 'personalFeedPosts'));
     }
 }
