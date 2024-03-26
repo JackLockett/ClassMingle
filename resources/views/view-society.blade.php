@@ -373,12 +373,15 @@
                      @csrf
                      <div class="form-group">
                         <label for="societyDesc">Description:</label>
-                        <textarea id="societyDesc" class="form-control" name="societyDesc" required autocomplete="societyDesc" style="resize: none; height: 150px;">{{ $society->societyDescription }}</textarea>
+                        <textarea id="societyDesc" class="form-control" maxlength="250" name="societyDesc" required autocomplete="societyDesc" style="resize: none; height: 125px;">{{ $society->societyDescription }}</textarea>
+                     </div>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCountSociety"></span>
                      </div>
                      <button type="button" class="btn btn-secondary" data-dismiss="modal">
                      <i class="fas fa-arrow-left"></i> Return
                      </button>
-                     <button type="submit" class="btn btn-success">
+                     <button type="submit" id="submitSocietyBtn" class="btn btn-success">
                      <i class="fas fa-check"></i> Update
                      </button>
                   </form>
@@ -548,29 +551,54 @@
                
       </script>
       <script>
-         // Function to update character count and disable button if input is empty
-         function updateCharacterCount() {
-            var commentLength = $('#postComment').val().length;
-            var totalLength = commentLength;
-            var remainingCharacters = 250 - totalLength;
+         // Function to update character count and disable button if input is empty (for posts)
+         function updatePostCharacterCount() {
+             var commentLength = $('#postComment').val().length;
+             var totalLength = commentLength;
+             var remainingCharacters = 250 - totalLength;
          
-            $('#characterCount').text(remainingCharacters);
+             $('#characterCount').text(remainingCharacters);
          
-            if (totalLength > 0) {
-                  $('#submitPostBtn').prop('disabled', false);
-            } else {
-                  $('#submitPostBtn').prop('disabled', true);
-            }
+             if (totalLength > 0) {
+                 $('#submitPostBtn').prop('disabled', false);
+             } else {
+                 $('#submitPostBtn').prop('disabled', true);
+             }
          }
          
-         // Update character count on input change
+         // Update character count on input change (for posts)
          $('#postTitle, #postComment').on('input', function() {
-            updateCharacterCount();
+             updatePostCharacterCount();
          });
          
-         // Initialize character count on document ready
+         // Initialize character count on document ready (for posts)
          $(document).ready(function() {
-            updateCharacterCount();
+             updatePostCharacterCount();
+         });
+         
+         // Function to update character count and disable button if input is empty (for societies)
+         function updateSocietyCharacterCount() {
+             var commentLength = $('#societyDesc').val().length;
+             var totalLength = commentLength;
+             var remainingCharacters = 250 - totalLength;
+         
+             $('#characterCountSociety').text(remainingCharacters);
+         
+             if (totalLength > 0) {
+                 $('#submitSocietyBtn').prop('disabled', false);
+             } else {
+                 $('#submitSocietyBtn').prop('disabled', true);
+             }
+         }
+         
+         // Update character count on input change (for societies)
+         $('#societyDesc').on('input', function() {
+             updateSocietyCharacterCount();
+         });
+         
+         // Initialize character count on document ready (for societies)
+         $(document).ready(function() {
+             updateSocietyCharacterCount();
          });
       </script>
       @include('layouts.footer')

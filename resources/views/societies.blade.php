@@ -199,11 +199,18 @@
                         </select>
                      </div>
                      <div class="form-group">
-                        <label for="societyDescription">Description:</label>
-                        <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
+                        <label for="academicSocietyDescription">Description:</label>
+                        <textarea id="academicSocietyDescription" class="form-control" name="academicSocietyDescription" maxlength="250" required autocomplete="societyDescription" style="resize: none; height: 125px;"></textarea>
                      </div>
-                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
-                     <button type="submit" class="btn btn-success">Request New Academic Society</button>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCountAcademicSociety"></span>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" id="submitAcademicSocietyBtn" class="btn btn-success">
+                     <i class="fas fa-check"></i> Request New Academic Society
+                     </button>
                   </form>
                </div>
             </div>
@@ -228,14 +235,26 @@
                      <div class="form-group">
                         <input id="societyType" name="societyType" value="Social" type="hidden">
                         <label for="societyName">Society Name:</label>
-                        <input type="text" class="form-control" id="societyName" name="societyName" required>
+                        <div class="input-group">
+                           <input type="text" class="form-control" id="societyName" name="societyName" maxlength="20" required>
+                           <div class="input-group-append">
+                              <span class="input-group-text" id="basic-addon2">Society</span>
+                           </div>
+                        </div>
                      </div>
                      <div class="form-group">
-                        <label for="societyDescription">Description:</label>
-                        <textarea id="societyDescription" class="form-control" name="societyDescription" required autocomplete="societyDescription" style="resize: none; height: 150px;"></textarea>
+                        <label for="socialSocietyDescription">Description:</label>
+                        <textarea id="socialSocietyDescription" class="form-control" name="socialSocietyDescription" maxlength="250" required autocomplete="socialSocietyDescription" style="resize: none; height: 125px;"></textarea>
                      </div>
-                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Return</button>
-                     <button type="submit" class="btn btn-success">Request New Social Society</button>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCountSocialSociety"></span>
+                     </div>
+                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                     <i class="fas fa-arrow-left"></i> Return
+                     </button>
+                     <button type="submit" id="submitSocialSocietyBtn" class="btn btn-success">
+                     <i class="fas fa-check"></i> Request New Social Society
+                     </button>
                   </form>
                </div>
             </div>
@@ -244,6 +263,57 @@
       <script>
          document.getElementById('createButton').addEventListener('click', function() {
             window.location.href = '/create-society';
+         });
+      </script>
+      <script>
+         // Function to update character count and disable button if input is empty (for social society description)
+         function updateSocialSocietyCharacterCount() {
+             var commentLength = $('#socialSocietyDescription').val().length;
+             var totalLength = commentLength;
+             var remainingCharacters = 250 - totalLength;
+         
+             $('#characterCountSocialSociety').text(remainingCharacters);
+         
+             if (totalLength > 0) {
+                 $('#submitSocialSocietyBtn').prop('disabled', false);
+             } else {
+                 $('#submitSocialSocietyBtn').prop('disabled', true);
+             }
+         }
+         
+         // Update character count on input change (for social society description)
+         $('#socialSocietyDescription').on('input', function() {
+             updateSocialSocietyCharacterCount();
+         });
+         
+         // Initialize character count on document ready (for social society description)
+         $(document).ready(function() {
+             updateSocialSocietyCharacterCount();
+         });
+         
+         // Function to update character count and disable button if input is empty (for academic society description)
+         function updateAcademicSocietyCharacterCount() {
+             var commentLength = $('#academicSocietyDescription').val().length;
+             var totalLength = commentLength;
+             var remainingCharacters = 250 - totalLength;
+         
+             $('#characterCountAcademicSociety').text(remainingCharacters);
+         
+             if (totalLength > 0) {
+                 $('#submitAcademicSocietyBtn').prop('disabled', false);
+             } else {
+                 $('#submitAcademicSocietyBtn').prop('disabled', true);
+             }
+         }
+         
+         // Update character count on input change (for academic society description)
+         $('#academicSocietyDescription').on('input', function() {
+             updateAcademicSocietyCharacterCount();
+         });
+         
+         // Initialize character count on document ready (for academic society description)
+         $(document).ready(function() {
+             updateAcademicSocietyCharacterCount();
          });
       </script>
       @include('layouts.footer')
