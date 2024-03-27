@@ -1,4 +1,36 @@
 {
-  "adjectives": ["happy", "lucky", "creative", "awesome", "super", "cool", "mysterious", "fantastic", "vibrant"],
-  "nouns": ["unicorn", "penguin", "robot", "ninja", "dragon", "wizard", "phoenix", "goblin", "mermaid"]
+  "adjectives": [
+    "smart",
+    "curious",
+    "learned",
+    "wise",
+    "clever",
+    "creative",
+    "focused",
+    "diligent",
+    "bright",
+    "studious",
+    "logical",
+    "imaginative",
+    "persistent",
+    "inquisitive",
+    "keen"
+  ],
+  "nouns": [
+    "learner",
+    "teacher",
+    "student",
+    "scholar",
+    "thinker",
+    "professor",
+    "researcher",
+    "pupil",
+    "tutor",
+    "mentor",
+    "academic",
+    "intellectual",
+    "enthusiast",
+    "expert",
+    "bookworm"
+  ]
 }

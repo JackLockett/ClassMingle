@@ -16,10 +16,10 @@ class RegisterController extends Controller
         $decodedJson = json_decode($jsonContents, true);
         
         $ukUniversities = [];
-        foreach ($decodedJson['universities'] as $university) {
+        foreach ($decodedJson as $university) {
             $ukUniversities[] = $university['name'];
         }
-
+    
         return view('register', ['ukUniversities' => $ukUniversities]);
     }
 
@@ -28,19 +28,26 @@ class RegisterController extends Controller
         $emailDomain = substr(strrchr($request->input('email'), "@"), 1);
 
         $selectedUniversity = $request->input('university');
-        $universityDomain = $this->getUniversityDomain($selectedUniversity);
+        $universityDomain = $this->getUniversityDomains($selectedUniversity);
 
         $this->validate($request, [
             'email' => 'required|email|unique:users|allowed_email_domain',
             'username' => 'required|min:4|unique:users',
             'university' => 'required|not_in:""',
             'password' => 'required|min:8',
+        ], [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'email.unique' => 'Email already exists.',
+            'username.required' => 'Username is required.',
+            'username.min' => 'Username must be at least :min characters.',
+            'username.unique' => 'Username already exists.',
+            'university.required' => 'University is required.',
+            'university.not_in' => 'Please select a valid university.',
+            'password.required' => 'Password is required.',
+            'password.min' => 'Password must be at least :min characters.',
         ]);
         
-        if ($emailDomain !== $universityDomain) {
-            return redirect()->back()->withErrors(['university' => 'The email domain does not match the selected university.'])->withInput();
-        }
-
         $user = new User([
             'email' => $request->input('email'),
             'username' => $request->input('username'),
@@ -72,25 +79,25 @@ class RegisterController extends Controller
         $filePath = public_path('universities.json');
         $jsonContents = file_get_contents($filePath);
         $decodedJson = json_decode($jsonContents, true);
-        
-        return $decodedJson['universities'] ?? [];
-    }
     
-    protected function getUniversityDomain($selectedUniversity)
+        return $decodedJson ?? [];
+    }    
+    
+    protected function getUniversityDomains($selectedUniversity)
     {
         $filePath = public_path('universities.json');
         $jsonContents = file_get_contents($filePath);
         $decodedJson = json_decode($jsonContents, true);
-        
-        foreach ($decodedJson['universities'] as $university) {
+    
+        foreach ($decodedJson as $university) {
             if ($university['name'] === $selectedUniversity) {
-                return $university['domain'];
+                return $university['domains'];
             }
         }
     
-        return null;
-    }
-
+        return [];
+    }      
+    
     public function checkUsernameAvailability($username)
     {
         $isAvailable = !User::where('username', $username)->exists();
@@ -102,8 +109,8 @@ class RegisterController extends Controller
     {
         $emailDomain = substr(strrchr($value, "@"), 1);
         $selectedUniversity = $validator->getData()['university']; 
-        $universityDomain = $this->getUniversityDomain($selectedUniversity);
-
-        return $emailDomain === $universityDomain;
+        $universityDomains = $this->getUniversityDomains($selectedUniversity);
+    
+        return in_array($emailDomain, $universityDomains);
     }
 }

@@ -40,7 +40,7 @@
                         <div class="form-group row">
                            <label for="email" class="col-md-3 col-form-label">Email</label>
                            <div class="col-md-9">
-                              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                              <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" maxlength="32" name="email" value="{{ old('email') }}" required autocomplete="email">
                               @error('email')
                               <span class="invalid-feedback" role="alert">
                               <strong>{{ $message }}</strong>
@@ -51,7 +51,7 @@
                         <div class="form-group row">
                            <label for="username" class="col-md-3 col-form-label">Username</label>
                            <div class="input-group col-md-9">
-                              <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username">
+                              <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" maxlength="24" value="{{ old('username') }}" required autocomplete="username">
                               <div class="input-group-append">
                                  <button type="button" id="generateButton" class="btn btn-outline-success" onclick="generateUsername()">Generate</button>
                               </div>
@@ -81,7 +81,7 @@
                         <div class="form-group row">
                            <label for="password" class="col-md-3 col-form-label">Password</label>
                            <div class="col-md-9">
-                              <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
+                              <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" maxlength="32" name="password" required autocomplete="current-password">
                               @error('password')
                               <span class="invalid-feedback" role="alert">
                               <strong>{{ $message }}</strong>
@@ -125,16 +125,20 @@
              }
          
              function getRandomUsername() {
-                 return fetch('words.json')
-                     .then(response => response.json())
-                     .then(data => {
-                         var words = data;
-                         var randomAdjective1 = getRandomElementFromArray(words.adjectives);
-                         var randomAdjective2 = getRandomElementFromArray(words.adjectives.filter(adj => adj !== randomAdjective1));
-                         var randomNoun = getRandomElementFromArray(words.nouns);
-                         return randomAdjective1 + '_' + randomAdjective2 + '_' + randomNoun;
-                     });
-             }
+               return fetch('words.json')
+                  .then(response => response.json())
+                  .then(data => {
+                        var words = data;
+                        var randomAdjective = getRandomElementFromArray(words.adjectives);
+                        var randomNoun = getRandomElementFromArray(words.nouns);
+                        var randomNumber = Math.floor(Math.random() * 1000);
+                        return randomAdjective + '_' + randomNoun + '_' + randomNumber;
+                  });
+            }
+         
+            function getRandomElementFromArray(arr) {
+               return arr[Math.floor(Math.random() * arr.length)];
+            }
          
              function setGeneratedUsername(username) {
                  usernameInput.value = username;
