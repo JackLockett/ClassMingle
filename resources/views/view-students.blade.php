@@ -40,7 +40,7 @@
             <div class="col-md-12">
                <h3 class="text-center mb-4">Students</h3>
                <div class="alert alert-info text-center" role="alert">
-                  <strong>Note:</strong> Only students from your university will be displayed here. If you haven't added a university, you can do so in your profile settings.
+                  <strong>Note:</strong> Only students from <strong>{{ $currentUserUniversity }}</strong> will be displayed here.
                </div>
                <div class="input-group mb-3">
                   <input type="text" class="form-control search-input" id="searchUsername" placeholder="Search by username" {{ count($students) > 0 ? '' : 'disabled' }}>

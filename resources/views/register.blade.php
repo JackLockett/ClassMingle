@@ -63,6 +63,22 @@
                            </div>
                         </div>
                         <div class="form-group row">
+                           <label for="university" class="col-md-3 col-form-label">University</label>
+                           <div class="input-group col-md-9">
+                              <select class="form-control" id="university" name="university" required>
+                                 <option value="">Select University</option>
+                                 @foreach($ukUniversities as $uni)
+                                 <option value="{{ $uni }}">{{ $uni }}</option>
+                                 @endforeach
+                              </select>
+                              @error('university')
+                              <span class="invalid-feedback" role="alert">
+                              <strong>{{ $message }}</strong>
+                              </span>
+                              @enderror
+                           </div>
+                        </div>
+                        <div class="form-group row">
                            <label for="password" class="col-md-3 col-form-label">Password</label>
                            <div class="col-md-9">
                               <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">

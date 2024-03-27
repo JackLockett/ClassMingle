@@ -1,0 +1,300 @@
+{
+    "universities": [
+        {
+            "name": "University of Oxford",
+            "domain": "ox.ac.uk"
+        },
+        {
+            "name": "University of Cambridge",
+            "domain": "cam.ac.uk"
+        },
+        {
+            "name": "Imperial College London",
+            "domain": "imperial.ac.uk"
+        },
+        {
+            "name": "London School of Economics and Political Science",
+            "domain": "lse.ac.uk"
+        },
+        {
+            "name": "University of Edinburgh",
+            "domain": "ed.ac.uk"
+        },
+        {
+            "name": "University College London",
+            "domain": "ucl.ac.uk"
+        },
+        {
+            "name": "University of Manchester",
+            "domain": "manchester.ac.uk"
+        },
+        {
+            "name": "University of Bristol",
+            "domain": "bristol.ac.uk"
+        },
+        {
+            "name": "University of Warwick",
+            "domain": "warwick.ac.uk"
+        },
+        {
+            "name": "King's College London",
+            "domain": "kcl.ac.uk"
+        },
+        {
+            "name": "University of Glasgow",
+            "domain": "glasgow.ac.uk"
+        },
+        {
+            "name": "University of Birmingham",
+            "domain": "bham.ac.uk"
+        },
+        {
+            "name": "University of Southampton",
+            "domain": "soton.ac.uk"
+        },
+        {
+            "name": "University of Sheffield",
+            "domain": "sheffield.ac.uk"
+        },
+        {
+            "name": "University of Leeds",
+            "domain": "leeds.ac.uk"
+        },
+        {
+            "name": "University of Nottingham",
+            "domain": "nottingham.ac.uk"
+        },
+        {
+            "name": "University of Liverpool",
+            "domain": "liv.ac.uk"
+        },
+        {
+            "name": "University of Newcastle upon Tyne",
+            "domain": "ncl.ac.uk"
+        },
+        {
+            "name": "Queen Mary University of London",
+            "domain": "qmul.ac.uk"
+        },
+        {
+            "name": "Durham University",
+            "domain": "durham.ac.uk"
+        },
+        {
+            "name": "University of St Andrews",
+            "domain": "st-andrews.ac.uk"
+        },
+        {
+            "name": "University of Exeter",
+            "domain": "exeter.ac.uk"
+        },
+        {
+            "name": "University of Sussex",
+            "domain": "sussex.ac.uk"
+        },
+        {
+            "name": "University of York",
+            "domain": "york.ac.uk"
+        },
+        {
+            "name": "University of Reading",
+            "domain": "reading.ac.uk"
+        },
+        {
+            "name": "Loughborough University",
+            "domain": "lboro.ac.uk"
+        },
+        {
+            "name": "University of Bath",
+            "domain": "bath.ac.uk"
+        },
+        {
+            "name": "Royal Holloway, University of London",
+            "domain": "rhul.ac.uk"
+        },
+        {
+            "name": "University of Surrey",
+            "domain": "surrey.ac.uk"
+        },
+        {
+            "name": "University of Leicester",
+            "domain": "le.ac.uk"
+        },
+        {
+            "name": "University of East Anglia",
+            "domain": "uea.ac.uk"
+        },
+        {
+            "name": "University of Dundee",
+            "domain": "dundee.ac.uk"
+        },
+        {
+            "name": "Cardiff University",
+            "domain": "cardiff.ac.uk"
+        },
+        {
+            "name": "University of Aberdeen",
+            "domain": "abdn.ac.uk"
+        },
+        {
+            "name": "City, University of London",
+            "domain": "city.ac.uk"
+        },
+        {
+            "name": "Heriot-Watt University",
+            "domain": "hw.ac.uk"
+        },
+        {
+            "name": "University of Sussex",
+            "domain": "sussex.ac.uk"
+        },
+        {
+            "name": "University of Essex",
+            "domain": "essex.ac.uk"
+        },
+        {
+            "name": "University of Buckingham",
+            "domain": "buckingham.ac.uk"
+        },
+        {
+            "name": "University of Greenwich",
+            "domain": "greenwich.ac.uk"
+        },
+        {
+            "name": "University of Hertfordshire",
+            "domain": "herts.ac.uk"
+        },
+        {
+            "name": "University of Hull",
+            "domain": "hull.ac.uk"
+        },
+        {
+            "name": "University of Kent",
+            "domain": "kent.ac.uk"
+        },
+        {
+            "name": "Kingston University",
+            "domain": "kingston.ac.uk"
+        },
+        {
+            "name": "University of Lincoln",
+            "domain": "lincoln.ac.uk"
+        },
+        {
+            "name": "Liverpool Hope University",
+            "domain": "hope.ac.uk"
+        },
+        {
+            "name": "Liverpool John Moores University",
+            "domain": "ljmu.ac.uk"
+        },
+        {
+            "name": "London Metropolitan University",
+            "domain": "londonmet.ac.uk"
+        },
+        {
+            "name": "London South Bank University",
+            "domain": "lsbu.ac.uk"
+        },
+        {
+            "name": "Manchester Metropolitan University",
+            "domain": "mmu.ac.uk"
+        },
+        {
+            "name": "Middlesex University",
+            "domain": "mdx.ac.uk"
+        },
+        {
+            "name": "Newcastle University",
+            "domain": "ncl.ac.uk"
+        },
+        {
+            "name": "Northumbria University",
+            "domain": "northumbria.ac.uk"
+        },
+        {
+            "name": "Nottingham Trent University",
+            "domain": "ntu.ac.uk"
+        },
+        {
+            "name": "Open University",
+            "domain": "open.ac.uk"
+        },
+        {
+            "name": "Oxford Brookes University",
+            "domain": "brookes.ac.uk"
+        },
+        {
+            "name": "Plymouth University",
+            "domain": "plymouth.ac.uk"
+        },
+        {
+            "name": "Portsmouth University",
+            "domain": "port.ac.uk"
+        },
+        {
+            "name": "Queen's University Belfast",
+            "domain": "qub.ac.uk"
+        },
+        {
+            "name": "Royal Veterinary College",
+            "domain": "rvc.ac.uk"
+        },
+        {
+            "name": "Salford University",
+            "domain": "salford.ac.uk"
+        },
+        {
+            "name": "Sheffield Hallam University",
+            "domain": "shu.ac.uk"
+        },
+        {
+            "name": "Southampton Solent University",
+            "domain": "solent.ac.uk"
+        },
+        {
+            "name": "Staffordshire University",
+            "domain": "staffs.ac.uk"
+        },
+        {
+            "name": "Swansea University",
+            "domain": "swansea.ac.uk"
+        },
+        {
+            "name": "Teesside University",
+            "domain": "tees.ac.uk"
+        },
+        {
+            "name": "University of the Arts London",
+            "domain": "arts.ac.uk"
+        },
+        {
+            "name": "University of the West of England",
+            "domain": "uwe.ac.uk"
+        },
+        {
+            "name": "University of Wales Trinity Saint David",
+            "domain": "uwtsd.ac.uk"
+        },
+        {
+            "name": "University of West London",
+            "domain": "uwl.ac.uk"
+        },
+        {
+            "name": "University of Westminster",
+            "domain": "westminster.ac.uk"
+        },
+        {
+            "name": "University of Wolverhampton",
+            "domain": "wlv.ac.uk"
+        },
+        {
+            "name": "University of Worcester",
+            "domain": "worc.ac.uk"
+        },
+        {
+            "name": "York St John University",
+            "domain": "yorksj.ac.uk"
+        }
+    ]
+}

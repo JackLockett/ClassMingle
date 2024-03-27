@@ -25,6 +25,13 @@
          .form-group textarea {
          resize: none;
          }
+         .button-group {
+         display: inline-flex;
+         align-items: center;
+         }
+         .button-group .btn {
+         margin-right: 5px; 
+         }
       </style>
    </head>
    <body>
@@ -88,14 +95,19 @@
                      </div>
                      <div class="text-muted">
                         <small>{{ $response->created_at->diffForHumans() }}</small>
-                        <button class="btn btn-sm {{ $response->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $response->id }}">
-                        {{ $response->isSaved() ? 'Unsave' : 'Save' }}
-                        </button>
-                        @if (auth()->user()->id == $response->user_id)
-                        <button class="btn btn-sm btn-danger ml-2 delete-response-btn" data-toggle="modal" data-target="#confirmDeleteResponse" data-response-id="{{ $response->id }}">
-                        <i class="fas fa-trash"></i> Delete
-                        </button>
-                        @endif
+                        <div class="button-group ml-2">
+                           <button class="btn btn-sm {{ $response->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} saveButton" data-comment-id="{{ $response->id }}">
+                           {{ $response->isSaved() ? 'Unsave' : 'Save' }}
+                           </button>
+                           @if (
+                           (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
+                           ($response->user_id == auth()->user()->id)
+                           )
+                           <button class="btn btn-sm btn-danger delete-response-btn" data-toggle="modal" data-target="#confirmDeleteResponse" data-response-id="{{ $response->id }}">
+                           <i class="fas fa-trash"></i> Delete
+                           </button>
+                           @endif
+                        </div>
                      </div>
                   </div>
                </div>

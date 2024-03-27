@@ -18,7 +18,6 @@ class UserController extends Controller
         $currentUser = User::findOrFail($currentUserId);
         $currentUserUniversity = $currentUser->university;
     
-        // Filter students by the same university as the current user and non-empty university
         $students = User::where('role', 'user')
                         ->whereNotNull('university')
                         ->where('university', $currentUserUniversity)
@@ -31,7 +30,38 @@ class UserController extends Controller
         ]);
     }
     
-       
+    public function showProfile($id)
+    {
+        $authId = auth()->id();
+        $student = User::findOrFail($id);
+
+        $isPendingRequest = FriendRequest::where('sender_id', auth()->id())
+                                         ->where('receiver_id', $student->id)
+                                         ->where('status', 'pending')
+                                         ->exists();
+
+        $isFriend = Friendship::where(function ($query) use ($student) {
+        $query->where('user_id', Auth::id())
+                ->where('friend_id', $student->id);
+        })
+        ->orWhere(function ($query) use ($student) {
+            $query->where('user_id', $student->id)
+                    ->where('friend_id', Auth::id());
+        })
+        ->where('status', 'accepted')
+        ->exists();
+
+        $badges = Badge::where('user_id', $id)->get();
+
+        return view('student', [
+            'student' => $student,
+            'isPendingRequest' => $isPendingRequest,
+            'isFriend' => $isFriend,
+            'authId' => $authId,
+            'badges' => $badges,
+        ]);
+    }
+
     public function sendMessage(Request $request, $id)
     {
         $currentUserId = Auth::id();
@@ -74,37 +104,5 @@ class UserController extends Controller
         $message->update(['read' => 0]);
         
         return redirect()->back()->with('success', 'Message marked as unread successfully.');
-    }
-    
-    public function showProfile($id)
-    {
-        $authId = auth()->id();
-        $student = User::findOrFail($id);
-
-        $isPendingRequest = FriendRequest::where('sender_id', auth()->id())
-                                         ->where('receiver_id', $student->id)
-                                         ->where('status', 'pending')
-                                         ->exists();
-
-        $isFriend = Friendship::where(function ($query) use ($student) {
-        $query->where('user_id', Auth::id())
-                ->where('friend_id', $student->id);
-        })
-        ->orWhere(function ($query) use ($student) {
-            $query->where('user_id', $student->id)
-                    ->where('friend_id', Auth::id());
-        })
-        ->where('status', 'accepted')
-        ->exists();
-
-        $badges = Badge::where('user_id', $id)->get();
-
-        return view('student', [
-            'student' => $student,
-            'isPendingRequest' => $isPendingRequest,
-            'isFriend' => $isFriend,
-            'authId' => $authId,
-            'badges' => $badges,
-        ]);
     }
 }

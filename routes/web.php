@@ -14,6 +14,8 @@ use App\Http\Controllers\DiscoveryController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PostController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -30,17 +32,22 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+# Login Controller
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+# Register Controller
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/check-username-availability/{username}', [RegisterController::class, 'checkUsernameAvailability']);
 
+# FAQ Controller
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');
 
 Route::middleware(['auth', 'admin'])->group(function () {
+
+    # Admin Controller
     Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin-panel');
     Route::post('/admin/update-user/{id}', [AdminController::class, 'updateUser'])->name('update-user');
     Route::post('/admin/delete-user/{id}', [AdminController::class, 'deleteUser'])->name('delete-user');
@@ -53,42 +60,51 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/societies', [SocietyController::class, 'index'])->name('societies');  
+
+    # Society Controller
+    Route::get('/societies', [SocietyController::class, 'index'])->name('societies');                                                                                   
     Route::get('/societies/{id}', [SocietyController::class, 'viewSocietyInfo'])->name('view-society');
-    Route::post('/promote-to-moderator/{societyId}', [SocietyController::class, 'promoteToModerator'])->name('promote-to-moderator');
-    Route::post('/demote-moderator/{societyId}', [SocietyController::class, 'demoteModerator'])->name('demote-moderator');
     Route::post('/create-society', [SocietyController::class, 'createSociety'])->name('create-society');
-    Route::post('/create-post/{societyId}', [SocietyController::class, 'createPost'])->name('create-post');
-    Route::post('/delete-post/{postId}', [SocietyController::class, 'deletePost'])->name('delete-post');
-    Route::post('/pin-post/{postId}', [SocietyController::class, 'pinPost'])->name('pin-post');
-    Route::post('/like-post/{postId}', [SocietyController::class, 'likePost'])->name('like-post');
-    Route::post('/dislike-post/{postId}', [SocietyController::class, 'dislikePost'])->name('dislike-post');
-    Route::post('/post/{postId}/comment', [SocietyController::class, 'addComment'])->name('add-comment');
-    Route::get('/posts/{postId}', [SocietyController::class, 'show'])->name('post.show');
-    Route::get('/societies/{societyId}/posts/{postId}', [SocietyController::class, 'viewPost'])->name('view-post');
     Route::post('/join-society/{societyId}', [SocietyController::class, 'joinSociety'])->name('join-society');
     Route::post('/leave-society/{societyId}', [SocietyController::class, 'leaveSociety'])->name('leave-society');
     Route::post('/edit-society/{societyId}', [SocietyController::class, 'editSociety'])->name('edit-society');
     Route::post('/claim-society/{societyId}', [SocietyController::class, 'claimSociety'])->name('claim-society');
     Route::post('/delete-society/{societyId}', [SocietyController::class, 'deleteSociety'])->name('delete-society');
-    Route::post('/bookmark/{postId}', [SocietyController::class, 'bookmarkPost'])->name('bookmark.post');
-    Route::delete('/unbookmark/{postId}', [SocietyController::class, 'unbookmarkPost'])->name('unbookmark.post');
-    Route::get('/check-bookmark/{postId}', [SocietyController::class, 'checkBookmark'])->name('check-bookmark');
-    Route::post('save-comment/{commentId}', [SocietyController::class, 'saveComment'])->name('save-comment');
-    Route::delete('/unsave-comment/{commentId}', [SocietyController::class, 'unsaveComment'])->name('unsave-comment');
-    Route::delete('/delete-comment/{commentId}', [SocietyController::class, 'deleteComment'])->name('delete-comment');
+    Route::post('/promote-to-moderator/{societyId}', [SocietyController::class, 'promoteToModerator'])->name('promote-to-moderator');
+    Route::post('/demote-moderator/{societyId}', [SocietyController::class, 'demoteModerator'])->name('demote-moderator');
 
+    # Post Controller
+    Route::get('/posts/{postId}', [PostController::class, 'show'])->name('post.show');
+    Route::get('/societies/{societyId}/posts/{postId}', [PostController::class, 'viewPost'])->name('view-post');
+    Route::post('/create-post/{societyId}', [PostController::class, 'createPost'])->name('create-post');
+    Route::post('/delete-post/{postId}', [PostController::class, 'deletePost'])->name('delete-post');
+    Route::post('/pin-post/{postId}', [PostController::class, 'pinPost'])->name('pin-post');
+    Route::post('/like-post/{postId}', [PostController::class, 'likePost'])->name('like-post');
+    Route::post('/dislike-post/{postId}', [PostController::class, 'dislikePost'])->name('dislike-post');
+    Route::post('/bookmark/{postId}', [PostController::class, 'bookmarkPost'])->name('bookmark.post');
+    Route::delete('/unbookmark/{postId}', [PostController::class, 'unbookmarkPost'])->name('unbookmark.post');
+    Route::get('/check-bookmark/{postId}', [PostController::class, 'checkBookmark'])->name('check-bookmark');
+
+    #Comment Controller
     Route::get('/societies/{societyId}/posts/{postId}/comments/{commentId}', [CommentController::class, 'viewComment'])->name('view-comment');
+    Route::post('save-comment/{commentId}', [CommentController::class, 'saveComment'])->name('save-comment');
+    Route::delete('/unsave-comment/{commentId}', [CommentController::class, 'unsaveComment'])->name('unsave-comment');
+    Route::post('/post/{postId}/comment', [CommentController::class, 'addComment'])->name('add-comment');
+    Route::delete('/delete-comment/{commentId}', [CommentController::class, 'deleteComment'])->name('delete-comment');
     Route::post('/societies/{societyId}/posts/{postId}/comments/{commentId}/respond', [CommentController::class, 'respondToComment'])->name('respond-to-comment');
 
+    #Account Controller
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     Route::post('/change-email', [AccountController::class, 'changeEmail'])->name('change-email');
     Route::post('/change-password', [AccountController::class, 'changePassword'])->name('change-password');
     Route::post('/delete-account', [AccountController::class, 'deleteAccount'])->name('delete-account');
 
+    #Profile Controller
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile-update', [ProfileController::class, 'updateProfile'])->name('profile-update');
+    Route::delete('/delete-message/{id}', [ProfileController::class, 'deleteMessage'])->name('delete-message');
 
+    #User Controller
     Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
     Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
     Route::post('/send-message/{id}', [UserController::class, 'sendMessage'])->name('send-message');
@@ -96,15 +112,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/mark-message/{id}', [UserController::class, 'markMessage'])->name('mark-message');
     Route::post('/unmark-message/{id}', [UserController::class, 'unmarkMessage'])->name('unmark-message');
 
+    #Discovery Controller
     Route::get('/discovery', [DiscoveryController::class, 'index'])->name('discovery');
 
+    #Friend Controller
     Route::post('/send-friend-request', [FriendController::class, 'sendFriendRequest'])->name('sendFriendRequest');
     Route::post('/cancel-friend-request', [FriendController::class, 'cancelFriendRequest'])->name('cancelFriendRequest');
     Route::post('/accept-friend-request', [FriendController::class, 'acceptFriendRequest'])->name('acceptFriendRequest');
     Route::post('/deny-friend-request', [FriendController::class, 'denyFriendRequest'])->name('denyFriendRequest');
     Route::post('/delete-pending-request', [FriendController::class, 'deletePendingRequest'])->name('delete-pending-request');
     Route::post('/remove-friend', [FriendController::class, 'removeFriend'])->name('removeFriend');
-    Route::delete('/delete-message/{id}', [ProfileController::class, 'deleteMessage'])->name('delete-message');
 });
 
 

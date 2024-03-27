@@ -23,6 +23,13 @@
          .form-group textarea {
          resize: none;
          }
+         .button-group {
+         display: inline-flex;
+         align-items: center;
+         }
+         .button-group .btn {
+         margin-right: 5px;
+         }
       </style>
    </head>
    <body>
@@ -53,7 +60,8 @@
          </a>
          <div class="card">
             <div class="card-body">
-               <h2 class="card-title">{{ $post->postTitle }}</h2>
+               <h3 class="card-title">{{ $post->postTitle }}</h3>
+               <hr>
                <p class="card-text">{{ $post->postComment }}</p>
                <p class="card-text">
                   <small class="text-muted">
@@ -68,18 +76,8 @@
                   • {{ $post->created_at->diffForHumans() }}
                   </small>
                </p>
-               <div class="d-flex justify-content-between align-items-end">
-                  <button id="bookmarkButton" class="btn btn-sm {{ $post->isBookmarked() ? 'btn-primary' : 'btn-outline-primary' }}">
-                  {{ $post->isBookmarked() ? 'Unbookmark Post' : 'Bookmark Post' }}
-                  </button>
-                  @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
-                  <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeletePost">
-                  <i class="fas fa-trash"></i> Delete Post
-                  </a>
-                  @endif
-               </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer d-flex justify-content-between align-items-center">
                <div>
                   <button id="likeButton" class="btn btn-sm btn-link" onclick="likePost('{{ $post->id }}')">
                   <i class="fas fa-thumbs-up"></i> {{ $post->likes }}
@@ -87,6 +85,19 @@
                   <button id="dislikeButton" class="btn btn-sm btn-link" onclick="dislikePost('{{ $post->id }}')">
                   <i class="fas fa-thumbs-down"></i> {{ $post->dislikes }}
                   </button>
+               </div>
+               <div class="d-flex align-items-center">
+                  <button id="bookmarkButton" class="btn btn-sm {{ $post->isBookmarked() ? 'btn-primary' : 'btn-outline-primary' }}">
+                  {{ $post->isBookmarked() ? 'Unbookmark Post' : 'Bookmark Post' }}
+                  </button>
+                  @if (
+                  (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
+                  ($post->authorId == auth()->user()->id)
+                  )
+                  <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeletePost">
+                  <i class="fas fa-trash"></i> Delete Post
+                  </a>
+                  @endif
                </div>
             </div>
          </div>
@@ -113,14 +124,19 @@
                      </div>
                      <div class="text-muted" style="display: inline-block;">
                         <small>{{ $comment->created_at->diffForHumans() }}</small>
-                        <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} ml-2 saveButton" data-comment-id="{{ $comment->id }}">
-                        {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
-                        </button>
-                        @if (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList))
-                        <a href="#" class="btn btn-sm btn-danger ml-2 delete-comment-btn" data-toggle="modal" data-target="#confirmDeleteComment" data-comment-id="{{ $comment->id }}">
-                        <i class="fas fa-trash"></i> Delete
-                        </a>
-                        @endif
+                        <div class="button-group ml-2">
+                           <button class="btn btn-sm {{ $comment->isSaved() ? 'btn-primary' : 'btn-outline-primary' }} saveButton" data-comment-id="{{ $comment->id }}">
+                           {{ $comment->isSaved() ? 'Unsave' : 'Save' }}
+                           </button>
+                           @if (
+                           (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
+                           ($comment->user_id == auth()->user()->id)
+                           )
+                           <a href="#" class="btn btn-sm btn-danger delete-comment-btn" data-toggle="modal" data-target="#confirmDeleteComment" data-comment-id="{{ $comment->id }}">
+                           <i class="fas fa-trash"></i> Delete
+                           </a>
+                           @endif
+                        </div>
                      </div>
                   </div>
                   <p>{{ $comment->comment }}</p>

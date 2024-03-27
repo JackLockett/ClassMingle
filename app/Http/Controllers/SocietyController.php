@@ -4,13 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Society;
-use App\Models\Post;
-use App\Models\Comment;
-use App\Models\Bookmark;
-use App\Models\SavedComment;
-use App\Models\Query;
 use App\Models\Badge;
-use App\Models\Like;
 
 use Illuminate\Support\Facades\DB;
 
@@ -21,10 +15,23 @@ class SocietyController extends Controller
         $academicSocieties = DB::table('societies')->where('societyType', 'Academic')->where('approved', 1)->paginate(6, ['*'], 'academic_page');
         $socialSocieties = DB::table('societies')->where('societyType', 'Social')->where('approved', 1)->paginate(6, ['*'], 'social_page');
     
-        return view('societies', compact('academicSocieties', 'socialSocieties'));
+        $filePath = public_path('subjects.json');
+        $jsonContents = file_get_contents($filePath);
+        $subjects = json_decode($jsonContents, true)['subjects'];
+    
+        $allSocieties = array_merge($academicSocieties->items(), $socialSocieties->items());
+    
+        // Remove subjects that already have a corresponding society
+        foreach ($allSocieties as $society) {
+            $index = array_search($society->societyName, $subjects);
+            if ($index !== false) {
+                unset($subjects[$index]);
+            }
+        }
+    
+        return view('societies', compact('academicSocieties', 'socialSocieties', 'subjects'));
     }
     
-
     public function viewSocietyInfo($id)
     {
         $society = Society::with(['posts' => function ($query) {
@@ -33,79 +40,103 @@ class SocietyController extends Controller
     
         return view('view-society', compact('society'));
     }
-
-    public function likePost($postId)
-    {
-        $user = auth()->user();
-        $post = Post::findOrFail($postId);
-        $like = $user->likes()->where('post_id', $postId)->first();
-    
-        if ($like && $like->is_like) {
-            // If the user has already liked the post, unlike it
-            $like->delete();
-            if ($post->likes > 0) { // Check if likes count is greater than 0
-                $post->decrement('likes'); // Decrement like count
-            }
-        } else {
-            // If the user hasn't liked the post, add the like
-            $user->likes()->updateOrCreate(['post_id' => $postId], ['is_like' => true]);
-            $post->increment('likes'); // Increment like count
-        }
-    
-        return response()->json(['likes' => $post->likes]);
-    }
-    
-    public function dislikePost($postId)
-    {
-        $user = auth()->user();
-        $post = Post::findOrFail($postId);
-        $like = $user->likes()->where('post_id', $postId)->first();
-    
-        if ($like && !$like->is_like) {
-            // If the user has already disliked the post, undislike it
-            $like->delete();
-            if ($post->dislikes > 0) { // Check if dislikes count is greater than 0
-                $post->decrement('dislikes'); // Decrement dislike count
-            }
-        } else {
-            // If the user hasn't disliked the post, add the dislike
-            $user->likes()->updateOrCreate(['post_id' => $postId], ['is_like' => false]);
-            $post->increment('dislikes'); // Increment dislike count
-        }
-    
-        return response()->json(['dislikes' => max($post->dislikes, 0)]);
-    }
-    
-    
-    
-
     
     public function createSociety(Request $request)
     {
         $validatedData = $request->validate([
             'societyType' => 'required',
-            'societyName' => $request->societyType === 'academic' ? 'required' : '',
-            'subjectList' => $request->societyType === 'academic' ? 'required' : '',
-            'societyDescription' => 'required',
+            'societyName' => $request->societyType === 'Academic' ? 'required|unique:societies' : '',
+            'subjectList' => $request->societyType === 'Academic' ? 'required' : '',
+            'academicSocietyDescription' => $request->societyType === 'Academic' ? 'required' : '',
+            'socialSocietyDescription' => $request->societyType === 'Social' ? 'required' : '',
         ]);
-
+    
+        if ($request->societyType === 'Academic') {
+            $existingSociety = Society::where('societyName', $validatedData['subjectList'])->first();
+        } else {
+            $existingSociety = Society::where('societyName', $validatedData['societyName'])->first();
+        }
+    
+        if ($existingSociety) {
+            return redirect()->back()->withInput()->withErrors(['societyName' => 'A society with this name already exists.']);
+        }
+    
         $society = new Society();
-
+    
         $society->ownerId = auth()->user()->id;
         $society->societyType = $validatedData['societyType'];
         $society->societyName = $request->societyType === 'Academic' ? $validatedData['subjectList'] : $validatedData['societyName'];
-        $society->societyDescription = $validatedData['societyDescription'];
+        $society->societyDescription = $request->societyType === 'Academic' ? $validatedData['academicSocietyDescription'] : $validatedData['socialSocietyDescription'];
         $society->approved = false;
         $society->memberList = [auth()->user()->id];
         $society->moderatorList = [auth()->user()->id];
-
+    
         $society->save();
-
+    
         $societyTypeName = $request->societyType === 'Academic' ? 'Academic' : 'Social';
-
+    
         session()->flash('success', "Thank you for your submission! Your " . strtolower($societyTypeName) . " society will be reviewed by an administrator.");
-
+    
         return redirect()->route('societies');
+    }
+
+    public function joinSociety($societyId)
+    {
+        $society = Society::find($societyId);
+    
+        if (!$society) {
+            return response()->json(['error' => 'Society not found'], 404);
+        }
+    
+        $memberList = $society->memberList ?: [];
+        $userId = auth()->user()->id;
+    
+        if (!in_array($userId, $memberList)) {
+            $memberList[] = $userId;
+        }
+    
+        $society->update(['memberList' => $memberList]);
+
+        $existingBadge = Badge::where('user_id', $userId)
+                            ->where('badgeType', 'Joined a Society')
+                            ->exists();
+
+        if (!$existingBadge) {
+            $badge = new Badge([
+                'user_id' => $userId,
+                'badgeType' => 'Joined a Society',
+            ]);
+            $badge->save();
+        }
+    
+        return response()->json(['success' => 'User joined the society'], 200);
+    }
+
+    public function leaveSociety($societyId)
+    {
+        $society = Society::find($societyId);
+    
+        if (!$society) {
+            return response()->json(['error' => 'Society not found'], 404);
+        }
+    
+        $userId = auth()->user()->id;
+    
+        $memberList = $society->memberList ?: [];
+        $memberKey = array_search($userId, $memberList);
+        if ($memberKey !== false) {
+            unset($memberList[$memberKey]);
+        }
+    
+        $moderatorList = $society->moderatorList ?: [];
+        $moderatorKey = array_search($userId, $moderatorList);
+        if ($moderatorKey !== false) {
+            unset($moderatorList[$moderatorKey]);
+        }
+    
+        $society->update(['memberList' => array_values($memberList), 'moderatorList' => array_values($moderatorList)]);
+    
+        return response()->json(['success' => 'User left the society'], 200);
     }
 
     public function editSociety(Request $request, $societyId)
@@ -151,216 +182,6 @@ class SocietyController extends Controller
         return redirect()->route('societies')->with('success', 'The society has been deleted successfully.');
     }
     
-    public function createPost(Request $request, $societyId)
-    {
-        $validatedData = $request->validate([
-            'postTitle' => 'required',
-            'postComment' => 'required',
-        ]);
-
-        $post = new Post();
-        $post->authorId = auth()->user()->id;
-        $post->societyId = $societyId;
-        $post->postTitle = $validatedData['postTitle'];
-        $post->postComment = $validatedData['postComment'];
-        $post->pinned = false;
-        $post->likes = 0;
-        $post->dislikes = 0;
-        $post->save();
-
-        // Check if there's already a row with the given user_id and badgeType
-        $existingBadge = Badge::where('user_id', auth()->user()->id)
-                            ->where('badgeType', 'Made a Post')
-                            ->exists();
-
-        if (!$existingBadge) {
-            // Give the user a "Made a post" badge
-            $badge = new Badge([
-                'user_id' => auth()->user()->id,
-                'badgeType' => 'Made a Post',
-            ]);
-            $badge->save();
-        }
-
-        return redirect()->route('view-society', ['id' => $societyId])->with('success', 'Post created successfully!');
-    }
-
-    public function pinPost($postId)
-    {
-        $post = Post::find($postId);
-    
-        if (!$post) {
-            return redirect()->back()->with('error', 'Post not found.');
-        }
-    
-        $post->pinned = !$post->pinned;
-        $post->save();
-    
-        $action = $post->pinned ? 'pinned' : 'unpinned';
-    
-        return redirect()->back()->with('success', "Post $action successfully!");
-    }
-    
-
-    public function deletePost($postId)
-    {
-        $post = Post::find($postId);
-        if (!$post) {
-            return redirect()->back()->with('error', 'Post not found.');
-        }
-
-        if ($post->authorId !== auth()->id() && !in_array(auth()->id(), $post->society->moderatorList)) {
-            return redirect()->back()->with('error', 'You are not authorized to delete this post.');
-        }
-
-        $post->delete();
-
-        return redirect()->route('view-society', ['id' => $post->societyId])->with('success', 'Post deleted successfully.');
-    }
-
-    public function viewPost($societyId, $postId)
-    {
-        $society = Society::find($societyId);
-        $post = Post::find($postId);
-    
-        return view('view-post', compact('society', 'post'));
-    }
-
-    public function bookmarkPost(Request $request, $postId)
-    {
-        $user = auth()->user();
-        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->first();
-
-        if ($bookmark) {
-            $bookmark->delete(); // Unbookmark if already bookmarked
-            return response()->json(['success' => 'Post unbookmarked'], 200);
-        } else {
-            $bookmark = new Bookmark();
-            $bookmark->user_id = $user->id;
-            $bookmark->post_id = $postId;
-            $bookmark->save();
-            return response()->json(['success' => 'Post bookmarked'], 200);
-        }
-    }
-
-    public function unbookmarkPost($postId)
-    {
-        $user = auth()->user();
-        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->first();
-
-        if ($bookmark) {
-            $bookmark->delete();
-            return redirect()->back()->with('success', 'Post unbookmarked successfully.');
-        } else {
-            return redirect()->back()->with('error', 'Bookmark not found.');
-        }
-    }
-
-    public function saveComment(Request $request, $commentId)
-    {
-        $user = auth()->user();
-        $comment = Comment::find($commentId);
-    
-        if (!$comment) {
-            return response()->json(['error' => 'Comment not found'], 404);
-        }
-    
-        $savedComment = SavedComment::where('user_id', $user->id)
-                                     ->where('comment_id', $commentId)
-                                     ->first();
-    
-        if ($savedComment) {
-            $savedComment->delete();
-            return response()->json(['success' => 'Comment unsaved'], 200);
-        } else {
-            $savedComment = new SavedComment();
-            $savedComment->user_id = $user->id;
-            $savedComment->comment_id = $commentId;
-            $savedComment->save();
-            return response()->json(['success' => 'Comment saved'], 200);
-        }
-    }
-
-    public function unsaveComment($commentId)
-    {
-        $user = auth()->user();
-        $savedComment = SavedComment::where('user_id', $user->id)->where('comment_id', $commentId)->first();
-
-        if ($savedComment) {
-            $savedComment->delete();
-            return redirect()->back()->with('success', 'Comment unsaved successfully.');
-        } else {
-            return redirect()->back()->with('error', 'Saved comment not found.');
-        }
-    }
-
-    public function checkBookmark($postId)
-    {
-        $user = auth()->user();
-        $bookmark = Bookmark::where('user_id', $user->id)->where('post_id', $postId)->exists();
-
-        return response()->json(['bookmarked' => $bookmark]);
-    }
-
-    public function addComment(Request $request, $postId)
-    {
-        $validatedData = $request->validate([
-            'comment' => 'required|string',
-        ]);
-
-        $post = Post::find($postId);
-
-        if (!$post) {
-            return abort(404, 'Post not found');
-        }
-
-        $comment = new Comment();
-        $comment->post_id = $post->id;
-        $comment->user_id = auth()->user()->id;
-        $comment->comment = $validatedData['comment'];
-        $comment->save();
-
-        // Check if there's already a row with the given user_id and badgeType
-        $existingBadge = Badge::where('user_id', auth()->user()->id)
-                            ->where('badgeType', 'Made a Comment')
-                            ->exists();
-
-        if (!$existingBadge) {
-            // Give the user a "Made a Comment" badge
-            $badge = new Badge([
-                'user_id' => auth()->user()->id,
-                'badgeType' => 'Made a Comment',
-            ]);
-            $badge->save();
-        }
-
-        return redirect()->back()->with('success', 'Comment added successfully');
-    }
-
-    public function deleteComment($commentId)
-    {
-        $comment = Comment::find($commentId);
-    
-        if (!$comment) {
-            return redirect()->back()->with('error', 'Comment not found.');
-        }
-    
-        $society = $comment->post->society;
-        if (!in_array(auth()->id(), $society->moderatorList)) {
-            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
-        }
-    
-        // Check if the comment has responses
-        if ($comment->responses()->count() > 0) {
-            // Delete responses associated with the comment
-            $comment->responses()->delete();
-        }
-    
-        $comment->delete();
-    
-        return redirect()->back()->with('success', 'Comment deleted successfully.');
-    }
-    
     public function promoteToModerator(Request $request, $societyId)
     {
         $society = Society::findOrFail($societyId);
@@ -391,69 +212,4 @@ class SocietyController extends Controller
     
         return response()->json(['success' => false, 'message' => 'Selected user is not a moderator.'], 400);
     }
-
-    public function joinSociety($societyId)
-    {
-        $society = Society::find($societyId);
-    
-        if (!$society) {
-            return response()->json(['error' => 'Society not found'], 404);
-        }
-    
-        $memberList = $society->memberList ?: [];
-        $userId = auth()->user()->id;
-    
-        if (!in_array($userId, $memberList)) {
-            $memberList[] = $userId;
-        }
-    
-        $society->update(['memberList' => $memberList]);
-
-        // Check if there's already a row with the given user_id and badgeType
-        $existingBadge = Badge::where('user_id', $userId)
-                            ->where('badgeType', 'Joined a Society')
-                            ->exists();
-
-        if (!$existingBadge) {
-            // Give the user a "Joined a Society" badge
-            $badge = new Badge([
-                'user_id' => $userId,
-                'badgeType' => 'Joined a Society',
-            ]);
-            $badge->save();
-        }
-    
-        return response()->json(['success' => 'User joined the society'], 200);
-    }
-    
-    public function leaveSociety($societyId)
-    {
-        $society = Society::find($societyId);
-    
-        if (!$society) {
-            return response()->json(['error' => 'Society not found'], 404);
-        }
-    
-        $userId = auth()->user()->id;
-    
-        // Remove user from memberList
-        $memberList = $society->memberList ?: [];
-        $memberKey = array_search($userId, $memberList);
-        if ($memberKey !== false) {
-            unset($memberList[$memberKey]);
-        }
-    
-        // Remove user from moderatorList
-        $moderatorList = $society->moderatorList ?: [];
-        $moderatorKey = array_search($userId, $moderatorList);
-        if ($moderatorKey !== false) {
-            unset($moderatorList[$moderatorKey]);
-        }
-    
-        // Update society with updated memberList and moderatorList
-        $society->update(['memberList' => array_values($memberList), 'moderatorList' => array_values($moderatorList)]);
-    
-        return response()->json(['success' => 'User left the society'], 200);
-    }
-    
 }

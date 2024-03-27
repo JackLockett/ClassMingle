@@ -156,12 +156,7 @@
                               </div>
                               <div class="form-group">
                                  <label for="university">University:</label>
-                                 <select class="form-control" id="university" name="university">
-                                    <option value="">Select University</option>
-                                    @foreach($ukUniversities as $uni)
-                                    <option value="{{ $uni }}" {{ $university == $uni ? 'selected' : '' }}>{{ $uni }}</option>
-                                    @endforeach
-                                 </select>
+                                 <input type="text" class="form-control" id="university" name="university" value="{{ $university }}" readonly>
                               </div>
                               <br>
                               <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeAvatarModal">

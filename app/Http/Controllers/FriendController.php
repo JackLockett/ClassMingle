@@ -106,7 +106,6 @@ class FriendController extends Controller
         return response()->json([], 204);
     }
     
-
     public function deletePendingRequest(Request $request)
     {
         $request->validate([
@@ -114,11 +113,10 @@ class FriendController extends Controller
         ]);
     
         $friendRequest = FriendRequest::findOrFail($request->request_id);
-        $friendRequest->delete(); // Delete the friend request
+        $friendRequest->delete();
     
         return response()->json([], 204);
     }
-    
     
     public function removeFriend(Request $request)
     {

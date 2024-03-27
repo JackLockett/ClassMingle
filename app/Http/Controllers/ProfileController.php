@@ -31,14 +31,12 @@ class ProfileController extends Controller
         $bookmarks = Bookmark::where('user_id', $user->id)->get();
         $savedComments = SavedComment::where('user_id', $user->id)->get();
 
-        // Calculate the count of existing saved comments
         $existingCommentsCount = $savedComments->filter(function($savedComment) {
-            return $savedComment->comment !== null; // Filter out saved comments that do not exist
+            return $savedComment->comment !== null;
         })->count();
 
-        // Calculate the count of existing bookmarks
         $existingBookmarksCount = $bookmarks->filter(function($bookmark) {
-            return $bookmark->post !== null; // Filter out bookmarks that do not exist
+            return $bookmark->post !== null; 
         })->count();
 
         $receivedMessages = Message::where('receiverId', $user->id)
@@ -51,10 +49,9 @@ class ProfileController extends Controller
         $joinedSocieties = Society::getSocietiesForUser($user->id);
         $friends = $user->friends;
     
-        $ukUniversities = [
-            'Sheffield Hallam University',
-            'University of Sheffield',
-        ];
+        $filePath = public_path('universities.json');
+        $jsonContents = file_get_contents($filePath);
+        $decodedJson = json_decode($jsonContents, true);
     
         return view('profile', [
             'userId' => $userId,
@@ -62,7 +59,6 @@ class ProfileController extends Controller
             'avatar' => $user->avatar,
             'bio' => $user->bio,
             'university' => $user->university,
-            'ukUniversities' => $ukUniversities,
             'bookmarks' => $bookmarks,
             'existingBookmarksCount' => $existingBookmarksCount,
             'comments' => $savedComments,
@@ -82,12 +78,11 @@ class ProfileController extends Controller
         $validatedData = $request->validate([
             'bio' => 'nullable|string',
             'university' => 'nullable|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Add validation for avatar
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         $user = Auth::user();
     
-        // Handle profile picture upload
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->move(public_path('avatars'), $request->file('avatar')->getClientOriginalName());
             $validatedData['avatar'] = 'avatars/' . $request->file('avatar')->getClientOriginalName();

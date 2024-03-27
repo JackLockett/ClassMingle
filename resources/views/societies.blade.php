@@ -8,6 +8,7 @@
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
    </head>
    <body>
       @include('layouts.navbar')
@@ -18,6 +19,11 @@
             </div>
          </div>
          <br>
+         @if ($errors->any())
+         <div id="dangerAlert" class="alert alert-danger">
+            {{ $errors->first() }}
+         </div>
+         @endif
          @if (session('success'))
          <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
             {{ session('success') }}
@@ -30,6 +36,9 @@
             document.addEventListener("DOMContentLoaded", function() {
                setTimeout(function() {
                      $('#successAlert').fadeOut('slow');
+               }, 5000);
+               setTimeout(function() {
+                     $('#dangerAlert').fadeOut('slow');
                }, 5000);
             });
          </script>
@@ -77,7 +86,7 @@
                         <thead>
                            <tr>
                               <th scope="col">Society Name</th>
-                              <th scope="col" style="text-align: right;">Actions</th>
+                              <th scope="col" style="text-align: right;">Action</th>
                            </tr>
                         </thead>
                         <tbody>
@@ -194,8 +203,10 @@
                         <input type="hidden" id="societyType" name="societyType" value="Academic">
                         <label for="subjectList">Subject:</label>
                         <select id="subjectList" class="form-control" name="subjectList" required>
-                           <option value="Computer Science">Computer Science</option>
-                           <option value="Computing">Computing</option>
+                           <option value="">Select a Subject</option>
+                           @foreach($subjects as $subject)
+                           <option value="{{ $subject }}">{{ $subject }}</option>
+                           @endforeach
                         </select>
                      </div>
                      <div class="form-group">

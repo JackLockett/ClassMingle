@@ -9,43 +9,54 @@ use App\Models\Badge;
 
 class RegisterController extends Controller
 {
-    // Path to the JSON file containing allowed email domains
-    protected $allowedEmailDomainsFilePath = 'allowed_email_domains.json';
-
     public function showRegistrationForm()
     {
-        return view('register');
+        $filePath = public_path('universities.json');
+        $jsonContents = file_get_contents($filePath);
+        $decodedJson = json_decode($jsonContents, true);
+        
+        $ukUniversities = [];
+        foreach ($decodedJson['universities'] as $university) {
+            $ukUniversities[] = $university['name'];
+        }
+
+        return view('register', ['ukUniversities' => $ukUniversities]);
     }
 
     public function register(Request $request)
     {
-        // Load allowed email domains from JSON file
-        $allowedEmailDomains = $this->getAllowedEmailDomains();
+        $emailDomain = substr(strrchr($request->input('email'), "@"), 1);
 
-        // Add custom validation rule for email domain
+        $selectedUniversity = $request->input('university');
+        $universityDomain = $this->getUniversityDomain($selectedUniversity);
+
         $this->validate($request, [
             'email' => 'required|email|unique:users|allowed_email_domain',
             'username' => 'required|min:4|unique:users',
+            'university' => 'required|not_in:""',
             'password' => 'required|min:8',
         ]);
+        
+        if ($emailDomain !== $universityDomain) {
+            return redirect()->back()->withErrors(['university' => 'The email domain does not match the selected university.'])->withInput();
+        }
 
         $user = new User([
             'email' => $request->input('email'),
             'username' => $request->input('username'),
             'password' => bcrypt($request->input('password')),
             'avatar' => 'images/default.jpg',
+            'university' => $request->input('university'),
             'role' => 'user',
         ]);
 
         $user->save();
 
-        // Check if there's already a row with the given user_id and badgeType
         $existingBadge = Badge::where('user_id', $user->id)
                             ->where('badgeType', 'New User')
                             ->exists();
 
         if (!$existingBadge) {
-            // Give the user a "New User" badge
             $badge = new Badge([
                 'user_id' => $user->id,
                 'badgeType' => 'New User',
@@ -56,6 +67,30 @@ class RegisterController extends Controller
         return redirect()->route('login')->with('success', 'Registration successful! You can now login!');
     }
 
+    protected function getUniversities()
+    {
+        $filePath = public_path('universities.json');
+        $jsonContents = file_get_contents($filePath);
+        $decodedJson = json_decode($jsonContents, true);
+        
+        return $decodedJson['universities'] ?? [];
+    }
+    
+    protected function getUniversityDomain($selectedUniversity)
+    {
+        $filePath = public_path('universities.json');
+        $jsonContents = file_get_contents($filePath);
+        $decodedJson = json_decode($jsonContents, true);
+        
+        foreach ($decodedJson['universities'] as $university) {
+            if ($university['name'] === $selectedUniversity) {
+                return $university['domain'];
+            }
+        }
+    
+        return null;
+    }
+
     public function checkUsernameAvailability($username)
     {
         $isAvailable = !User::where('username', $username)->exists();
@@ -63,21 +98,12 @@ class RegisterController extends Controller
         return response()->json(['isAvailable' => $isAvailable]);
     }
 
-    // Read allowed email domains from JSON file
-    protected function getAllowedEmailDomains()
-    {
-        $fileContent = File::get(public_path($this->allowedEmailDomainsFilePath));
-        $jsonData = json_decode($fileContent, true);
-
-        return $jsonData['domains'] ?? [];
-    }
-
-    // Custom validation rule for allowed email domain
     public function allowedEmailDomain($attribute, $value, $parameters, $validator)
     {
-        $domain = substr(strrchr($value, "@"), 1);
-        $allowedDomains = $this->getAllowedEmailDomains();
+        $emailDomain = substr(strrchr($value, "@"), 1);
+        $selectedUniversity = $validator->getData()['university']; 
+        $universityDomain = $this->getUniversityDomain($selectedUniversity);
 
-        return in_array($domain, $allowedDomains);
+        return $emailDomain === $universityDomain;
     }
 }

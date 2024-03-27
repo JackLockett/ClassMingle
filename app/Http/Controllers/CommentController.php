@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\SavedComment;
 use App\Models\Comment;
 use App\Models\Society;
+use App\Models\Badge;
 use App\Models\Post;
 
 class CommentController extends Controller
@@ -17,7 +19,100 @@ class CommentController extends Controller
         
         return view('view-comment', compact('society', 'societyId', 'post', 'comment'));
     }
+
+    public function saveComment(Request $request, $commentId)
+    {
+        $user = auth()->user();
+        $comment = Comment::find($commentId);
     
+        if (!$comment) {
+            return response()->json(['error' => 'Comment not found'], 404);
+        }
+    
+        $savedComment = SavedComment::where('user_id', $user->id)
+                                     ->where('comment_id', $commentId)
+                                     ->first();
+    
+        if ($savedComment) {
+            $savedComment->delete();
+            return response()->json(['success' => 'Comment unsaved'], 200);
+        } else {
+            $savedComment = new SavedComment();
+            $savedComment->user_id = $user->id;
+            $savedComment->comment_id = $commentId;
+            $savedComment->save();
+            return response()->json(['success' => 'Comment saved'], 200);
+        }
+    }
+
+    public function unsaveComment($commentId)
+    {
+        $user = auth()->user();
+        $savedComment = SavedComment::where('user_id', $user->id)->where('comment_id', $commentId)->first();
+
+        if ($savedComment) {
+            $savedComment->delete();
+            return redirect()->back()->with('success', 'Comment unsaved successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Saved comment not found.');
+        }
+    }
+
+    public function addComment(Request $request, $postId)
+    {
+        $validatedData = $request->validate([
+            'comment' => 'required|string',
+        ]);
+
+        $post = Post::find($postId);
+
+        if (!$post) {
+            return abort(404, 'Post not found');
+        }
+
+        $comment = new Comment();
+        $comment->post_id = $post->id;
+        $comment->user_id = auth()->user()->id;
+        $comment->comment = $validatedData['comment'];
+        $comment->save();
+
+        $existingBadge = Badge::where('user_id', auth()->user()->id)
+                            ->where('badgeType', 'Made a Comment')
+                            ->exists();
+
+        if (!$existingBadge) {
+            $badge = new Badge([
+                'user_id' => auth()->user()->id,
+                'badgeType' => 'Made a Comment',
+            ]);
+            $badge->save();
+        }
+
+        return redirect()->back()->with('success', 'Comment added successfully');
+    }
+    
+    public function deleteComment($commentId)
+    {
+        $comment = Comment::find($commentId);
+    
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Comment not found.');
+        }
+    
+        $society = $comment->post->society;
+        if (!in_array(auth()->id(), $society->moderatorList)) {
+            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
+        }
+    
+        if ($comment->responses()->count() > 0) {
+            $comment->responses()->delete();
+        }
+    
+        $comment->delete();
+    
+        return redirect()->back()->with('success', 'Comment deleted successfully.');
+    }
+
     public function respondToComment(Request $request, $societyId, $postId, $commentId)
     {
         $validatedData = $request->validate([
@@ -29,8 +124,8 @@ class CommentController extends Controller
         $responseComment = new Comment();
         $responseComment->user_id = auth()->user()->id;
         $responseComment->comment = $validatedData['response'];
-        $responseComment->post_id = $parentComment->post_id; // Set the post_id
-        $responseComment->parent_comment_id = $commentId; // Set the parent_comment_id
+        $responseComment->post_id = $parentComment->post_id; 
+        $responseComment->parent_comment_id = $commentId;
     
         $responseComment->save();
     
@@ -38,7 +133,6 @@ class CommentController extends Controller
             'societyId' => $societyId,
             'postId' => $postId,
             'commentId' => $commentId
-        ])->with('success', 'Response added successfully!');
-        
+        ])->with('success', 'Response added successfully!'); 
     }
 }
