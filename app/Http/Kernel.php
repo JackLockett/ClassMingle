@@ -68,6 +68,7 @@ class Kernel extends HttpKernel
 
     protected $routeMiddleware = [
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
-        'token.auth' => \App\Http\Middleware\TokenAuthenticate::class,
+        'reset.token.auth' => \App\Http\Middleware\ResetTokenAuthenticate::class,
+        'verify.token.auth' => \App\Http\Middleware\VerifyTokenAuthenticate::class,
     ];  
 }

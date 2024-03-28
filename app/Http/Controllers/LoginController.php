@@ -17,6 +17,10 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+            if (auth()->user()->verified == 0) {
+                Auth::logout();
+                return back()->withErrors(['notVerified' => 'Your account is not verified. Please check your email for verification instructions.']);
+            }
             return redirect()->intended('/discovery');
         }
 

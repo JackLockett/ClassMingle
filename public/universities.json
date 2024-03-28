@@ -1366,7 +1366,10 @@
 
 
       "domains": [
-          "shu.ac.uk"
+          "shu.ac.uk",
+          "student.shu.ac.uk",
+          "hallam.shu.ac.uk",
+          "my.shu.ac.uk"
       ]
   },
   {

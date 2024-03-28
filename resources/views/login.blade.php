@@ -35,6 +35,12 @@
       <div class="container mt-5">
          <div class="row justify-content-center">
             <div class="col-md-6">
+               @if ($errors->has('notVerified'))
+               <div class="alert alert-danger">
+                  {{ $errors->first('notVerified') }}
+                  <a href="{{ route('resend-verification-email') }}">Click here</a> to resend verification email.
+               </div>
+               @endif
                @if (session('success'))
                <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
                   {{ session('success') }}
@@ -79,6 +85,7 @@
                      <hr>
                      <a href="/register" class="btn btn-link btn-block">Don't Have An Account?</a>
                      <a href="/forgot-password" class="btn btn-link btn-block forgot-password">Forgot Your Password?</a>
+                     <a href="/resend-verification-email" class="btn btn-link btn-block forgot-password">Resend Verification Email</a>
                   </div>
                </div>
             </div>

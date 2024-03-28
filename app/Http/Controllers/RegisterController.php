@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\Badge;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerifyAccountMail;
 
 class RegisterController extends Controller
 {
@@ -21,6 +24,11 @@ class RegisterController extends Controller
         }
     
         return view('register', ['ukUniversities' => $ukUniversities]);
+    }
+
+    public function showVerificationForm()
+    {
+        return view('resend-verification-email');
     }
 
     public function register(Request $request)
@@ -55,6 +63,7 @@ class RegisterController extends Controller
             'avatar' => 'images/default.jpg',
             'university' => $request->input('university'),
             'role' => 'user',
+            'verified' => false
         ]);
 
         $user->save();
@@ -71,7 +80,12 @@ class RegisterController extends Controller
             $badge->save();
         }
 
-        return redirect()->route('login')->with('success', 'Registration successful! You can now login!');
+        $token = Str::random(60);
+    
+        $user->update(['verify_token' => $token]);
+        Mail::to($user->email)->send(new VerifyAccountMail($user, $token));
+
+        return redirect()->route('login')->with('success', 'Registration successful! Check your email to verify your account!');
     }
 
     protected function getUniversities()
@@ -112,5 +126,43 @@ class RegisterController extends Controller
         $universityDomains = $this->getUniversityDomains($selectedUniversity);
     
         return in_array($emailDomain, $universityDomains);
+    }
+
+    public function verifyAccount(Request $request)
+    {
+        $token = $request->token;
+        
+        $user = User::where('verify_token', $token)->first();
+        
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Invalid token or account already verified.');
+        }
+    
+        $user->verified = true;
+        $user->verify_token = null;
+        $user->save();
+        
+        return redirect()->route('login')->with('success', 'Your account has been verified! You can now login.');
+    } 
+    
+    public function resendVerification(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'User with this email address does not exist.']);
+        }        
+
+        if ($user->verified) {
+            return back()->withErrors(['email' => 'Your account is already verified.']);
+        }
+
+        $token = Str::random(60);
+
+        $user->update(['verify_token' => $token]);
+
+        Mail::to($user->email)->send(new VerifyAccountMail($user, $token));
+
+        return back()->with('success', 'Verification email resent successfully.');
     }
 }

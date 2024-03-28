@@ -6,13 +6,13 @@ use Closure;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class TokenAuthenticate
+class VerifyTokenAuthenticate
 {
     public function handle(Request $request, Closure $next)
     {
         $token = $request->query('token');
 
-        if (!$token || !User::where('reset_token', $token)->exists()) {
+        if (!$token || !User::where('verify_token', $token)->exists()) {
             return redirect()->route('login')->withErrors(['token' => 'Invalid or expired token']);
         }
 

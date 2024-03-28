@@ -13,7 +13,7 @@ class User extends Authenticatable
     protected $table = 'users';
 
     protected $fillable = [
-        'email', 'username', 'password', 'role', 'avatar', 'bio', 'university', 'reset_token'
+        'email', 'username', 'password', 'role', 'avatar', 'bio', 'university', 'verified', 'verify_token', 'reset_token'
     ];
 
     public function friends()
