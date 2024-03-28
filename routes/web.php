@@ -15,6 +15,7 @@ use App\Http\Controllers\FriendController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PasswordResetController;
 
 
 /*
@@ -41,6 +42,12 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/check-username-availability/{username}', [RegisterController::class, 'checkUsernameAvailability']);
+
+# Forgot Password Controller
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm']);
+Route::post('/forgot-password', [PasswordResetController::class, 'sendPasswordResetLink']);
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']);
+Route::middleware(['token.auth'])->get('/reset-password', [PasswordResetController::class, 'showNewPasswordForm'])->name('reset-password');
 
 # FAQ Controller
 Route::get('/faq', [FaqController::class, 'index'])->name('faq');

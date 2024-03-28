@@ -78,7 +78,7 @@
                      </form>
                      <hr>
                      <a href="/register" class="btn btn-link btn-block">Don't Have An Account?</a>
-                     <a href="#" class="btn btn-link btn-block forgot-password">Forgot Your Password?</a>
+                     <a href="/forgot-password" class="btn btn-link btn-block forgot-password">Forgot Your Password?</a>
                   </div>
                </div>
             </div>
