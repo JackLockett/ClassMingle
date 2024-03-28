@@ -31,10 +31,6 @@
                         @csrf
                         <input type="hidden" name="token" value="{{ $token }}">
                         <div class="form-group">
-                           <label for="email">Email</label>
-                           <input type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
-                        </div>
-                        <div class="form-group">
                            <label for="password">New Password</label>
                            <input type="password" class="form-control" name="password" required>
                         </div>

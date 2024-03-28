@@ -6,7 +6,7 @@
       <title>Password Reset</title>
    </head>
    <body>
-      <p>Hello {{ $user->name }},</p>
+      <p>Hello {{ $user->username }},</p>
       <p>You have requested to reset your password. Please click the following link to reset your password:</p>
       <p><a href="{{ url('reset-password?token=' . $token) }}">Reset Password</a></p>
       <p>If you did not request a password reset, you can ignore this email.</p>
