@@ -101,7 +101,8 @@
                            </button>
                            @if (
                            (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
-                           ($response->user_id == auth()->user()->id)
+                           ($response->user_id == auth()->user()->id) ||
+                           (auth()->user()->role == 'admin')
                            )
                            <button class="btn btn-sm btn-danger delete-response-btn" data-toggle="modal" data-target="#confirmDeleteResponse" data-response-id="{{ $response->id }}">
                            <i class="fas fa-trash"></i> Delete

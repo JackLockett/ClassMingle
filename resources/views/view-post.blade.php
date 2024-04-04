@@ -92,7 +92,8 @@
                   </button>
                   @if (
                   (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
-                  ($post->authorId == auth()->user()->id)
+                  ($post->authorId == auth()->user()->id) ||
+                  (auth()->user()->role == 'admin')
                   )
                   <a href="#" class="btn btn-sm btn-danger ml-2" data-toggle="modal" data-target="#confirmDeletePost">
                   <i class="fas fa-trash"></i> Delete Post
@@ -130,7 +131,8 @@
                            </button>
                            @if (
                            (is_array($society->moderatorList) && in_array(auth()->user()->id, $society->moderatorList)) || 
-                           ($comment->user_id == auth()->user()->id)
+                           ($comment->user_id == auth()->user()->id) ||
+                           (auth()->user()->role == 'admin')
                            )
                            <a href="#" class="btn btn-sm btn-danger delete-comment-btn" data-toggle="modal" data-target="#confirmDeleteComment" data-comment-id="{{ $comment->id }}">
                            <i class="fas fa-trash"></i> Delete
