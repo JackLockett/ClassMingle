@@ -64,14 +64,22 @@ class CommentController extends Controller
         $validatedData = $request->validate([
             'reportReasonComment' => 'required',
         ]);
-
+    
         $comment = Comment::find($commentId);
         if (!$comment) {
             return redirect()->back()->with('error', 'Comment not found.');
         }
-
+    
         $userId = auth()->id();
-
+    
+        $existingReport = Report::where('user_id', $userId)
+                                 ->where('comment_id', $commentId)
+                                 ->first();
+    
+        if ($existingReport) {
+            return redirect()->back()->with('error', 'You have already reported this comment.');
+        }
+    
         $report = new Report([
             'user_id' => $userId,
             'post_id' => $postId,
@@ -80,9 +88,9 @@ class CommentController extends Controller
             'reportType' => 'Comment',
             'reportReason' => $request->input('reportReasonComment')
         ]);
-
+    
         $report->save();
-
+    
         return redirect()->back()->with('success', 'Comment reported successfully.');
     }
 

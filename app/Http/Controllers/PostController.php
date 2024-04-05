@@ -79,14 +79,22 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'reportReasonPost' => 'required',
         ]);
-
+    
         $post = Post::find($postId);
         if (!$post) {
             return redirect()->back()->with('error', 'Post not found.');
         }
-
+    
         $userId = auth()->id();
-
+    
+        $existingReport = Report::where('user_id', $userId)
+                                 ->where('post_id', $postId)
+                                 ->first();
+    
+        if ($existingReport) {
+            return redirect()->back()->with('error', 'You have already reported this post.');
+        }
+    
         $report = new Report([
             'user_id' => $userId,
             'post_id' => $postId,
@@ -94,9 +102,9 @@ class PostController extends Controller
             'reportType' => 'Post',
             'reportReason' => $request->input('reportReasonPost')
         ]);
-
+    
         $report->save();
-
+    
         return redirect()->back()->with('success', 'Post reported successfully.');
     }
 
