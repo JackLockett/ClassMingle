@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\Society;
 use App\Models\Badge;
 use App\Models\Post;
+use App\Models\Report;
 
 class CommentController extends Controller
 {
@@ -56,6 +57,33 @@ class CommentController extends Controller
         } else {
             return redirect()->back()->with('error', 'Saved comment not found.');
         }
+    }
+
+    public function reportComment(Request $request, $postId, $commentId)
+    {
+        $validatedData = $request->validate([
+            'reportReasonComment' => 'required',
+        ]);
+
+        $comment = Comment::find($commentId);
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Comment not found.');
+        }
+
+        $userId = auth()->id();
+
+        $report = new Report([
+            'user_id' => $userId,
+            'post_id' => $postId,
+            'comment_id' => $commentId,
+            'society_id' => $request->input('societyId'),
+            'reportType' => 'Comment',
+            'reportReason' => $request->input('reportReasonComment')
+        ]);
+
+        $report->save();
+
+        return redirect()->back()->with('success', 'Comment reported successfully.');
     }
 
     public function addComment(Request $request, $postId)

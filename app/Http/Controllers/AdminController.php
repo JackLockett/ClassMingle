@@ -16,6 +16,7 @@ use App\Models\Friendship;
 use App\Models\User;
 use App\Models\Query;
 use App\Models\Badge;
+use App\Models\Report;
 
 class AdminController extends Controller
 {
@@ -28,6 +29,7 @@ class AdminController extends Controller
         $societies = Society::where('approved', 1)->get();
         $pendingSocieties = Society::where('approved', 0)->get();
         $queries = Query::all();
+        $reports = Report::all();
         
         $ukUniversities = [
             'Sheffield Hallam University',
@@ -43,6 +45,11 @@ class AdminController extends Controller
             'Society Ownership Claim',
         ];
 
+        $typesOfReports = [
+            'Post',
+            'Comment'
+        ];
+
         return view('admin-panel', [
             'users' => $users,
             'societies' => $societies,
@@ -51,6 +58,8 @@ class AdminController extends Controller
             'pendingSocieties' => $pendingSocieties,
             'queryTypes' => $queryTypes,
             'queries' => $queries,
+            'typesOfReports' => $typesOfReports,
+            'reports' => $reports,
         ]);
     }
 

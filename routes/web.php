@@ -88,6 +88,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/societies/{societyId}/posts/{postId}', [PostController::class, 'viewPost'])->name('view-post');
     Route::post('/create-post/{societyId}', [PostController::class, 'createPost'])->name('create-post');
     Route::post('/delete-post/{postId}', [PostController::class, 'deletePost'])->name('delete-post');
+    Route::post('/report-post/{postId}', [PostController::class, 'reportPost'])->name('report-post');
     Route::post('/pin-post/{postId}', [PostController::class, 'pinPost'])->name('pin-post');
     Route::post('/like-post/{postId}', [PostController::class, 'likePost'])->name('like-post');
     Route::post('/dislike-post/{postId}', [PostController::class, 'dislikePost'])->name('dislike-post');
@@ -99,6 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/societies/{societyId}/posts/{postId}/comments/{commentId}', [CommentController::class, 'viewComment'])->name('view-comment');
     Route::post('save-comment/{commentId}', [CommentController::class, 'saveComment'])->name('save-comment');
     Route::delete('/unsave-comment/{commentId}', [CommentController::class, 'unsaveComment'])->name('unsave-comment');
+    Route::post('report-comment/{postId}/{commentId}', [CommentController::class, 'reportComment'])->name('report-comment');
     Route::post('/post/{postId}/comment', [CommentController::class, 'addComment'])->name('add-comment');
     Route::delete('/delete-comment/{commentId}', [CommentController::class, 'deleteComment'])->name('delete-comment');
     Route::post('/societies/{societyId}/posts/{postId}/comments/{commentId}/respond', [CommentController::class, 'respondToComment'])->name('respond-to-comment');

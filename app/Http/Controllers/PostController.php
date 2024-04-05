@@ -7,6 +7,7 @@ use App\Models\Society;
 use App\Models\Post;
 use App\Models\Bookmark;
 use App\Models\Badge;
+use App\Models\Report;
 
 use Illuminate\Support\Facades\DB;
 
@@ -66,6 +67,32 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('view-society', ['id' => $post->societyId])->with('success', 'Post deleted successfully.');
+    }
+
+    public function reportPost(Request $request, $postId)
+    {
+        $validatedData = $request->validate([
+            'reportReasonPost' => 'required',
+        ]);
+
+        $post = Post::find($postId);
+        if (!$post) {
+            return redirect()->back()->with('error', 'Post not found.');
+        }
+
+        $userId = auth()->id();
+
+        $report = new Report([
+            'user_id' => $userId,
+            'post_id' => $postId,
+            'society_id' => $request->input('societyId'),
+            'reportType' => 'Post',
+            'reportReason' => $request->input('reportReasonPost')
+        ]);
+
+        $report->save();
+
+        return redirect()->back()->with('success', 'Post reported successfully.');
     }
 
     public function pinPost($postId)

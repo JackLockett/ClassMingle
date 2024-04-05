@@ -42,6 +42,21 @@
                <h3 class="text-center">View Comment</h3>
             </div>
          </div>
+         @if (session('success'))
+         <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
+            {{ session('success') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+         </div>
+         @endif
+         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+               setTimeout(function() {
+                     $('#successAlert').fadeOut('slow');
+               }, 5000);
+            });
+         </script>
          <a href="{{ url('/societies/' . $society->id . '/posts/' . $post->id) }}" class="btn btn-secondary btn-sm mb-3">
          <i class="fas fa-arrow-left"></i> Return to Post
          </a>
@@ -108,6 +123,11 @@
                            <i class="fas fa-trash"></i> Delete
                            </button>
                            @endif
+                           @if($response->user_id != auth()->user()->id)
+                           <button id="reportButton" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#reportCommentModal" data-society-id="{{ $society->id }}">
+                           <i class="fas fa-exclamation-triangle"></i>
+                           </button>
+                           @endif
                         </div>
                      </div>
                   </div>
@@ -148,6 +168,40 @@
             </div>
          </div>
          @endif
+      </div>
+      <!-- Modal for Reporting Comments -->
+      <div class="modal fade" id="reportCommentModal" tabindex="-1" role="dialog" aria-labelledby="reportCommentModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="reportCommentModalLabel">Report Comment</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <form action="{{ route('report-comment', ['postId' => $comment->post_id, 'commentId' => $comment->parent_comment_id ?: $comment->id]) }}" method="POST">
+                     @csrf
+                     <div class="form-group">
+                        <p>Please provide details about why you are reporting this comment:</p>
+                        <input id="societyId" type="hidden" value="{{ $society->id }}" name="societyId">
+                        <textarea class="form-control" id="reportReasonComment" name="reportReasonComment" rows="3" maxlength="250" style="resize: none; height: 125px;" required></textarea>
+                     </div>
+                     <div class="form-group text-muted">
+                        Characters remaining: <span id="characterCountReportComment"></span>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-arrow-left"></i> Return
+                        </button>
+                        <button type="submit" class="btn btn-warning" id="reportComment" name="reportComment">
+                        <i class="fas fa-exclamation-triangle"></i> Report Comment
+                        </button>
+                     </div>
+               </div>
+               </form>
+            </div>
+         </div>
       </div>
       <!-- Modal for Confirming Response Deletion -->
       <div class="modal fade" id="confirmDeleteResponse" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteResponseLabel" aria-hidden="true">
@@ -242,6 +296,30 @@
                      deleteResponseForm.action = `/delete-comment/${responseId}`;
                  });
              });
+         });
+         
+         function updateCommentReportCharacterCount() {
+             var commentLength = $('#reportReasonComment').val().length;
+             var totalLength = commentLength;
+             var remainingCharacters = 250 - totalLength;
+         
+             $('#characterCountReportComment').text(remainingCharacters);
+         
+             if (totalLength > 0) {
+                 $('#reportComment').prop('disabled', false);
+             } else {
+                 $('#reportComment').prop('disabled', true);
+             }
+         }
+         
+         // Update character count on input change (for posts)
+         $('#reportReasonComment').on('input', function() {
+            updateCommentReportCharacterCount();
+         });
+         
+         // Initialize character count on document ready (for posts)
+         $(document).ready(function() {
+            updateCommentReportCharacterCount();
          });
       </script>
       @include('layouts.footer')

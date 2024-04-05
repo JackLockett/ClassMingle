@@ -1,3 +1,9 @@
+<?php
+   use App\Models\Society;
+   use App\Models\User;
+   use App\Models\Report;
+   
+   ?>
 <!DOCTYPE html>
 <html lang="en">
    <head>
@@ -35,6 +41,9 @@
             </li>
             <li class="nav-item">
                <a class="nav-link" id="pills-societies-tab" data-toggle="pill" href="#pills-societies" role="tab" aria-controls="pills-societies" aria-selected="false">Active Societies</a>
+            </li>
+            <li class="nav-item">
+               <a class="nav-link" id="pills-reports-tab" data-toggle="pill" href="#pills-reports" role="tab" aria-controls="pills-reports" aria-selected="false">Reports</a>
             </li>
             <hr>
             <li class="nav-item">
@@ -363,6 +372,97 @@
                   @endif
                </div>
             </div>
+            <!-- Reports Tab -->
+            <div class="tab-pane fade" id="pills-reports" role="tabpanel" aria-labelledby="pills-reports-tab">
+               <div class="row">
+                  <div class="col-md-6 mb-3">
+                     <select class="form-control" id="reportCategoryFilter">
+                        <option value="">All Types</option>
+                        @foreach($typesOfReports as $type)
+                        <option value="{{ $type }}">{{ $type }}</option>
+                        @endforeach
+                     </select>
+                  </div>
+                  <div class="col-md-6 mb-3 d-flex flex-column flex-md-row">
+                     <input class="form-control mr-sm-2 mb-2 mb-md-0" type="search" placeholder="Search by Society Name" aria-label="Search" id="reportSearchInput">
+                     <button class="btn btn-outline-primary my-2 my-md-0 ml-md-2" type="button" id="reportSearchButton">Search</button>
+                  </div>
+                  @if(count($reports) > 0)
+                  @foreach($reports as $report)
+                  <div class="col-md-6">
+                     <div class="card mb-3">
+                        <div class="card-body">
+                           @php
+                           // Assuming $report is the instance containing society_id
+                           $society = App\Models\Society::find($report->society_id);
+                           $reportee = App\Models\User::find($report->user_id);
+                           @endphp
+                           @if($society)
+                           <h5 class='card-title'>{{ $society->societyName }}</h5>
+                           @else
+                           <p>Society Not Found</p>
+                           @endif
+                           <p class="card-text">Type: {{ $report->reportType }}</p>
+                           <button class="btn btn-info view-details-button" data-toggle="modal" data-target="#reportDetailsModal{{ $report->id }}">
+                           <i class="fas fa-info-circle"></i> View Report Details
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="modal fade" id="reportDetailsModal{{ $report->id }}" tabindex="-1" role="dialog" aria-labelledby="reportDetailsModalLabel{{ $report->id }}" aria-hidden="true">
+                     <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                           <div class="modal-header">
+                              <div class="d-flex align-items-center">
+                                 <h5 class="modal-title" id="reportDetailsModalLabel{{ $report->id }}">Report Type: {{ $report->reportType }}</h5>
+                              </div>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                              </button>
+                           </div>
+                           <div class="modal-body">
+                              <form>
+                                 @csrf
+                                 <input type="hidden" name="claimerId" value="">
+                                 <div class="form-group">
+                                    <label for="name">Society Name:</label>
+                                    <input type="text" class="form-control" id="" value="{{ $society->societyName ?? '' }}" readonly>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="name">Reportee:</label>
+                                    <input type="text" class="form-control" id="" value="{{ $reportee->username ?? '' }}" readonly>
+                                 </div>
+                                 <div class="form-group">
+                                    <label for="description">Report Reason:</label>
+                                    <textarea class="form-control" name="description" id="" rows="3" style="height: 100px; resize: none;" maxlength="250" readonly>{{ $report->reportReason }}</textarea>
+                                 </div>
+                                 <div class="d-flex justify-content-between">
+                                    @if ($society)
+                                    @if ($report->reportType == "Comment")
+                                    <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $report->post_id, 'commentId' => $report->comment_id]) }}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View Comment
+                                    </a>
+                                    @else
+                                    <a href="{{ route('view-post', ['societyId' => $society->id, 'postId' => $report->post_id]) }}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> View Post
+                                    </a>
+                                    @endif
+                                    @endif
+                                    <div>
+                                       <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                       <i class="fas fa-times"></i> Close
+                                       </button>
+                                    </div>
+                                 </div>
+                              </form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  @endforeach
+                  @endif
+               </div>
+            </div>
          </div>
       </div>
       @include('layouts.footer')
@@ -469,6 +569,32 @@
              document.getElementById('claimSocietySearchButton').addEventListener('click', function() {
                  var categoryFilter = document.getElementById('claimCategoryFilter').value;
                  var societySearchTerm = document.getElementById('claimSocietySearchInput').value.trim().toLowerCase();
+                 var societyCards = document.querySelectorAll('.card');
+                 societyCards.forEach(function(card) {
+                     var cardTitleElement = card.querySelector('.card-body .card-title');
+                     var cardCategoryElement = card.querySelector('.card-body .card-text:nth-of-type(1)');
+                     if (cardTitleElement && cardCategoryElement) {
+                         var cardTitle = cardTitleElement.textContent.toLowerCase();
+                         var cardCategory = cardCategoryElement.textContent.trim().toLowerCase();
+                         var categoryMatches = categoryFilter === '' || cardCategory.includes(categoryFilter.toLowerCase());
+                         var searchTermMatches = cardTitle.includes(societySearchTerm);
+                         if (categoryMatches && searchTermMatches) {
+                             card.closest('.col-md-6').style.display = 'block';
+                         } else {
+                             card.closest('.col-md-6').style.display = 'none';
+                         }
+                     } else {
+                         console.error("Card title or category element not found!");
+                     }
+                 });
+             });
+         });
+      </script>
+      <script>
+         $(document).ready(function() {
+             document.getElementById('reportSearchButton').addEventListener('click', function() {
+                 var categoryFilter = document.getElementById('reportCategoryFilter').value;
+                 var societySearchTerm = document.getElementById('reportSearchInput').value.trim().toLowerCase();
                  var societyCards = document.querySelectorAll('.card');
                  societyCards.forEach(function(card) {
                      var cardTitleElement = card.querySelector('.card-body .card-title');
