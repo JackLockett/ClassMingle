@@ -59,13 +59,18 @@ class PostController extends Controller
         if (!$post) {
             return redirect()->back()->with('error', 'Post not found.');
         }
-
+    
         if ($post->authorId !== auth()->id() && !in_array(auth()->id(), $post->society->moderatorList)) {
             return redirect()->back()->with('error', 'You are not authorized to delete this post.');
         }
-
+    
+        $reports = Report::where('post_id', $postId)->get();
+        foreach ($reports as $report) {
+            $report->delete();
+        }
+    
         $post->delete();
-
+    
         return redirect()->route('view-society', ['id' => $post->societyId])->with('success', 'Post deleted successfully.');
     }
 
