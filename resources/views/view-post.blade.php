@@ -154,14 +154,18 @@
                   <p>{{ $comment->comment }}</p>
                   @if ($comment->responses->count() > 0)
                   <div class="mb-3">
+                     @if($comment->user_id != auth()->user()->id)
                      <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     @endif
                      <span class="ml-3 text-muted">•</span>
                      <small class="text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
                      </small>
                   </div>
                   @else
+                  @if($comment->user_id != auth()->user()->id)
                   <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                  @endif
                   @endif
                   @if (!$loop->last)
                   <hr>
