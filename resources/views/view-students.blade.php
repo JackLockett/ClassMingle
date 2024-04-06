@@ -39,6 +39,21 @@
          <div class="row justify-content-center">
             <div class="col-md-12">
                <h3 class="text-center mb-4">Students</h3>
+               @if (session('error'))
+               <div id="successAlert" class="alert alert-danger alert-dismissible fade show animate__animated" role="alert">
+                  {{ session('error') }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               @endif
+               <script>
+                  document.addEventListener("DOMContentLoaded", function() {
+                     setTimeout(function() {
+                           $('#successAlert').fadeOut('slow');
+                     }, 5000);
+                  });
+               </script>
                <div class="alert alert-info text-center" role="alert">
                   <strong>Note:</strong> Only students from <strong>{{ $currentUserUniversity }}</strong> will be displayed here.
                </div>

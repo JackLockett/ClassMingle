@@ -84,6 +84,14 @@
          .friends-list a:hover {
          color: #007bff;
          }
+         .profile-card {
+         position: relative;
+         }
+         .block-btn {
+         position: absolute;
+         top: 10px;
+         right: 10px;
+         }
       </style>
    </head>
    <body>
@@ -134,6 +142,17 @@
             </div>
             <div class="col-md-8">
                <div class="profile-card">
+                  @if($student->id != Auth::id())
+                  @if($isBlocked)
+                  <button id="blockButton" class="btn btn-success btn-sm block-btn" data-toggle="modal" data-target="#unblockUserModal">
+                  <i class="fas fa-lock-open"></i> Unblock User
+                  </button>
+                  @else
+                  <button id="blockButton" class="btn btn-danger btn-sm block-btn" data-toggle="modal" data-target="#blockUserModal" data-user-id="{{ $authId }}" data-blocked-id="{{ $student->id }}">
+                  <i class="fas fa-ban"></i> Block User
+                  </button>
+                  @endif
+                  @endif
                   <h4 class="profile-header"><i class="fas fa-user"></i>&nbsp;User Details</h4>
                   <div class="profile-info">
                      <br>
@@ -229,6 +248,57 @@
             </div>
          </div>
       </div>
+      <!-- Modal for Blocking User -->
+      <div class="modal fade" id="blockUserModal" tabindex="-1" role="dialog" aria-labelledby="blockUserModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="blockUserModalLabel">Block User - {{ $student->username }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to block this user?</p>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                  <i class="fas fa-times"></i> Cancel
+                  </button>
+                  <!-- Add this inside your modal -->
+                  <button type="button" id="confirmBlockButton" class="btn btn-danger" onclick="confirmBlockUser()">
+                  <i class="fas fa-ban"></i> Block
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+      <!-- Modal for Unblocking User -->
+      <div class="modal fade" id="unblockUserModal" tabindex="-1" role="dialog" aria-labelledby="unblockUserModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="unblockUserModalLabel">Unblock User - {{ $student->username }}</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                  <p>Are you sure you want to unblock this user?</p>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                  <i class="fas fa-times"></i> Cancel
+                  </button>
+                  <button type="button" class="btn btn-success" onclick="unblockUser({{ $student->id }})">
+                  <i class="fas fa-lock-open"></i> Unblock
+                  </button>
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
       <script>
          // Function to update character count and disable button if input is empty
          function updateCharacterCount() {
@@ -298,6 +368,80 @@
                  }
              });
          }
+         
+         function blockUser(userId, blockedId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("block-user") }}',
+               data: {
+                     '_token': '{{ csrf_token() }}',
+                     'user_id': userId,
+                     'blocked_id': blockedId 
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         }
+         
+         function unblockUser(userId) {
+            $.ajax({
+               type: 'POST',
+               url: '{{ route("unblock-user") }}',
+               data: {
+                     '_token': '{{ csrf_token() }}',
+                     'user_id': userId,
+               },
+               success: function(response) {
+                     location.reload();
+               },
+               error: function(xhr, status, error) {
+                     console.error(xhr.responseText);
+               }
+            });
+         }
+         
+         $(document).ready(function() {
+         $('#blockButton').click(function() {
+         // Get the user ID and blocked ID from data attributes of the button
+         var userId = $(this).data('user-id');
+         var blockedId = $(this).data('blocked-id');
+         
+         // Set the user ID and blocked ID in the modal's confirmation button
+         $('#confirmBlockButton').data('user-id', userId);
+         $('#confirmBlockButton').data('blocked-id', blockedId);
+         });
+         });
+         
+         function confirmBlockUser() {
+         // Retrieve user ID and blocked ID from the confirmation button's data attributes
+         var userId = $('#confirmBlockButton').data('user-id');
+         var blockedId = $('#confirmBlockButton').data('blocked-id');
+         
+         // Perform the AJAX call to block the user
+         $.ajax({
+         type: 'POST',
+         url: '{{ route("block-user") }}',
+         data: {
+            '_token': '{{ csrf_token() }}',
+            'user_id': userId,
+            'blocked_id': blockedId
+         },
+         success: function(response) {
+            location.reload();
+         },
+         error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+         }
+         });
+         }
+         
+         
+         
+         
       </script>
       @include('layouts.footer')
    </body>

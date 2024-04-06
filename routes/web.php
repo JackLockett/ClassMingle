@@ -118,11 +118,13 @@ Route::middleware('auth')->group(function () {
 
     #User Controller
     Route::get('/view-students', [UserController::class, 'index'])->name('view-students');  
-    Route::get('/student/{id}', [UserController::class, 'showProfile'])->name('user.profile');
+    Route::get('/student/{id}', [UserController::class, 'showProfile'])->middleware(['auth', 'checkBlockedUser'])->name('user.profile');
     Route::post('/send-message/{id}', [UserController::class, 'sendMessage'])->name('send-message');
     Route::post('/delete-message/{id}', [UserController::class, 'deleteMessage'])->name('delete-message');
     Route::post('/mark-message/{id}', [UserController::class, 'markMessage'])->name('mark-message');
     Route::post('/unmark-message/{id}', [UserController::class, 'unmarkMessage'])->name('unmark-message');
+    Route::post('/block-user', [UserController::class, 'blockUser'])->name('block-user');
+    Route::post('/unblock-user', [UserController::class, 'unblockUser'])->name('unblock-user');
 
     #Discovery Controller
     Route::get('/discovery', [DiscoveryController::class, 'index'])->name('discovery');

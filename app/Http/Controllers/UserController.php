@@ -9,6 +9,7 @@ use App\Models\FriendRequest;
 use App\Models\Friendship;
 use App\Models\Message;
 use App\Models\Badge;
+use App\Models\Block;
 
 class UserController extends Controller
 {
@@ -53,12 +54,17 @@ class UserController extends Controller
 
         $badges = Badge::where('user_id', $id)->get();
 
+        $isBlocked = Block::where('user_id', Auth::id())
+                        ->where('blocked_id', $student->id)
+                        ->exists();
+
         return view('student', [
             'student' => $student,
             'isPendingRequest' => $isPendingRequest,
             'isFriend' => $isFriend,
             'authId' => $authId,
             'badges' => $badges,
+            'isBlocked' => $isBlocked,
         ]);
     }
 
@@ -105,4 +111,33 @@ class UserController extends Controller
         
         return redirect()->back()->with('success', 'Message marked as unread successfully.');
     }
+
+    public function blockUser(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id', 
+            'blocked_id' => 'required|exists:users,id', 
+        ]);
+
+        $block = Block::create([
+            'user_id' => $request->user_id,
+            'blocked_id' => $request->blocked_id,
+        ]);
+
+        return response()->json(['message' => 'User blocked successfully'], 200);
+    }
+
+    public function unblockUser(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id', 
+        ]);
+    
+        Block::where('user_id', Auth::id())
+             ->where('blocked_id', $request->user_id)
+             ->delete();
+    
+        return response()->json(['message' => 'User unblocked successfully'], 200);
+    }
+    
 }

@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'reset.token.auth' => \App\Http\Middleware\ResetTokenAuthenticate::class,
         'verify.token.auth' => \App\Http\Middleware\VerifyTokenAuthenticate::class,
+        'checkBlockedUser' => \App\Http\Middleware\CheckBlockedUser::class,
     ];  
 }
