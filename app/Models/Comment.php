@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
+    protected $table = 'comments';
+    protected $fillable = [
+        'likes',
+        'dislikes',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -37,5 +43,8 @@ class Comment extends Model
         return $this->hasMany(SavedComment::class);
     }
 
-    
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
 }

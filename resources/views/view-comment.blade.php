@@ -5,9 +5,10 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>View Comment</title>
       <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
       <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      <meta name="csrf-token" content="{{ csrf_token() }}">
       <style>
          .comment {
          margin-bottom: 10px;
@@ -88,6 +89,14 @@
                   </small>
                </p>
             </div>
+            <div class="card-footer">
+               <button id="likeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="likeComment('{{ $comment->id }}')" style="color: #666;">
+               <i class="fas fa-thumbs-up" style="color: #666;"></i> {{ $comment->likes }}
+               </button>
+               <button id="dislikeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="dislikeComment('{{ $comment->id }}')" style="color: #666;">
+               <i class="fas fa-thumbs-down" style="color: #666;"></i> {{ $comment->dislikes }}
+               </button>
+            </div>
          </div>
          @if ($comment->responses->count() > 0)
          <div class="card mt-3">
@@ -130,6 +139,14 @@
                            @endif
                         </div>
                      </div>
+                  </div>
+                  <div class="mb-3">
+                     <button id="likeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="likeComment('{{ $comment->id }}')" style="color: #666;">
+                     <i class="fas fa-thumbs-up"></i> {{ $comment->likes }}
+                     </button>
+                     <button id="dislikeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="dislikeComment('{{ $comment->id }}')" style="color: #666;">
+                     <i class="fas fa-thumbs-down"></i> {{ $comment->dislikes }}
+                     </button>
                   </div>
                </div>
                @endforeach
@@ -321,6 +338,32 @@
          $(document).ready(function() {
             updateCommentReportCharacterCount();
          });
+         
+         function likeComment(commentId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/like-comment/' + commentId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#likeButton_comment_' + commentId).html('<i class="fas fa-thumbs-up"></i> ' + response.likes);
+                 }
+             });
+         }
+         
+         function dislikeComment(commentId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/dislike-comment/' + commentId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#dislikeButton_comment_' + commentId).html('<i class="fas fa-thumbs-down"></i> ' + response.dislikes);
+                 }
+             });
+         }
       </script>
       @include('layouts.footer')
    </body>

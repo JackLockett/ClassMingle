@@ -110,6 +110,8 @@ class CommentController extends Controller
         $comment->post_id = $post->id;
         $comment->user_id = auth()->user()->id;
         $comment->comment = $validatedData['comment'];
+        $comment->likes = 0;
+        $comment->dislikes = 0;
         $comment->save();
 
         $existingBadge = Badge::where('user_id', auth()->user()->id)
@@ -175,5 +177,43 @@ class CommentController extends Controller
             'postId' => $postId,
             'commentId' => $commentId
         ])->with('success', 'Response added successfully!'); 
+    }
+
+    public function likeComment($commentId)
+    {
+        $user = auth()->user();
+        $comment = Comment::findOrFail($commentId);
+        $like = $user->likes()->where('comment_id', $commentId)->first();
+    
+        if ($like && $like->is_like) {
+            $like->delete();
+            if ($comment->likes > 0) { 
+                $comment->decrement('likes'); 
+            }
+        } else {
+            $user->likes()->updateOrCreate(['comment_id' => $commentId], ['is_like' => true]);
+            $comment->increment('likes'); 
+        }
+    
+        return response()->json(['likes' => $comment->likes]);
+    }
+    
+    public function dislikeComment($commentId)
+    {
+        $user = auth()->user();
+        $comment = Comment::findOrFail($commentId);
+        $like = $user->likes()->where('comment_id', $commentId)->first();
+    
+        if ($like && !$like->is_like) {
+            $like->delete();
+            if ($comment->dislikes > 0) {
+                $comment->decrement('dislikes'); 
+            }
+        } else {
+            $user->likes()->updateOrCreate(['comment_id' => $commentId], ['is_like' => false]);
+            $comment->increment('dislikes');
+        }
+    
+        return response()->json(['dislikes' => max($comment->dislikes, 0)]);
     }
 }

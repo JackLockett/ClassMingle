@@ -104,6 +104,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/post/{postId}/comment', [CommentController::class, 'addComment'])->name('add-comment');
     Route::delete('/delete-comment/{commentId}', [CommentController::class, 'deleteComment'])->name('delete-comment');
     Route::post('/societies/{societyId}/posts/{postId}/comments/{commentId}/respond', [CommentController::class, 'respondToComment'])->name('respond-to-comment');
+    Route::post('/like-comment/{commentId}', [CommentController::class, 'likeComment'])->name('like-comment');
+    Route::post('/dislike-comment/{commentId}', [CommentController::class, 'dislikeComment'])->name('dislike-comment');
 
     #Account Controller
     Route::get('/account', [AccountController::class, 'index'])->name('account');

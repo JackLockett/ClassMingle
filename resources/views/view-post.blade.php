@@ -79,10 +79,10 @@
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
                <div>
-                  <button id="likeButton" class="btn btn-sm btn-link" onclick="likePost('{{ $post->id }}')">
+                  <button id="likeButton_{{ $post->id }}" class="btn btn-sm btn-link" onclick="likePost('{{ $post->id }}')" style="color: #666;">
                   <i class="fas fa-thumbs-up"></i> {{ $post->likes }}
                   </button>
-                  <button id="dislikeButton" class="btn btn-sm btn-link" onclick="dislikePost('{{ $post->id }}')">
+                  <button id="dislikeButton_{{ $post->id }}" class="btn btn-sm btn-link" onclick="dislikePost('{{ $post->id }}')" style="color: #666;">
                   <i class="fas fa-thumbs-down"></i> {{ $post->dislikes }}
                   </button>
                </div>
@@ -152,24 +152,25 @@
                      </div>
                   </div>
                   <p>{{ $comment->comment }}</p>
-                  @if ($comment->responses->count() > 0)
                   <div class="mb-3">
+                     <button id="likeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="likeComment('{{ $comment->id }}')" style="color: #666;">
+                     <i class="fas fa-thumbs-up"></i> {{ $comment->likes }}
+                     </button>
+                     <button id="dislikeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="dislikeComment('{{ $comment->id }}')" style="color: #666;">
+                     <i class="fas fa-thumbs-down"></i> {{ $comment->dislikes }}
+                     </button>
+                     @if ($comment->responses->count() > 0)
                      @if($comment->user_id != auth()->user()->id)
                      <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
                      @endif
                      <span class="ml-3 text-muted">•</span>
-                     <small class="text-muted">
+                     <small class="ml-2 text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
                      </small>
+                     @else
+                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     @endif
                   </div>
-                  @else
-                  @if($comment->user_id != auth()->user()->id)
-                  <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
-                  @endif
-                  @endif
-                  @if (!$loop->last)
-                  <hr>
-                  @endif
                </div>
                @endforeach
                @else
@@ -444,7 +445,7 @@
                      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                  },
                  success: function(response) {
-                     $('#likeButton').html('<i class="fas fa-thumbs-up"></i> ' + response.likes);
+                     $('#likeButton_' + postId).html('<i class="fas fa-thumbs-up"></i> ' + response.likes);
                  }
              });
          }
@@ -457,58 +458,87 @@
                      'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                  },
                  success: function(response) {
-                     $('#dislikeButton').html('<i class="fas fa-thumbs-down"></i> ' + response.dislikes);
+                     $('#dislikeButton_' + postId).html('<i class="fas fa-thumbs-down"></i> ' + response.dislikes);
                  }
              });
          }
          
-         function updatePostReportCharacterCount() {
-             var commentLength = $('#reportReasonPost').val().length;
-             var totalLength = commentLength;
-             var remainingCharacters = 250 - totalLength;
-         
-             $('#characterCountReportPost').text(remainingCharacters);
-         
-             if (totalLength > 0) {
-                 $('#reportPost').prop('disabled', false);
-             } else {
-                 $('#reportPost').prop('disabled', true);
-             }
+         function likeComment(commentId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/like-comment/' + commentId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#likeButton_comment_' + commentId).html('<i class="fas fa-thumbs-up"></i> ' + response.likes);
+                 }
+             });
          }
          
-         // Update character count on input change (for posts)
-         $('#reportReasonPost').on('input', function() {
-            updatePostReportCharacterCount();
-         });
-         
-         // Initialize character count on document ready (for posts)
-         $(document).ready(function() {
-            updatePostReportCharacterCount();
-         });
-         
-         function updateCommentReportCharacterCount() {
-             var commentLength = $('#reportReasonComment').val().length;
-             var totalLength = commentLength;
-             var remainingCharacters = 250 - totalLength;
-         
-             $('#characterCountReportComment').text(remainingCharacters);
-         
-             if (totalLength > 0) {
-                 $('#reportComment').prop('disabled', false);
-             } else {
-                 $('#reportComment').prop('disabled', true);
-             }
+         function dislikeComment(commentId) {
+             $.ajax({
+                 type: 'POST',
+                 url: '/dislike-comment/' + commentId,
+                 headers: {
+                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                 },
+                 success: function(response) {
+                     $('#dislikeButton_comment_' + commentId).html('<i class="fas fa-thumbs-down"></i> ' + response.dislikes);
+                 }
+             });
          }
          
-         // Update character count on input change (for posts)
-         $('#reportReasonComment').on('input', function() {
-            updateCommentReportCharacterCount();
-         });
          
-         // Initialize character count on document ready (for posts)
-         $(document).ready(function() {
-            updateCommentReportCharacterCount();
-         });
+              
+              function updatePostReportCharacterCount() {
+                  var commentLength = $('#reportReasonPost').val().length;
+                  var totalLength = commentLength;
+                  var remainingCharacters = 250 - totalLength;
+              
+                  $('#characterCountReportPost').text(remainingCharacters);
+              
+                  if (totalLength > 0) {
+                      $('#reportPost').prop('disabled', false);
+                  } else {
+                      $('#reportPost').prop('disabled', true);
+                  }
+              }
+              
+              // Update character count on input change (for posts)
+              $('#reportReasonPost').on('input', function() {
+                 updatePostReportCharacterCount();
+              });
+              
+              // Initialize character count on document ready (for posts)
+              $(document).ready(function() {
+                 updatePostReportCharacterCount();
+              });
+              
+              function updateCommentReportCharacterCount() {
+                  var commentLength = $('#reportReasonComment').val().length;
+                  var totalLength = commentLength;
+                  var remainingCharacters = 250 - totalLength;
+              
+                  $('#characterCountReportComment').text(remainingCharacters);
+              
+                  if (totalLength > 0) {
+                      $('#reportComment').prop('disabled', false);
+                  } else {
+                      $('#reportComment').prop('disabled', true);
+                  }
+              }
+              
+              // Update character count on input change (for posts)
+              $('#reportReasonComment').on('input', function() {
+                 updateCommentReportCharacterCount();
+              });
+              
+              // Initialize character count on document ready (for posts)
+              $(document).ready(function() {
+                 updateCommentReportCharacterCount();
+              });
+           
       </script>
       @include('layouts.footer')
    </body>
