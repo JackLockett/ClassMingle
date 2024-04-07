@@ -118,14 +118,26 @@ class UserController extends Controller
             'user_id' => 'required|exists:users,id', 
             'blocked_id' => 'required|exists:users,id', 
         ]);
-
+    
+        $userId = $request->user_id;
+        $blockedId = $request->blocked_id;
+    
+        Friendship::where(function ($query) use ($userId, $blockedId) {
+            $query->where('user_id', $userId)
+                ->where('friend_id', $blockedId);
+        })->orWhere(function ($query) use ($userId, $blockedId) {
+            $query->where('user_id', $blockedId)
+                ->where('friend_id', $userId);
+        })->delete();
+    
         $block = Block::create([
-            'user_id' => $request->user_id,
-            'blocked_id' => $request->blocked_id,
+            'user_id' => $userId,
+            'blocked_id' => $blockedId,
         ]);
-
+    
         return response()->json(['message' => 'User blocked successfully'], 200);
     }
+    
 
     public function unblockUser(Request $request)
     {
