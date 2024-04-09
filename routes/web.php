@@ -67,6 +67,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/accept-society-claim/{societyId}', [AdminController::class, 'acceptSocietyClaim'])->name('accept-society-claim');
     Route::post('/admin/deny-society-claim/{id}', [AdminController::class, 'denySocietyClaim'])->name('deny-society-claim');
     Route::post('/admin/delete-society/{id}', [AdminController::class, 'deleteSociety'])->name('delete-society');
+    Route::post('/admin/ban-user/{id}', [AdminController::class, 'banUser'])->name('ban-user');
+    Route::post('/admin/unban-user/{id}', [AdminController::class, 'unbanUser'])->name('unban-user');
 });
 
 Route::middleware('auth')->group(function () {

@@ -27,5 +27,15 @@ class User extends Authenticatable
         return $this->hasMany(Like::class);
     }
 
+    public function isBanned()
+    {
+        return $this->ban()->exists();
+    }
+
+    public function ban()
+    {
+        return $this->hasOne(Ban::class);
+    }
+
 
 }

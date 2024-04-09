@@ -41,6 +41,11 @@
                   <a href="{{ route('resend-verification-email') }}">Click here</a> to resend verification email.
                </div>
                @endif
+               @if ($errors->has('banned'))
+               <div class="alert alert-danger">
+                  {{ $errors->first('banned') }}
+               </div>
+               @endif
                @if (session('success'))
                <div id="successAlert" class="alert alert-success alert-dismissible fade show animate__animated" role="alert">
                   {{ session('success') }}

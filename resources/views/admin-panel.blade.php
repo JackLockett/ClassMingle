@@ -122,9 +122,22 @@
                                     </select>
                                  </div>
                                  <div class="d-flex justify-content-between">
-                                    <button type="button" class="btn btn-danger" onclick="deleteAccount({{ $user->id }})">
-                                    <i class="fas fa-trash"></i> Delete Account
-                                    </button>
+                                    <div>
+                                       <button type="button" class="btn btn-danger" onclick="deleteAccount({{ $user->id }})">
+                                       <i class="fas fa-trash"></i> Delete Account
+                                       </button>
+                                       @if ($user->isBanned())
+                                       <!-- Display unban button -->
+                                       <button type="button" class="btn btn-success" onclick="unbanAccount({{ $user->id }})">
+                                       <i class="fas fa-user-check"></i> Unban
+                                       </button>
+                                       @else
+                                       <!-- Display ban button -->
+                                       <button type="button" class="btn btn-danger" onclick="banAccount({{ $user->id }})">
+                                       <i class="fas fa-user-times"></i> Ban
+                                       </button>
+                                       @endif
+                                    </div>
                                     <div>
                                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
                                        <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Save Changes</button>
@@ -653,6 +666,74 @@
                  csrfInput.setAttribute('value', csrfToken);
          
                  form.appendChild(csrfInput);
+                 document.body.appendChild(form);
+                 form.submit();
+             }
+         }
+      </script>
+      <script>
+         function banAccount(id) {
+             var banDuration = prompt("Enter the ban duration (in days):");
+             var reason = prompt("Enter the reason for banning this account (max 50 characters):");
+         
+             if (banDuration && reason) {
+                 if (reason.length > 50) {
+                     alert("Ban reason must not exceed 50 characters.");
+                     return;
+                 }
+         
+                 if (confirm("Are you sure you want to ban this account?")) {
+                     var url = '/admin/ban-user/' + id;
+         
+                     var form = document.createElement('form');
+                     form.method = 'POST';
+                     form.action = url;
+         
+                     var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                     var csrfInput = document.createElement('input');
+                     csrfInput.setAttribute('type', 'hidden');
+                     csrfInput.setAttribute('name', '_token');
+                     csrfInput.setAttribute('value', csrfToken);
+         
+                     var banDurationInput = document.createElement('input');
+                     banDurationInput.setAttribute('type', 'hidden');
+                     banDurationInput.setAttribute('name', 'ban_duration');
+                     banDurationInput.setAttribute('value', banDuration);
+         
+                     var reasonInput = document.createElement('input');
+                     reasonInput.setAttribute('type', 'hidden');
+                     reasonInput.setAttribute('name', 'ban_reason');
+                     reasonInput.setAttribute('value', reason);
+         
+                     form.appendChild(csrfInput);
+                     form.appendChild(banDurationInput);
+                     form.appendChild(reasonInput);
+         
+                     document.body.appendChild(form);
+                     form.submit();
+                 }
+             } else {
+                 alert("Please enter both ban duration and reason.");
+             }
+         }
+      </script>
+      <script>
+         function unbanAccount(id) {
+             if (confirm("Are you sure you want to unban this account?")) {
+                 var url = '/admin/unban-user/' + id;
+         
+                 var form = document.createElement('form');
+                 form.method = 'POST';
+                 form.action = url;
+         
+                 var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                 var csrfInput = document.createElement('input');
+                 csrfInput.setAttribute('type', 'hidden');
+                 csrfInput.setAttribute('name', '_token');
+                 csrfInput.setAttribute('value', csrfToken);
+         
+                 form.appendChild(csrfInput);
+         
                  document.body.appendChild(form);
                  form.submit();
              }

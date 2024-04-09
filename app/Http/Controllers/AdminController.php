@@ -17,6 +17,7 @@ use App\Models\User;
 use App\Models\Query;
 use App\Models\Badge;
 use App\Models\Report;
+use App\Models\Ban;
 
 class AdminController extends Controller
 {
@@ -263,5 +264,53 @@ class AdminController extends Controller
         $user->delete();
     
         return redirect()->route('admin-panel')->with('success', 'User deleted successfully!');
+    }
+
+    public function banUser(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'ban_duration' => 'required|integer|min:1',
+            'ban_reason' => 'required|string|max:255',
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()->route('admin-panel')->with('error', $validator->errors()->first());
+        }
+    
+        $user = User::find($id);
+    
+        if (!$user) {
+            return redirect()->route('admin-panel')->with('error', 'User not found!');
+        }
+    
+        $banDuration = $request->input('ban_duration');
+        $banReason = $request->input('ban_reason');
+    
+        $ban = new Ban([
+            'user_id' => $user->id,
+            'banDuration' => $banDuration,
+            'banReason' => $banReason,
+        ]);
+        $ban->save();
+    
+        return redirect()->route('admin-panel')->with('success', 'User banned successfully!');
+    }
+
+    public function unbanUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return redirect()->route('admin-panel')->with('error', 'User not found!');
+        }
+
+        $ban = Ban::where('user_id', $user->id)->first();
+
+        if ($ban) {
+            $ban->delete();
+            return redirect()->route('admin-panel')->with('success', 'User unbanned successfully!');
+        } else {
+            return redirect()->route('admin-panel')->with('error', 'User is not currently banned!');
+        }
     }
 }
