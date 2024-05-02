@@ -159,17 +159,18 @@
                      <button id="dislikeButton_comment_{{ $comment->id }}" class="btn btn-sm btn-link d-inline-block" onclick="dislikeComment('{{ $comment->id }}')" style="color: #666;">
                      <i class="fas fa-thumbs-down"></i> {{ $comment->dislikes }}
                      </button>
+                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}">
                      @if ($comment->responses->count() > 0)
                      @if($comment->user_id != auth()->user()->id)
-                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     <span class="btn btn-sm btn-link">Respond</span>
                      @endif
-                     <span class="ml-3 text-muted">•</span>
                      <small class="ml-2 text-muted">
                      {{ $comment->responses->count() }} Response{{ $comment->responses->count() != 1 ? 's' : '' }}
                      </small>
                      @else
-                     <a href="{{ route('view-comment', ['societyId' => $society->id, 'postId' => $post->id, 'commentId' => $comment->id]) }}" class="btn btn-sm btn-link">Respond</a>
+                     <span class="btn btn-sm btn-link">Respond</span>
                      @endif
+                     </a>
                   </div>
                </div>
                @endforeach
@@ -237,7 +238,9 @@
                   </button>
                </div>
                <div class="modal-body">
+                  @if(isset($comment))
                   <form action="{{ route('report-comment', ['postId' => $comment->post_id, 'commentId' => $comment->parent_comment_id ?: $comment->id]) }}" method="POST">
+                     @endif
                      @csrf
                      <div class="form-group">
                         <p>Please provide details about why you are reporting this comment:</p>

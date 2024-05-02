@@ -40,9 +40,9 @@
                         </div>
                         <hr>
                         <div class="row">
-                           <div class="col-12 mb-2">
+                           <!--<div class="col-12 mb-2">
                               <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#changeEmailModal">Change Email</button>
-                           </div>
+                           </div> -->
                            <div class="col-12 mb-2">
                               <button class="btn btn-primary btn-block" data-toggle="modal" data-target="#changePasswordModal">Change Password</button>
                            </div>

@@ -445,7 +445,7 @@
                      .then(data => {
                          console.log(data);
          
-                         showAlert(data.success, data.success ? actionMessage : errorMessage);
+                         //showAlert(data.success, data.success ? actionMessage : errorMessage);
          
                          location.reload();
                      })

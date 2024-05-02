@@ -45,17 +45,18 @@ class SocietyController extends Controller
     {
         $validatedData = $request->validate([
             'societyType' => 'required',
-            'societyName' => $request->societyType === 'Academic' ? 'required|unique:societies' : '',
             'subjectList' => $request->societyType === 'Academic' ? 'required' : '',
             'academicSocietyDescription' => $request->societyType === 'Academic' ? 'required' : '',
             'socialSocietyDescription' => $request->societyType === 'Social' ? 'required' : '',
         ]);
     
         if ($request->societyType === 'Academic') {
-            $existingSociety = Society::where('societyName', $validatedData['subjectList'])->first();
+            $societyName = $validatedData['subjectList']; // Set society name to subject name for academic societies
         } else {
-            $existingSociety = Society::where('societyName', $validatedData['societyName'])->first();
+            $societyName = $request->input('societyName');
         }
+    
+        $existingSociety = Society::where('societyName', $societyName)->first();
     
         if ($existingSociety) {
             return redirect()->back()->withInput()->withErrors(['societyName' => 'A society with this name already exists.']);
@@ -65,7 +66,7 @@ class SocietyController extends Controller
     
         $society->ownerId = auth()->user()->id;
         $society->societyType = $validatedData['societyType'];
-        $society->societyName = $request->societyType === 'Academic' ? $validatedData['subjectList'] : $validatedData['societyName'];
+        $society->societyName = $societyName;
         $society->societyDescription = $request->societyType === 'Academic' ? $validatedData['academicSocietyDescription'] : $validatedData['socialSocietyDescription'];
         $society->approved = false;
         $society->memberList = [auth()->user()->id];
@@ -79,6 +80,7 @@ class SocietyController extends Controller
     
         return redirect()->route('societies');
     }
+    
 
     public function joinSociety($societyId)
     {

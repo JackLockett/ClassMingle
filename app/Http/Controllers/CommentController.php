@@ -137,11 +137,6 @@ class CommentController extends Controller
             return redirect()->back()->with('error', 'Comment not found.');
         }
     
-        $society = $comment->post->society;
-        if (!in_array(auth()->id(), $society->moderatorList)) {
-            return redirect()->back()->with('error', 'You are not authorized to delete this comment.');
-        }
-    
         $reports = Report::where('comment_id', $commentId)->get();
         foreach ($reports as $report) {
             $report->delete();
